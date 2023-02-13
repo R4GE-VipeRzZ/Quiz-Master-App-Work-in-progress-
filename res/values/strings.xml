@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Question Master</string>
+    <string name="menu_title_label">Question Master</string>
+    <string name="menu_play_btn">Play</string>
+    <string name="menu_questions_btn">Questions</string>
+    <string name="menu_settings_btn">Settings</string>
+    <string name="menu_exit_btn">Exit</string>
+    <string name="setup_pg_title_label">Select Team Colours</string>
+    <string name="setup_pg_team1_label">Team 1</string>
+    <string name="setup_pg_team2_label">Team 2</string>
+    <string name="setup_pg_board_label">Board</string>
+    <string name="setup_pg_start_btn">Start</string>
+</resources>
