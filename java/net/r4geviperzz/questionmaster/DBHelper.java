@@ -20,6 +20,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COL_GAME_BOARDS_TOTAL_SPACES = "totalSpaces";
     private static final String COL_GAME_BOARDS_TIME_LIMIT = "timeLimit";
     private static final String COL_GAME_BOARDS_BOARD_NAME = "boardName";
+    private static final String COL_GAME_BOARDS_IMG_NAME = "boardImgName";
     private static final String TABLE_TEAMS = "teams";
     private static final String COL_TEAMS_ID = "teamId";
     private static final String COL_TEAMS_NAME = "teamName";
@@ -81,7 +82,7 @@ public class DBHelper extends SQLiteOpenHelper {
         //Creates the gameBoards table
         String createGameBoardsTable = "CREATE TABLE " + TABLE_GAME_BOARDS + " (" + COL_GAME_BOARDS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
                 + COL_GAME_BOARDS_TOTAL_SPACES + " INTEGER NOT NULL, " + COL_GAME_BOARDS_TIME_LIMIT + " INTEGER NOT NULL, "
-                + COL_GAME_BOARDS_BOARD_NAME + " VARCHAR(20) NOT NULL" +");";
+                + COL_GAME_BOARDS_BOARD_NAME + " VARCHAR(20) NOT NULL, " + COL_GAME_BOARDS_IMG_NAME + " VARCHAR(30) NOT NULL" +");";
 
         try {
             db.execSQL(createGameBoardsTable);
@@ -91,7 +92,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         //Insert values into gameBoards table
         String insertGameBoardsTable = "INSERT INTO " + TABLE_GAME_BOARDS + "(" + COL_GAME_BOARDS_TOTAL_SPACES + ", "
-                + COL_GAME_BOARDS_TIME_LIMIT + ", " + COL_GAME_BOARDS_BOARD_NAME + ") VALUES (65, 60, \"Standard\");";
+                + COL_GAME_BOARDS_TIME_LIMIT + ", " + COL_GAME_BOARDS_BOARD_NAME + ", " + COL_GAME_BOARDS_IMG_NAME + ") VALUES (65, 60, \"Standard\", \"standard_board\");";
 
         try{
             db.execSQL(insertGameBoardsTable);
@@ -339,7 +340,6 @@ public class DBHelper extends SQLiteOpenHelper {
             }
 
             try{
-                Log.e("test", insertQuestionsTable.toString());
                 //Executes the created insert statement for the given cardColour
                 db.execSQL(insertQuestionsTable.toString());
             }catch (Exception e){
@@ -397,6 +397,32 @@ public class DBHelper extends SQLiteOpenHelper {
         return returnList;
     }
 
+    //This is a static version of the readDB method that requires the handle of the database to be passed to it
+    //as a the databases handle can't be access due to the fact that the method is static meaning that it
+    //can't access the database handle of the instance. The method should only be used when a static method is required
+    //This method is used to execute the read queries for the database
+    private static List<String> readDBStatic(String sqlQuery, SQLiteDatabase db){
+        List<String> returnList = new ArrayList<>();
+        Cursor cursor = null;
+
+        try{
+            cursor = db.rawQuery(sqlQuery, null);
+
+            //Checks if the pointer can be moved to the first element in the cursor, if it can then it is true as values are in the cursor
+            if (cursor.moveToFirst()){
+                do{
+                    returnList.add(cursor.getString(0));
+                }while (cursor.moveToNext()); //Used to move to the next element in the cursor until it reaches the end
+            }
+        }catch(Exception e){
+            Log.e("readDB Method", "------ The readDB method was unable to read the data from the table ------");
+        }
+
+        db.close();
+        cursor.close();
+        return returnList;
+    }
+
     //This method is responsible for reading the names of the game boards from the database
     public List<String> getGameBoardNames(){
         //Creates an array list to store the results from the query
@@ -421,14 +447,30 @@ public class DBHelper extends SQLiteOpenHelper {
         return teamNameList;
     }
 
+    //This method is responsible for reading the names of the boards from the database
     public List<String> getBoardNames(){
         //Creates an array list to store the results from the query
         List<String> boardNameList = new ArrayList<>();
         //This is the sql query that will be executed
-        String readTeamNamesQuery = "SELECT " + COL_GAME_BOARDS_BOARD_NAME +" FROM " + TABLE_GAME_BOARDS + ";";
-        //Passes the sql query and stores the results in the teamNameList
-        boardNameList = readDB(readTeamNamesQuery);
+        String readBoardNamesQuery = "SELECT " + COL_GAME_BOARDS_BOARD_NAME +" FROM " + TABLE_GAME_BOARDS + ";";
+        //Passes the sql query and stores the results in the boardNameList
+        boardNameList = readDB(readBoardNamesQuery);
 
         return boardNameList;
+    }
+
+    //This method is responsible for reading the image name of the passed board name from the database
+    //This method has to be static as it is used inside onItemSelected() that is a static method
+    //that is used by the board dropdown spinner
+    public static String getBoardImg(String boardName, SQLiteDatabase db){
+        String boardImg = null;
+
+        //This is the sql query that will be executed
+        String readBoardImgQuery = "SELECT " + COL_GAME_BOARDS_IMG_NAME +" FROM " + TABLE_GAME_BOARDS + " WHERE "
+                + COL_GAME_BOARDS_BOARD_NAME + " = \"" + boardName + "\"" + ";";
+        //Passes the sql query and stores the results in the boardImg
+        boardImg = readDBStatic(readBoardImgQuery, db).get(0).toString();
+
+        return boardImg;
     }
 }

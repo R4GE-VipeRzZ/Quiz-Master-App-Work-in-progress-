@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.os.Handler;
 
@@ -19,6 +20,7 @@ public class SetupPage extends Activity {
     private DBHelper dbHelper = new DBHelper(SetupPage.this);
     private Boolean isUserInput = true;
     private final Handler handler = new Handler();
+    private String boardDropdownPrevVal = null;
     private String team1DropdownPrevVal = null;
     private String team2DropdownPrevVal = null;
 
@@ -40,8 +42,46 @@ public class SetupPage extends Activity {
         Spinner boardDropdown = findViewById(R.id.setupPgBoardDropdown);
         //Creates the ArrayAdapter that is to be used in the board spinner
         ArrayAdapter<String> boardAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, boardNames);
-        //Binds the ArrayAdapter to the team 1 spinner
+        //Binds the ArrayAdapter to the board spinner
         boardDropdown.setAdapter(boardAdapter);
+
+        //Sets a listener for the board spinner
+        boardDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            //This call back method is triggered when an item is selected in the board spinner
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                if (isUserInput == true) {
+                    String selectedBoard = boardDropdown.getSelectedItem().toString();
+                    if (!"Select Board".equals(selectedBoard)) {
+                        String boardImgName = DBHelper.getBoardImg(selectedBoard, dbHelper.getReadableDatabase());
+
+                        int boardImgDrawableId = 0;
+                        try{
+                            //Gets the integer ID of the board image resource
+                            boardImgDrawableId = getResources().getIdentifier(boardImgName, "drawable", getPackageName());
+                        }catch (Exception e){
+                            Log.e("getBoardImgDrawable", "Error locating the board image drawable");
+                        }
+
+                        if (boardImgDrawableId != 0) {
+                            //Get a reference to the board image ImageView
+                            ImageView boardImgObj = findViewById(R.id.setupPgBoardImg);
+                            boardImgObj.setImageResource(boardImgDrawableId);
+                        }else{
+                            Log.e("ErrFindingBoardDrawable", "Unable to find a game board image drawable of the specified file name");
+                        }
+
+                        boardDropdownPrevVal = selectedBoard;
+                    }
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+        });
     }
 
     //This method is responsible for populating and controlling the values of the team dropdown spinners
