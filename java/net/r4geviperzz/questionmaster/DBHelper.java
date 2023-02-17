@@ -92,7 +92,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
         //Insert values into gameBoards table
         String insertGameBoardsTable = "INSERT INTO " + TABLE_GAME_BOARDS + "(" + COL_GAME_BOARDS_TOTAL_SPACES + ", "
-                + COL_GAME_BOARDS_TIME_LIMIT + ", " + COL_GAME_BOARDS_BOARD_NAME + ", " + COL_GAME_BOARDS_IMG_NAME + ") VALUES (65, 60, \"Standard\", \"standard_board\");";
+                + COL_GAME_BOARDS_TIME_LIMIT + ", " + COL_GAME_BOARDS_BOARD_NAME + ", " + COL_GAME_BOARDS_IMG_NAME + ") VALUES " +
+                "(65, 60, \"Standard\", \"standard_board\")," +
+                "(60,60, \"Snake\", \"snake_board\");";
 
         try{
             db.execSQL(insertGameBoardsTable);
@@ -111,7 +113,8 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
         //Insert values into teams table
-        String insertTeamsTable = "INSERT INTO " + TABLE_TEAMS + "(" + COL_TEAMS_NAME + ", " + COL_TEAMS_IMG_NAME + ") VALUES (\"Blue\", \"blue_icon\"),"
+        String insertTeamsTable = "INSERT INTO " + TABLE_TEAMS + "(" + COL_TEAMS_NAME + ", " + COL_TEAMS_IMG_NAME + ") VALUES " +
+                "(\"Blue\", \"blue_icon\"),"
                 + "(\"Red\", \"red_icon\")," +
                 "(\"Yellow\", \"yellow_icon\")," +
                 "(\"Green\", \"green_icon\")," +
@@ -145,13 +148,13 @@ public class DBHelper extends SQLiteOpenHelper {
         //Insert values into the boardPositions table
 
         //This array stores the id values of each board
-        Integer[] boardIdsArray = {1};
+        Integer[] boardIdsArray = {1,2};
 
         //This for loop is used to insert the board positions to the boardPositions table with the correct boardId
         for (int x = 0; x < boardIdsArray.length; x++){
             String[][] boardLocationVals;
             boardLocationVals = null;
-            if (x == 0){    //This is true if the board that is been is the first in the boardIdsArray
+            if (x == 0){    //This is true if the board that is being selected is the first in the boardIdsArray
                 //Values {girdX, gridY, cardColour, Special}
                 boardLocationVals = new String[][]{{"11","10","1","0"}, //This two dimensional string array contains all the boardPositions for the
                         {"11", "9", "0", "0"},                          //given board, excluding the boardId and posId
@@ -218,7 +221,69 @@ public class DBHelper extends SQLiteOpenHelper {
                         {"6", "5", "0", "0"},
                         {"5", "5", "1", "0"},
                         {"6", "5", "null","0"}};
-            }
+            } else if (x == 1) {    //This is true if the board that is being selected is the second in the boardIdsArray
+                //Values {girdX, gridY, cardColour, Special}
+                boardLocationVals = new String[][]{{"1","10","1","0"}, //This two dimensional string array contains all the boardPositions for the
+                        {"2", "10", "0", "0"},
+                        {"3", "10", "1", "0"},
+                        {"4", "10", "0", "0"},
+                        {"5", "10", "1", "0"},
+                        {"6", "10", "0", "0"},
+                        {"7", "10", "1", "0"},
+                        {"8", "10", "0", "0"},
+                        {"9", "10", "1", "0"},
+                        {"10", "10", "0", "0"},
+                        {"11", "10", "1", "1"},
+                        {"11", "9", "1", "0"},
+                        {"11", "8", "1", "-1"},
+                        {"10", "8", "0", "0"},
+                        {"9", "8", "1", "0"},
+                        {"8", "8", "0", "0"},
+                        {"7", "8", "1", "0"},
+                        {"6", "8", "0", "0"},
+                        {"5", "8", "1", "0"},
+                        {"4", "8", "0", "0"},
+                        {"3", "8", "1", "0"},
+                        {"2", "8", "0", "0"},
+                        {"1", "8", "1", "-1"},
+                        {"1", "7", "1", "0"},
+                        {"1", "6", "1", "1"},
+                        {"2", "6", "0", "0"},
+                        {"3", "6", "1", "0"},
+                        {"4", "6", "0", "0"},
+                        {"5", "6", "1", "0"},
+                        {"6", "6", "0", "0"},
+                        {"7", "6", "1", "0"},
+                        {"8", "6", "0", "0"},
+                        {"9", "6", "1", "0"},
+                        {"10", "6", "0", "0"},
+                        {"11", "6", "1", "-1"},
+                        {"11", "5", "1", "0"},
+                        {"11", "4", "1", "1"},
+                        {"10", "4", "0", "0"},
+                        {"9", "4", "1", "0"},
+                        {"8", "4", "0", "0"},
+                        {"7", "4", "1", "0"},
+                        {"6", "4", "0", "0"},
+                        {"5", "4", "1", "0"},
+                        {"4", "4", "0", "0"},
+                        {"3", "4", "1", "0"},
+                        {"2", "4", "0", "0"},
+                        {"1", "4", "1", "-1"},
+                        {"1", "3", "1", "0"},
+                        {"1", "2", "1", "-1"},
+                        {"2", "2", "0", "0"},
+                        {"3", "2", "1", "0"},
+                        {"4", "2", "0", "0"},
+                        {"5", "2", "1", "0"},
+                        {"6", "2", "0", "0"},
+                        {"7", "2", "1", "0"},
+                        {"8", "2", "0", "0"},
+                        {"9", "2", "1", "0"},
+                        {"10", "2", "0", "0"},
+                        {"11", "2", "1", "0"},
+                        {"11", "1", "null","0"}};
+                }
 
             //Creates the StringBuilder with first part of the insert statement added to it
             StringBuilder insertBoardPositionsTable = new StringBuilder("INSERT INTO " + TABLE_BOARD_POSITIONS + "(" + COL_GAME_BOARDS_ID
@@ -390,10 +455,14 @@ public class DBHelper extends SQLiteOpenHelper {
             }
         }catch(Exception e){
             Log.e("readDB Method", "------ The readDB method was unable to read the data from the table ------");
+        }finally {
+            if (cursor == null){
+                Log.e("readDBMethod", "No such values are contained in the database");
+            }
+            db.close();
+            cursor.close();
         }
 
-        db.close();
-        cursor.close();
         return returnList;
     }
 
@@ -416,10 +485,15 @@ public class DBHelper extends SQLiteOpenHelper {
             }
         }catch(Exception e){
             Log.e("readDB Method", "------ The readDB method was unable to read the data from the table ------");
+        }finally {
+            if (cursor == null){
+                Log.e("readDBStaticMethod", "No such values are contained in the database");
+            }
+
+            db.close();
+            cursor.close();
         }
 
-        db.close();
-        cursor.close();
         return returnList;
     }
 

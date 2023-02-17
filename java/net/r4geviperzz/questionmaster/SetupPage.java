@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.os.Handler;
@@ -20,17 +21,93 @@ public class SetupPage extends Activity {
     private DBHelper dbHelper = new DBHelper(SetupPage.this);
     private Boolean isUserInput = true;
     private final Handler handler = new Handler();
-    private String boardDropdownPrevVal = null;
     private String team1DropdownPrevVal = null;
     private String team2DropdownPrevVal = null;
+
+    //Used to reference the board dropdown spinner
+    Spinner boardDropdown = null;
+
+    //Used to reference the team 1 dropdown spinner
+    Spinner team1Dropdown = null;
+
+    //Used to reference the team 2 dropdown spinner
+    Spinner team2Dropdown = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup_page);
 
+        //Get a reference to the board spinner
+        boardDropdown = findViewById(R.id.setupPgBoardDropdown);
+
+        //Get a reference to the team 1 spinner
+        team1Dropdown = findViewById(R.id.setupPgTeam1Dropdown);
+
+        //Get a reference to the team 2 spinner
+        team2Dropdown = findViewById(R.id.setupPgTeam2Dropdown);
+
         teamSpinners();
         boardSpinner();
+        submitBtnFunc();
+    }
+
+    private void submitBtnFunc(){
+        Button submitBtn = findViewById(R.id.setupPgStartBtn);
+
+        submitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Boolean valuesValid = true;
+
+                String boardDropdownVal = boardDropdown.getSelectedItem().toString();
+                String team1DropdownVal = team1Dropdown.getSelectedItem().toString();
+                String team2DropdownVal = team2Dropdown.getSelectedItem().toString();
+
+                //Checks that the value selected in the board dropdown isn't the default value
+                if (boardDropdownVal.equals("Select Board")){
+                    boardDropdown.setBackgroundResource(R.drawable.spinner_background_red);
+                    valuesValid = false;
+                }else{
+                    boardDropdown.setBackgroundResource(R.drawable.spinner_background);
+                }
+
+                //Checks that the value selected in the team 1 dropdown isn't the default value
+                if (team1DropdownVal.equals("Select Team")){
+                    team1Dropdown.setBackgroundResource(R.drawable.spinner_background_red);
+                    valuesValid = false;
+                }else{
+                    team1Dropdown.setBackgroundResource(R.drawable.spinner_background);
+                }
+
+                //Checks that the value selected in the team 2 dropdown isn't the default value
+                if (team2DropdownVal.equals("Select Team")){
+                    team2Dropdown.setBackgroundResource(R.drawable.spinner_background_red);
+                    valuesValid = false;
+                }else{
+                    team2Dropdown.setBackgroundResource(R.drawable.spinner_background);
+                }
+
+                //Checks that the value in the team 1 dropdown isn't the same as the selected value in the team 2 dropdown
+                //this shouldn't occur as when an item is selected in one dropdown it should be removed from the other
+                //however, this if statement should catch the error if it some how happens
+                if (valuesValid == true){
+                    if (team1DropdownVal.equals(team2DropdownVal)){
+                        team1Dropdown.setBackgroundResource(R.drawable.spinner_background_red);
+                        team2Dropdown.setBackgroundResource(R.drawable.spinner_background_red);
+                        valuesValid = false;
+                        Log.e("teamSelectionError", "The selected colour is the same for each team!");
+                    }
+                }
+
+                //Checks if the valuesValid boolean is still true, if it is still true at this point
+                //then the values selected in the dropdown boxes are valid and the activity should
+                //change to the next page
+                if (valuesValid == true){
+                    Log.e("test", "---------- All of the dropdown values are valid ----------");
+                }
+            }
+        });
     }
 
     private void boardSpinner(){
@@ -38,8 +115,6 @@ public class SetupPage extends Activity {
         List<String> boardNames = dbHelper.getBoardNames();
         boardNames.add(0, "Select Board");
 
-        //Get a reference to the board spinner
-        Spinner boardDropdown = findViewById(R.id.setupPgBoardDropdown);
         //Creates the ArrayAdapter that is to be used in the board spinner
         ArrayAdapter<String> boardAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, boardNames);
         //Binds the ArrayAdapter to the board spinner
@@ -54,7 +129,7 @@ public class SetupPage extends Activity {
                 if (isUserInput == true) {
                     String selectedBoard = boardDropdown.getSelectedItem().toString();
                     if (!"Select Board".equals(selectedBoard)) {
-                        String boardImgName = DBHelper.getBoardImg(selectedBoard, dbHelper.getReadableDatabase());
+                        String boardImgName = (DBHelper.getBoardImg(selectedBoard, dbHelper.getReadableDatabase())) + "_icon";
 
                         int boardImgDrawableId = 0;
                         try{
@@ -71,8 +146,6 @@ public class SetupPage extends Activity {
                         }else{
                             Log.e("ErrFindingBoardDrawable", "Unable to find a game board image drawable of the specified file name");
                         }
-
-                        boardDropdownPrevVal = selectedBoard;
                     }
                 }
             }
@@ -106,14 +179,11 @@ public class SetupPage extends Activity {
             team2Options.add((teamNames.get(i)).toString());
         }
 
-        //Get a reference to the team 1 spinner
-        Spinner team1Dropdown = findViewById(R.id.setupPgTeam1Dropdown);
         //Creates the ArrayAdapter that is to be used in the team 1 spinner
         ArrayAdapter<String> team1Adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, team1Options);
         //Binds the ArrayAdapter to the team 1 spinner
         team1Dropdown.setAdapter(team1Adapter);
 
-        Spinner team2Dropdown = findViewById(R.id.setupPgTeam2Dropdown);
         ArrayAdapter<String> team2Adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, team2Options);
         team2Dropdown.setAdapter(team2Adapter);
 
@@ -159,20 +229,20 @@ public class SetupPage extends Activity {
                         }else{
                             Log.e("UpdateTeamSpinnerError", "The team spinner is empty");
                         }
-
-                        //This if statement if responsible for adding items back to the other spinner
-                        //e.g. if the spinner value is changed from Red to Blue then Red is added back to the other
-                        //spinner as it can now be used by the other team
-                        if (team1DropdownPrevVal != null){      //Checks that a previous value does exist
-                            //Sets isUserInput to false so that adding a value to the spinner doesn't trigger the code in the onItemSelected method
-                            isUserInput = false;
-                            //Adds the previous value to the other spinner so that it can now be selected
-                            team2Adapter.add(team1DropdownPrevVal);
-                            isUserInput = true;
-                        }
-                        //Stores the new value of the spinner so that is can be used later if the value of the spinner is changed
-                        team1DropdownPrevVal = selectedTeam;
                     }
+
+                    //This if statement if responsible for adding items back to the other spinner
+                    //e.g. if the spinner value is changed from Red to Blue then Red is added back to the other
+                    //spinner as it can now be used by the other team
+                    if (team1DropdownPrevVal != null && !team1DropdownPrevVal.equals("Select Team")){      //Checks that a previous value does exist and isn't the default value
+                        //Sets isUserInput to false so that adding a value to the spinner doesn't trigger the code in the onItemSelected method
+                        isUserInput = false;
+                        //Adds the previous value to the other spinner so that it can now be selected
+                        team2Adapter.add(team1DropdownPrevVal);
+                        isUserInput = true;
+                    }
+                    //Stores the new value of the spinner so that is can be used later if the value of the spinner is changed
+                    team1DropdownPrevVal = selectedTeam;
                 }
             }
 
@@ -207,14 +277,20 @@ public class SetupPage extends Activity {
                         }else{
                             Log.e("UpdateTeamSpinnerError", "The team spinner is empty");
                         }
-
-                        if (team2DropdownPrevVal != null){
-                            isUserInput = false;
-                            team1Adapter.add(team2DropdownPrevVal);
-                            isUserInput = true;
-                        }
-                        team2DropdownPrevVal = selectedTeam;
                     }
+
+                    //This if statement if responsible for adding items back to the other spinner
+                    //e.g. if the spinner value is changed from Red to Blue then Red is added back to the other
+                    //spinner as it can now be used by the other team
+                    if (team2DropdownPrevVal != null && !team2DropdownPrevVal.equals("Select Team")){      //Checks that a previous value does exist and isn't the default value
+                        //Sets isUserInput to false so that adding a value to the spinner doesn't trigger the code in the onItemSelected method
+                        isUserInput = false;
+                        //Adds the previous value to the other spinner so that it can now be selected
+                        team1Adapter.add(team2DropdownPrevVal);
+                        isUserInput = true;
+                    }
+                    //Stores the new value of the spinner so that is can be used later if the value of the spinner is changed
+                    team2DropdownPrevVal = selectedTeam;
                 }
             }
 

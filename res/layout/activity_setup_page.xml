@@ -33,7 +33,7 @@
         app:layout_constraintHorizontal_bias="0.084"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/setupPgTitleLabel"
-        app:layout_constraintVertical_bias="0.109" />
+        app:layout_constraintVertical_bias="0.106" />
 
     <TextView
         android:id="@+id/setupPgTeam2Label"
@@ -48,31 +48,35 @@
         app:layout_constraintHorizontal_bias="0.086"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/setupPgTeam1Label"
-        app:layout_constraintVertical_bias="0.044" />
+        app:layout_constraintVertical_bias="0.063" />
 
     <Spinner
         android:id="@+id/setupPgTeam1Dropdown"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:spinnerMode="dropdown"
+        android:contentDescription="@string/setup_pg_team1_dropdown_description"
+        android:background="@drawable/spinner_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.59"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/setupPgTitleLabel"
-        app:layout_constraintVertical_bias="0.120" />
+        app:layout_constraintVertical_bias="0.104" />
 
     <Spinner
         android:id="@+id/setupPgTeam2Dropdown"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:spinnerMode="dropdown"
+        android:contentDescription="@string/setup_pg_team2_dropdown_description"
+        android:background="@drawable/spinner_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.59"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/setupPgTeam1Dropdown"
-        app:layout_constraintVertical_bias="0.060" />
+        app:layout_constraintVertical_bias="0.036" />
 
     <TextView
         android:id="@+id/setupPgBoardLabel"
@@ -87,23 +91,25 @@
         app:layout_constraintHorizontal_bias="0.081"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/setupPgTeam2Label"
-        app:layout_constraintVertical_bias="0.058" />
+        app:layout_constraintVertical_bias="0.072" />
 
     <Spinner
         android:id="@+id/setupPgBoardDropdown"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/setup_pg_board_dropdown_description"
+        android:background="@drawable/spinner_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.59"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/setupPgTeam2Dropdown"
-        app:layout_constraintVertical_bias="0.078" />
+        app:layout_constraintVertical_bias="0.040" />
 
     <ImageView
         android:id="@+id/setupPgBoardImg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="130dp"
+        android:layout_height="150dp"
         android:contentDescription="@string/setup_pg_img_description"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
