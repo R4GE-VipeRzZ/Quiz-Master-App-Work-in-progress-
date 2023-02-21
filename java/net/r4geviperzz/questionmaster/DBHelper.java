@@ -14,7 +14,7 @@ import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "question_master.db";
-    private static final Integer DB_VERSION = 1;
+    private static final int DB_VERSION = 1;
     private static final String TABLE_GAME_BOARDS = "gameBoards";
     private static final String COL_GAME_BOARDS_ID = "boardId";
     private static final String COL_GAME_BOARDS_TOTAL_SPACES = "totalSpaces";
@@ -87,6 +87,7 @@ public class DBHelper extends SQLiteOpenHelper {
         try {
             db.execSQL(createGameBoardsTable);
         }catch (Exception e){
+            Log.e("query" , createGameBoardsTable);
             Log.e("createGameBoardTable", "Unable to create gameBoard table");
         }
 
@@ -134,7 +135,7 @@ public class DBHelper extends SQLiteOpenHelper {
         //Create the boardPositions table
         String createBoardPositions = "CREATE TABLE " + TABLE_BOARD_POSITIONS + " (" + COL_GAME_BOARDS_ID + " INTEGER NOT NULL, "
                 + COL_BOARD_POSITIONS_POS_ID + " INTEGER NOT NULL, " + COL_BOARD_POSITIONS_GRID_X + " INTEGER NOT NULL, "
-                + COL_BOARD_POSITIONS_GRID_Y + " INTEGER NOT NULL, " + COL_BOARD_POSITIONS_CARD_COLOUR + " INT, "
+                + COL_BOARD_POSITIONS_GRID_Y + " INTEGER NOT NULL, " + COL_BOARD_POSITIONS_CARD_COLOUR + " INTEGER, "
                 + COL_BOARD_POSITIONS_SPECIAL + " INTEGER NOT NULL ,"
                 + "PRIMARY KEY (" + COL_GAME_BOARDS_ID + ", " + COL_BOARD_POSITIONS_POS_ID + "),"
                 + "FOREIGN KEY (" + COL_GAME_BOARDS_ID + ") REFERENCES " + TABLE_GAME_BOARDS + "(" + COL_GAME_BOARDS_ID + ")"+ ");";
@@ -148,7 +149,7 @@ public class DBHelper extends SQLiteOpenHelper {
         //Insert values into the boardPositions table
 
         //This array stores the id values of each board
-        Integer[] boardIdsArray = {1,2};
+        int[] boardIdsArray = {1,2};
 
         //This for loop is used to insert the board positions to the boardPositions table with the correct boardId
         for (int x = 0; x < boardIdsArray.length; x++){
@@ -220,7 +221,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         {"7", "5", "1", "-1"},
                         {"6", "5", "0", "0"},
                         {"5", "5", "1", "0"},
-                        {"6", "5", "null","0"}};
+                        {"5", "6", "null","0"}};
             } else if (x == 1) {    //This is true if the board that is being selected is the second in the boardIdsArray
                 //Values {girdX, gridY, cardColour, Special}
                 boardLocationVals = new String[][]{{"1","10","1","0"}, //This two dimensional string array contains all the boardPositions for the
@@ -308,14 +309,14 @@ public class DBHelper extends SQLiteOpenHelper {
                 //Executes the created insert statement for the given boardId
                 db.execSQL(insertBoardPositionsTable.toString());
             }catch (Exception e){
-                Log.e("insertBoardPositions", "Unable to insert values into the boardPositions table for the given boardId " + boardIdsArray[x].toString());
+                Log.e("insertBoardPositions", "Unable to insert values into the boardPositions table for the given boardId " + Integer.toString(boardIdsArray[x]));
             }
         }
 
         //Create the gameSession table
         String createGameSession = "CREATE TABLE " + TABLE_GAME_SESSION + " (" + COL_TEAMS_ID + " INTEGER NOT NULL, "
                 + COL_GAME_BOARDS_ID + " INTEGER NOT NULL, " + COL_GAME_SESSION_QUESTIONS_ASKED + " INTEGER NOT NULL, "
-                + COL_GAME_SESSION_CORRECT_ANS + " INTEGER NOT NULL, " + COL_GAME_SESSION_CURRENT_POS + " INT NOT NULL, "
+                + COL_GAME_SESSION_CORRECT_ANS + " INTEGER NOT NULL, " + COL_GAME_SESSION_CURRENT_POS + " INTEGER NOT NULL, "
                 + "PRIMARY KEY (" + COL_TEAMS_ID + ", " + COL_GAME_BOARDS_ID + "),"
                 + "FOREIGN KEY (" + COL_TEAMS_ID + ") REFERENCES " + TABLE_TEAMS + "(" + COL_TEAMS_ID + "),"
                 + "FOREIGN KEY (" + COL_GAME_BOARDS_ID + ") REFERENCES " + TABLE_GAME_BOARDS + "(" + COL_GAME_BOARDS_ID + ")"+ ");";
@@ -347,7 +348,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         //This array stores the values for the different types of questions
         //0 = Yellow, 1 = Purple
-        Integer[] questionTypeArray = {0,1};
+        int[] questionTypeArray = {0,1};
 
         //This for loop is used to insert the questions in to the questions table with the correct cardColour
         for (int j = 0; j < questionTypeArray.length; j++){
@@ -408,7 +409,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 //Executes the created insert statement for the given cardColour
                 db.execSQL(insertQuestionsTable.toString());
             }catch (Exception e){
-                Log.e("insertQuestions", "Unable to insert values into the questions table for the given cardColour " + questionTypeArray[j].toString());
+                Log.e("insertQuestions", "Unable to insert values into the questions table for the given cardColour " + Integer.toString(questionTypeArray[j]));
             }
         }
     }
@@ -420,7 +421,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     //This method adds an entry of the given values to the gameBoards table
-    public void insertGameBoards(Integer boardSpaces, Integer questionTimeLimit, String nameOfBoard){
+    public void insertGameBoards(int boardSpaces, int questionTimeLimit, String nameOfBoard){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
@@ -450,7 +451,9 @@ public class DBHelper extends SQLiteOpenHelper {
             //Checks if the pointer can be moved to the first element in the cursor, if it can then it is true as values are in the cursor
             if (cursor.moveToFirst()){
                 do{
-                    returnList.add(cursor.getString(0));
+                    for (int n = 0; n < cursor.getColumnCount(); n++) {
+                        returnList.add(cursor.getString(n));
+                    }
                 }while (cursor.moveToNext()); //Used to move to the next element in the cursor until it reaches the end
             }
         }catch(Exception e){
@@ -480,7 +483,9 @@ public class DBHelper extends SQLiteOpenHelper {
             //Checks if the pointer can be moved to the first element in the cursor, if it can then it is true as values are in the cursor
             if (cursor.moveToFirst()){
                 do{
-                    returnList.add(cursor.getString(0));
+                    for (int n = 0; n < cursor.getColumnCount(); n++) {
+                        returnList.add(cursor.getString(n));
+                    }
                 }while (cursor.moveToNext()); //Used to move to the next element in the cursor until it reaches the end
             }
         }catch(Exception e){
@@ -497,16 +502,93 @@ public class DBHelper extends SQLiteOpenHelper {
         return returnList;
     }
 
-    //This method is responsible for reading the names of the game boards from the database
-    public List<String> getGameBoardNames(){
-        //Creates an array list to store the results from the query
-        List<String> boardNameList = new ArrayList<>();
-        //This is the sql query that will be executed
-        String readBoardNamesQuery = "SELECT " + COL_GAME_BOARDS_BOARD_NAME +" FROM " + TABLE_GAME_BOARDS + ";";
-        //Passes the sql query and stores the results in the boardNameList
-        boardNameList = readDB(readBoardNamesQuery);
+    //This method is used to execute the write queries for the database
+    private void writeDB(String sqlQuery){
+        SQLiteDatabase db = this.getWritableDatabase();
 
-        return boardNameList;
+        try{
+            db.execSQL(sqlQuery);
+        }catch(Exception e){
+            Log.e("writeDB Method", "------ The writeDB method was unable to add the data to the database ------");
+            Log.e("error", e.toString());
+        }finally {
+            db.close();
+        }
+    }
+
+    //This method return a boolean depending on it the last game on the specified board in the boardSession table ended with a team winning
+    //returns true in a gameSession doesn't already exist for the given board or if a team had won in the gameSession for the given board
+    //is a team has already won for the session the it will called the delete method to remove the entries for the given board from the
+    //gameSession table before it returns true
+    public Boolean checkGameWin(String passedBoardId){
+        Boolean gameWon = false;
+
+        //This is the sql query that will be executed
+        String checkForBoardQuery = "SELECT " + COL_TEAMS_ID +" FROM " + TABLE_GAME_SESSION + " WHERE " + COL_GAME_BOARDS_ID
+                + " = " + passedBoardId + ";";
+
+        //Executes the sql query that checks if an entry of the passed boardId is in the gameSession table
+        int boardOfIdSize = readDB(checkForBoardQuery).size();
+
+        //This is true if there is an entry with the passed boardId in it
+        if (boardOfIdSize  > 0){
+            String totalBoardSpacesQuery = "SELECT " + COL_GAME_BOARDS_TOTAL_SPACES + " FROM " + TABLE_GAME_BOARDS + " WHERE "
+                    + COL_GAME_BOARDS_ID + " = " + passedBoardId +";";
+
+            //Executes the query that gets to total number of spaces for that boardId that was passed into the method
+            String numBoardSpaces = readDB(totalBoardSpacesQuery).get(0);
+
+            String readTeamWinQuery = "SELECT " + COL_TEAMS_ID +" FROM " + TABLE_GAME_SESSION + " WHERE "
+                    + COL_GAME_SESSION_CURRENT_POS + " = " + numBoardSpaces + ";";
+
+            //Executes the query that checks if there is any team in the gameSession table with the passed boardId
+            //that has got to the end win position on the board
+            int winningTeamSize = readDB(readTeamWinQuery).size();
+
+            //This is true if a game session exists for the board where a team has already won
+            if (winningTeamSize > 0){
+                deleteGameSession(passedBoardId);
+                gameWon = true;
+            }
+        }else{
+            gameWon = true;
+        }
+
+        return gameWon;
+    }
+
+    //This method deletes the entries in the gameSession table that have the boardId of the passed value
+    public void deleteGameSession(String passedBoardId){
+        //This is the sql query that will be executed
+        String deleteGameSessionQuery = "DELETE FROM " + TABLE_GAME_SESSION + " WHERE " + COL_GAME_BOARDS_ID + " = " + passedBoardId + ";";
+
+        //Passes the sql query that need to be executed
+        writeDB(deleteGameSessionQuery);
+    }
+
+    //This method inserts the required data to the gameSession table for when a new game is being created
+    public void setInitialGameSessionValues(String passedTeam1Id, String passedTeam2Id, String passedBoardId){
+        //This is the sql query that will be executed
+        String insertGameSessionValQuery = "INSERT INTO " + TABLE_GAME_SESSION + "(" + COL_TEAMS_ID + ", "
+                + COL_GAME_BOARDS_ID + ", " + COL_GAME_SESSION_QUESTIONS_ASKED + ", " + COL_GAME_SESSION_CORRECT_ANS
+                + ", " + COL_GAME_SESSION_CURRENT_POS + ") VALUES (" + passedTeam1Id + ", " + passedBoardId + ", 0, 0, 0" + "),"
+                + "(" + passedTeam2Id + ", " + passedBoardId  + ", 0, 0, 0" + ");";
+
+        //Passes the sql query that needs to be executed
+        writeDB(insertGameSessionValQuery);
+    }
+
+    //This method gets the row and column values that correspond to the posId that is passed
+    public List<String> getPosGridLocations(int passedPosValue, String passedBoardId){
+        //Creates an array list to store the results from the query
+        List<String> gridLocations = new ArrayList<>();
+        //This is the sql query that will be executed
+        String readGridLocationsQuery = "SELECT " +  COL_BOARD_POSITIONS_GRID_X + ", " + COL_BOARD_POSITIONS_GRID_Y + " FROM " + TABLE_BOARD_POSITIONS + " WHERE "
+                + COL_GAME_BOARDS_ID + " = " + passedBoardId + " AND " + COL_BOARD_POSITIONS_POS_ID + " = " + Integer.toString(passedPosValue) +";";
+        //Passes the sql query and stores the results in the teamNameList
+        gridLocations = readDB(readGridLocationsQuery);
+
+        return gridLocations;
     }
 
     //This method is responsible for reading the names of the teams from the database
@@ -522,7 +604,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     //This method is responsible for reading the names of the boards from the database
-    public List<String> getBoardNames(){
+    public List<String> getGameBoardNames(){
         //Creates an array list to store the results from the query
         List<String> boardNameList = new ArrayList<>();
         //This is the sql query that will be executed
@@ -533,10 +615,23 @@ public class DBHelper extends SQLiteOpenHelper {
         return boardNameList;
     }
 
+    //This method is responsible for reading the image name of the passed board id from the database
+    public String getBoardImgById(String passedBoardId){
+        String boardImg = null;
+
+        //This is the sql query that will be executed
+        String readBoardImgByIdQuery = "SELECT " + COL_GAME_BOARDS_IMG_NAME +" FROM " + TABLE_GAME_BOARDS + " WHERE "
+                + COL_GAME_BOARDS_ID + " = " + passedBoardId + ";";
+        //Passes the sql query and stores the results in the boardImg
+        boardImg = readDB(readBoardImgByIdQuery).get(0).toString();
+
+        return boardImg;
+    }
+
     //This method is responsible for reading the image name of the passed board name from the database
     //This method has to be static as it is used inside onItemSelected() that is a static method
     //that is used by the board dropdown spinner
-    public static String getBoardImg(String boardName, SQLiteDatabase db){
+    public static String getBoardImgStatic(String boardName, SQLiteDatabase db){
         String boardImg = null;
 
         //This is the sql query that will be executed
@@ -546,5 +641,43 @@ public class DBHelper extends SQLiteOpenHelper {
         boardImg = readDBStatic(readBoardImgQuery, db).get(0).toString();
 
         return boardImg;
+    }
+
+    //This method returns the teamId from the team table using the team name that is passed to it
+    public String getTeamIdByName(String passedTeamName){
+        //Creates the string that is used to store the results from the query
+        String returnedTeamId = null;
+        //This is the sql query that will be executed
+        String readTeamIDByNameQuery = "SELECT " + COL_TEAMS_ID +" FROM " + TABLE_TEAMS + " WHERE " + COL_TEAMS_NAME
+                + " = \"" + passedTeamName + "\";";
+        //Passes the sql query and stores the results in the returnedTeamId String
+        returnedTeamId = readDB(readTeamIDByNameQuery).get(0);
+
+        return returnedTeamId;
+    }
+
+    //This method returns the boardId from the gameBoards table using the boardName that is passed to it
+    public String getBoardIdByName(String passedBoardName){
+        //Creates the string that is used to store the results from the query
+        String returnedBoardId = null;
+        //This is the sql query that will be executed
+        String readTeamIDByNameQuery = "SELECT " + COL_GAME_BOARDS_ID +" FROM " + TABLE_GAME_BOARDS + " WHERE " + COL_GAME_BOARDS_BOARD_NAME
+                + " = \"" + passedBoardName + "\";";
+        //Passes the sql query and stores the results in the returnedTeamId String
+        returnedBoardId = readDB(readTeamIDByNameQuery).get(0);
+
+        return returnedBoardId;
+    }
+
+    //This method returns the total number of spaces in the passed board id
+    public int getBoardTotalSpaces(String passedBoardId){
+        //Creates the string that is used to store the results from the query
+        int returnedBoardSpaces = 0;
+        //This is the sql query that will be executed
+        String readBoardSpacesQuery = "SELECT " + COL_GAME_BOARDS_TOTAL_SPACES + " FROM " + TABLE_GAME_BOARDS + " WHERE " + COL_GAME_BOARDS_ID + " = " + passedBoardId + ";";
+        //Passes the sql query and stores the results in the returnedTeamId String
+        returnedBoardSpaces = Integer.parseInt(readDB(readBoardSpacesQuery).get(0));
+
+        return returnedBoardSpaces;
     }
 }

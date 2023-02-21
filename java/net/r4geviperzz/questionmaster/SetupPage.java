@@ -1,6 +1,9 @@
 package net.r4geviperzz.questionmaster;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -50,6 +53,13 @@ public class SetupPage extends Activity {
         teamSpinners();
         boardSpinner();
         submitBtnFunc();
+    }
+
+    //This method is called to change the activity to the boardPage activity
+    private void changeToBoardPg(String selectedBoardId){
+        Intent intent = new Intent(SetupPage.this, BoardPage.class);
+        intent.putExtra("boardId", selectedBoardId);
+        startActivity(intent);
     }
 
     private void submitBtnFunc(){
@@ -104,7 +114,51 @@ public class SetupPage extends Activity {
                 //then the values selected in the dropdown boxes are valid and the activity should
                 //change to the next page
                 if (valuesValid == true){
-                    Log.e("test", "---------- All of the dropdown values are valid ----------");
+                    Log.e("checkedDropdownValues", "---------- All of the dropdown values are valid ----------");
+                    //Gets the id of the team colour that was selected in the team1 dropdown
+                    String selectedTeam1Id = dbHelper.getTeamIdByName(team1DropdownVal);
+                    //Gets the id of the team colour that was selected in the team2 dropdown
+                    String selectedTeam2Id = dbHelper.getTeamIdByName(team2DropdownVal);
+                    //Gets the id of the board that was selected in the board dropdown
+                    String selectedBoardId = dbHelper.getBoardIdByName(boardDropdownVal);
+
+                    //Checks if the last game session for the selected board ended with a team reaching the end
+                    Boolean existingGameCompleted = dbHelper.checkGameWin(selectedBoardId);
+
+                    Log.e("gameSessionExists", "Game Session Exists = " + existingGameCompleted);
+
+                    if (existingGameCompleted == false){
+                        AlertDialog.Builder builder = new AlertDialog.Builder(SetupPage.this);
+
+                        builder.setMessage("An unfinished game already exists for the board, do you want to start a new game for this board?");
+                        builder.setTitle("Unfinished Game Exist");
+
+                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.e("createNewGameSession", "A new game session should be created");
+                                dbHelper.deleteGameSession(selectedBoardId);
+                                dbHelper.setInitialGameSessionValues(selectedTeam1Id, selectedTeam2Id, selectedBoardId);
+                                changeToBoardPg(selectedBoardId);
+                            }
+                        });
+
+                        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.e("continueGameSession", "The old game session should be continued");
+                                changeToBoardPg(selectedBoardId);
+                            }
+                        });
+
+                        // Create and show the AlertDialog
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }else{
+                        //This runs if a board of the given boardId doesn't already exist in the gameSession table
+                        dbHelper.setInitialGameSessionValues(selectedTeam1Id, selectedTeam2Id, selectedBoardId);
+                        changeToBoardPg(selectedBoardId);
+                    }
                 }
             }
         });
@@ -112,7 +166,7 @@ public class SetupPage extends Activity {
 
     private void boardSpinner(){
         //Calls the method that will read the team names from the database and stores them in the teamNames list
-        List<String> boardNames = dbHelper.getBoardNames();
+        List<String> boardNames = dbHelper.getGameBoardNames();
         boardNames.add(0, "Select Board");
 
         //Creates the ArrayAdapter that is to be used in the board spinner
@@ -129,7 +183,7 @@ public class SetupPage extends Activity {
                 if (isUserInput == true) {
                     String selectedBoard = boardDropdown.getSelectedItem().toString();
                     if (!"Select Board".equals(selectedBoard)) {
-                        String boardImgName = (DBHelper.getBoardImg(selectedBoard, dbHelper.getReadableDatabase())) + "_icon";
+                        String boardImgName = (DBHelper.getBoardImgStatic(selectedBoard, dbHelper.getReadableDatabase())) + "_icon";
 
                         int boardImgDrawableId = 0;
                         try{

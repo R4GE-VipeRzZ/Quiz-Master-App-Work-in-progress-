@@ -14,4 +14,5 @@
     <string name="setup_pg_team1_dropdown_description">Dropdown box for selecting team 1</string>
     <string name="setup_pg_team2_dropdown_description">Dropdown box for selecting team 2</string>
     <string name="setup_pg_board_dropdown_description">Dropdown box for selecting game board</string>
+    <string name="board_pg_ask_question_btn">Ask Question</string>
 </resources>
