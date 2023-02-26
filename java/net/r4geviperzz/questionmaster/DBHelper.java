@@ -36,6 +36,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COL_GAME_SESSION_QUESTIONS_ASKED = "questionsAsked";
     private static final String COL_GAME_SESSION_CORRECT_ANS = "correctAns";
     private static final String COL_GAME_SESSION_CURRENT_POS = "currentPos";
+    private static final String COL_GAME_SESSION_NEXT_TEAM_TO_ASK = "teamToAskNext";
     private static final String TABLE_QUESTIONS = "questions";
     private static final String COL_QUESTIONS_ID = "questionId";
     private static final String COL_QUESTIONS_QUESTION = "question";
@@ -105,7 +106,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
         //Creates the teams table
         String createTeamsTable = "CREATE TABLE " + TABLE_TEAMS + " (" + COL_TEAMS_ID+ " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
-                + COL_TEAMS_NAME + " VARCHAR(14) NOT NULL, " + COL_TEAMS_IMG_NAME + " VARCHAR(18)" +");";
+                + COL_TEAMS_NAME + " VARCHAR(14) NOT NULL, " + COL_TEAMS_IMG_NAME + " VARCHAR(18), "
+                + " UNIQUE (" + COL_TEAMS_NAME + ", " + COL_TEAMS_IMG_NAME + "));";
 
         try {
             db.execSQL(createTeamsTable);
@@ -115,16 +117,16 @@ public class DBHelper extends SQLiteOpenHelper {
 
         //Insert values into teams table
         String insertTeamsTable = "INSERT INTO " + TABLE_TEAMS + "(" + COL_TEAMS_NAME + ", " + COL_TEAMS_IMG_NAME + ") VALUES " +
-                "(\"Blue\", \"blue_icon\"),"
-                + "(\"Red\", \"red_icon\")," +
-                "(\"Yellow\", \"yellow_icon\")," +
-                "(\"Green\", \"green_icon\")," +
-                "(\"Orange\", \"orange_icon\")," +
-                "(\"White\", \"white_icon\")," +
-                "(\"Brown\", \"brown_icon\")," +
-                "(\"Purple\", \"purple_icon\")," +
-                "(\"Pink\", \"pink_icon\")," +
-                "(\"Black\", \"black_icon\");";
+                "(\"Blue\", \"blue_counter\"),"
+                + "(\"Red\", \"red_counter\")," +
+                "(\"Yellow\", \"yellow_counter\")," +
+                "(\"Green\", \"green_counter\")," +
+                "(\"Orange\", \"orange_counter\")," +
+                "(\"White\", \"white_counter\")," +
+                "(\"Brown\", \"brown_counter\")," +
+                "(\"Purple\", \"purple_counter\")," +
+                "(\"Pink\", \"pink_counter\")," +
+                "(\"Black\", \"black_counter\");";
 
         try{
             db.execSQL(insertTeamsTable);
@@ -317,6 +319,7 @@ public class DBHelper extends SQLiteOpenHelper {
         String createGameSession = "CREATE TABLE " + TABLE_GAME_SESSION + " (" + COL_TEAMS_ID + " INTEGER NOT NULL, "
                 + COL_GAME_BOARDS_ID + " INTEGER NOT NULL, " + COL_GAME_SESSION_QUESTIONS_ASKED + " INTEGER NOT NULL, "
                 + COL_GAME_SESSION_CORRECT_ANS + " INTEGER NOT NULL, " + COL_GAME_SESSION_CURRENT_POS + " INTEGER NOT NULL, "
+                + COL_GAME_SESSION_NEXT_TEAM_TO_ASK + " BOOLEAN NOT NULL, "
                 + "PRIMARY KEY (" + COL_TEAMS_ID + ", " + COL_GAME_BOARDS_ID + "),"
                 + "FOREIGN KEY (" + COL_TEAMS_ID + ") REFERENCES " + TABLE_TEAMS + "(" + COL_TEAMS_ID + "),"
                 + "FOREIGN KEY (" + COL_GAME_BOARDS_ID + ") REFERENCES " + TABLE_GAME_BOARDS + "(" + COL_GAME_BOARDS_ID + ")"+ ");";
@@ -418,25 +421,6 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
-    }
-
-    //This method adds an entry of the given values to the gameBoards table
-    public void insertGameBoards(int boardSpaces, int questionTimeLimit, String nameOfBoard){
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-
-        //Adds the values that were passed into the ContentVlaue
-        cv.put(COL_GAME_BOARDS_TOTAL_SPACES, boardSpaces);
-        cv.put(COL_GAME_BOARDS_TIME_LIMIT, questionTimeLimit);
-        cv.put(COL_GAME_BOARDS_BOARD_NAME, nameOfBoard);
-
-        try{
-            db.insert(TABLE_GAME_BOARDS, null, cv);
-        }catch(Exception e){
-            Log.e("insertGameBoard", "------ Unable to insert the values into the gameBoards table ------");
-        }finally {
-            db.close();
-        }
     }
 
     //This method is used to execute the read queries for the database
@@ -567,17 +551,58 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     //This method inserts the required data to the gameSession table for when a new game is being created
-    public void setInitialGameSessionValues(String passedTeam1Id, String passedTeam2Id, String passedBoardId){
+    public void setInitialGameSessionValues(List<String> passedTeamIdsList, String passedBoardId){
         //This is the sql query that will be executed
         String insertGameSessionValQuery = "INSERT INTO " + TABLE_GAME_SESSION + "(" + COL_TEAMS_ID + ", "
                 + COL_GAME_BOARDS_ID + ", " + COL_GAME_SESSION_QUESTIONS_ASKED + ", " + COL_GAME_SESSION_CORRECT_ANS
-                + ", " + COL_GAME_SESSION_CURRENT_POS + ") VALUES (" + passedTeam1Id + ", " + passedBoardId + ", 0, 0, 0" + "),"
-                + "(" + passedTeam2Id + ", " + passedBoardId  + ", 0, 0, 0" + ");";
+                + ", " + COL_GAME_SESSION_CURRENT_POS + ", " + COL_GAME_SESSION_NEXT_TEAM_TO_ASK + ") VALUES ";
+
+        for(int i = 0; i < passedTeamIdsList.size(); i++){
+            //Checks if it is the first team been added to the gameSession table and if it is makes it so that it will be the team that gets asked a question first
+            if (i == 0) {
+                insertGameSessionValQuery = insertGameSessionValQuery + "(" + passedTeamIdsList.get(i) + ", "
+                        + passedBoardId + ", 0, 0, 1, 1)";
+            }else{
+                insertGameSessionValQuery = insertGameSessionValQuery + "(" + passedTeamIdsList.get(i) + ", "
+                        + passedBoardId + ", 0, 0, 1, 0)";
+            }
+
+            //This if statement adds a semi colon to the end of the value brackets if it is the last value that is going to be added, else it sets it to a comma
+            if (i == (passedTeamIdsList.size() - 1)){
+                insertGameSessionValQuery = insertGameSessionValQuery + ";";
+            }else{
+                insertGameSessionValQuery = insertGameSessionValQuery + ",";
+            }
+        }
 
         //Passes the sql query that needs to be executed
         writeDB(insertGameSessionValQuery);
     }
 
+    //This method updates the currentPos of the passed teamId to the passed value
+    public void setCurrentPosByTeamId (String passedBoardId, String passedTeamId, int passedTotalPosValue){
+        //This is the sql query that will be executed
+        String updatedCounterTotalPosQuery = "UPDATE " + TABLE_GAME_SESSION + " SET "
+                + COL_GAME_SESSION_CURRENT_POS + " = " + passedTotalPosValue
+                + " WHERE " + COL_TEAMS_ID + " = " + passedTeamId + " AND "
+                + COL_GAME_BOARDS_ID + " = " + passedBoardId + ";";
+        //Passes the sql query that needs to be executed
+        writeDB(updatedCounterTotalPosQuery);
+    }
+    //This method is used to store the team that should be asked the question next so that when the game session is loaded again the correct team is asked the next question
+    public void setTeamToAskNext (String passedTeamId, String passedBoardId){
+        //This is the sql query that will be executed to reset the old ask next value
+        String removePreviousAskNextValue = "UPDATE " + TABLE_GAME_SESSION + " SET "
+                + COL_GAME_SESSION_NEXT_TEAM_TO_ASK + " = 0 " + "WHERE " + COL_GAME_BOARDS_ID
+                + " = " + passedBoardId + " AND " + COL_GAME_SESSION_NEXT_TEAM_TO_ASK + " = 1;";
+        writeDB(removePreviousAskNextValue);
+
+        String updatedAskNextValue = "UPDATE " + TABLE_GAME_SESSION + " SET "
+                + COL_GAME_SESSION_NEXT_TEAM_TO_ASK + " = 1 " + "WHERE " + COL_TEAMS_ID
+                + " = " + passedTeamId+ " AND " + COL_GAME_BOARDS_ID + " = " + passedBoardId +";";
+        //Passes the sql query that needs to be executed
+        writeDB(updatedAskNextValue);
+    }
     //This method gets the row and column values that correspond to the posId that is passed
     public List<String> getPosGridLocations(int passedPosValue, String passedBoardId){
         //Creates an array list to store the results from the query
@@ -589,18 +614,6 @@ public class DBHelper extends SQLiteOpenHelper {
         gridLocations = readDB(readGridLocationsQuery);
 
         return gridLocations;
-    }
-
-    //This method is responsible for reading the names of the teams from the database
-    public List<String> getTeamNames(){
-        //Creates an array list to store the results from the query
-        List<String> teamNameList = new ArrayList<>();
-        //This is the sql query that will be executed
-        String readTeamNamesQuery = "SELECT " + COL_TEAMS_NAME +" FROM " + TABLE_TEAMS + ";";
-        //Passes the sql query and stores the results in the teamNameList
-        teamNameList = readDB(readTeamNamesQuery);
-
-        return teamNameList;
     }
 
     //This method is responsible for reading the names of the boards from the database
@@ -643,19 +656,6 @@ public class DBHelper extends SQLiteOpenHelper {
         return boardImg;
     }
 
-    //This method returns the teamId from the team table using the team name that is passed to it
-    public String getTeamIdByName(String passedTeamName){
-        //Creates the string that is used to store the results from the query
-        String returnedTeamId = null;
-        //This is the sql query that will be executed
-        String readTeamIDByNameQuery = "SELECT " + COL_TEAMS_ID +" FROM " + TABLE_TEAMS + " WHERE " + COL_TEAMS_NAME
-                + " = \"" + passedTeamName + "\";";
-        //Passes the sql query and stores the results in the returnedTeamId String
-        returnedTeamId = readDB(readTeamIDByNameQuery).get(0);
-
-        return returnedTeamId;
-    }
-
     //This method returns the boardId from the gameBoards table using the boardName that is passed to it
     public String getBoardIdByName(String passedBoardName){
         //Creates the string that is used to store the results from the query
@@ -679,5 +679,109 @@ public class DBHelper extends SQLiteOpenHelper {
         returnedBoardSpaces = Integer.parseInt(readDB(readBoardSpacesQuery).get(0));
 
         return returnedBoardSpaces;
+    }
+
+    //This method is responsible for reading all the names of the teams from the database
+    public List<String> getAllTeamNames(){
+        //Creates an array list to store the results from the query
+        List<String> teamNameList = new ArrayList<>();
+        //This is the sql query that will be executed
+        String readTeamNamesQuery = "SELECT " + COL_TEAMS_NAME +" FROM " + TABLE_TEAMS + ";";
+        //Passes the sql query and stores the results in the teamNameList
+        teamNameList = readDB(readTeamNamesQuery);
+
+        return teamNameList;
+    }
+
+    //This method returns the teamId from the team table using the team name that is passed to it
+    public List<String> getTeamIdByName(String[] passedTeamNamesArray){
+        List<String> teamNamesArrayWithSpeechMarks = new ArrayList<>();
+        for (String element : passedTeamNamesArray){
+            teamNamesArrayWithSpeechMarks.add("\"" + element + "\"");
+        }
+        String passedTeamNamesString = String.join(", ", teamNamesArrayWithSpeechMarks);
+        //Creates the string that is used to store the results from the query
+        List<String> returnedTeamIdsList = null;
+        //This is the sql query that will be executed
+        String readTeamIDByNameQuery = "SELECT " + COL_TEAMS_ID +" FROM " + TABLE_TEAMS + " WHERE " + COL_TEAMS_NAME
+                + " IN (" + passedTeamNamesString + ");";
+        //Passes the sql query and stores the results in the returnedTeamId String
+        returnedTeamIdsList = readDB(readTeamIDByNameQuery);
+
+        return returnedTeamIdsList;
+    }
+
+    //This method is responsible for reading the IDs of the teams from the database for the given boardId
+    public List<String> getTeamIdsFromSession(String passedBoardId){
+        //Creates an array list to store the results from the query
+        List<String> sessionTeamIdsList = new ArrayList<>();
+        //This is the sql query that will be executed
+        String readTeamIdsQuery = "SELECT " + COL_TEAMS_ID +" FROM " + TABLE_GAME_SESSION + " WHERE "
+                + COL_GAME_BOARDS_ID + " = " + passedBoardId + ";";
+        //Passes the sql query and stores the results in the sessionTeamIdsList
+        sessionTeamIdsList = readDB(readTeamIdsQuery);
+
+        return sessionTeamIdsList;
+    }
+
+    //This method is responsible for reading all the team names that correspond to the teams in the gameSession table for the boardId that is passed
+    public List<String> getTeamNamesForSession(String[] passedTeamIds){
+        //Converts the String[] to a single string with each of the elements separated in the string by a comma
+        //This string of all the team ids for the session is then used in the next query to get the teams names
+        String sessionTeamIdsString = String.join(", ", passedTeamIds);
+        //Creates an array list to store the results from the query
+        List<String> sessionTeamNamesList = new ArrayList<>();
+        //This is the sql query that will be executed
+        String readTeamNamesQuery = "SELECT " + COL_TEAMS_NAME +" FROM " + TABLE_TEAMS + " WHERE "
+                + COL_TEAMS_ID + " IN (" + sessionTeamIdsString + ");";
+        //Passes the sql query and stores the results in the sessionTeamNamesList
+        sessionTeamNamesList = readDB(readTeamNamesQuery);
+
+        return sessionTeamNamesList;
+    }
+    //This method gets the id of the team that should be asked the next question, this information is need when loading a game session
+    public Integer getIdOfTeamToAskNext(String passedBoardId){
+        //Creates a variable to store tha id of the team that should be asked the next question
+        Integer teamToAskNextQuestion = 0;
+        //This is the sql query that will be executed
+        String readTeamIdsQuery = "SELECT " + COL_TEAMS_ID +" FROM " + TABLE_GAME_SESSION + " WHERE "
+                + COL_GAME_BOARDS_ID + " = " + passedBoardId + " AND " + COL_GAME_SESSION_NEXT_TEAM_TO_ASK + " = 1;";
+        //Passes the sql query and stores the results in the sessionTeamIdsList
+        teamToAskNextQuestion = Integer.parseInt(readDB(readTeamIdsQuery).get(0));
+
+        return teamToAskNextQuestion;
+    }
+
+    //This method returns the image names of the team ids that are passed
+    public List<String> getTeamImgByIds(String[] passedTeamIds){
+        //Converts the String[] to a single string with each of the elements separated in the string by a comma
+        //This string of all the team ids for the session is then used in the next query to get the teams images
+        String sessionTeamIdsString = String.join(", ", passedTeamIds);
+        //Creates an array list to store the results from the query
+        List<String> teamImgList = new ArrayList<>();
+        //This is the sql query that will be executed
+        String readTeamNamesQuery = "SELECT " + COL_TEAMS_IMG_NAME +" FROM " + TABLE_TEAMS + " WHERE "
+                + COL_TEAMS_ID + " IN (" + sessionTeamIdsString + ");";
+        //Passes the sql query and stores the results in the sessionTeamNamesList
+        teamImgList = readDB(readTeamNamesQuery);
+
+        return teamImgList;
+    }
+
+    //This method gets the current position of a passed user id from the gameSession table
+    public List<String> getCurrentPosByTeamId(String[] passedTeamIdArray, String passedBoardId){
+        //Converts the String[] to a single string with each of the elements separated in the string by a comma
+        //This string of all the team ids for the session is then used to find the position of each
+        String passedTeamIds = String.join(", ", passedTeamIdArray);
+        //Creates the array list that is used to store the results from the query
+        List<String> returnedCountersPos = new ArrayList<>();
+        //This is the sql query that will be executed
+        String readCurrentCounterPosQuery = "SELECT " + COL_GAME_SESSION_CURRENT_POS + " FROM " + TABLE_GAME_SESSION
+                + " WHERE  " +  COL_GAME_BOARDS_ID + " = " + passedBoardId + " AND "
+                + COL_TEAMS_ID + " IN (" + passedTeamIds + ");";
+        //Passes the sql query and stores the results in the returnedTeamId String
+        returnedCountersPos = readDB(readCurrentCounterPosQuery);
+
+        return returnedCountersPos;
     }
 }

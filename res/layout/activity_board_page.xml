@@ -32,4 +32,15 @@
         app:layout_constraintTop_toBottomOf="@+id/boardPgGrid"
         app:layout_constraintVertical_bias="0.757" />
 
+    <TextView
+        android:id="@+id/currentTeamLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/askQuestionBtn"
+        app:layout_constraintHorizontal_bias="0.416"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/boardPgGrid"
+        app:layout_constraintVertical_bias="0.749" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

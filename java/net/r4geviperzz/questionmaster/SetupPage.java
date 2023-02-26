@@ -71,8 +71,7 @@ public class SetupPage extends Activity {
                 Boolean valuesValid = true;
 
                 String boardDropdownVal = boardDropdown.getSelectedItem().toString();
-                String team1DropdownVal = team1Dropdown.getSelectedItem().toString();
-                String team2DropdownVal = team2Dropdown.getSelectedItem().toString();
+                String[]dropdownValuesArray = {team1Dropdown.getSelectedItem().toString(), team2Dropdown.getSelectedItem().toString()};
 
                 //Checks that the value selected in the board dropdown isn't the default value
                 if (boardDropdownVal.equals("Select Board")){
@@ -83,7 +82,7 @@ public class SetupPage extends Activity {
                 }
 
                 //Checks that the value selected in the team 1 dropdown isn't the default value
-                if (team1DropdownVal.equals("Select Team")){
+                if (dropdownValuesArray[0].equals("Select Team")){
                     team1Dropdown.setBackgroundResource(R.drawable.spinner_background_red);
                     valuesValid = false;
                 }else{
@@ -91,7 +90,7 @@ public class SetupPage extends Activity {
                 }
 
                 //Checks that the value selected in the team 2 dropdown isn't the default value
-                if (team2DropdownVal.equals("Select Team")){
+                if (dropdownValuesArray[1].equals("Select Team")){
                     team2Dropdown.setBackgroundResource(R.drawable.spinner_background_red);
                     valuesValid = false;
                 }else{
@@ -102,7 +101,7 @@ public class SetupPage extends Activity {
                 //this shouldn't occur as when an item is selected in one dropdown it should be removed from the other
                 //however, this if statement should catch the error if it some how happens
                 if (valuesValid == true){
-                    if (team1DropdownVal.equals(team2DropdownVal)){
+                    if (dropdownValuesArray[0].equals(dropdownValuesArray[1])){
                         team1Dropdown.setBackgroundResource(R.drawable.spinner_background_red);
                         team2Dropdown.setBackgroundResource(R.drawable.spinner_background_red);
                         valuesValid = false;
@@ -115,10 +114,7 @@ public class SetupPage extends Activity {
                 //change to the next page
                 if (valuesValid == true){
                     Log.e("checkedDropdownValues", "---------- All of the dropdown values are valid ----------");
-                    //Gets the id of the team colour that was selected in the team1 dropdown
-                    String selectedTeam1Id = dbHelper.getTeamIdByName(team1DropdownVal);
-                    //Gets the id of the team colour that was selected in the team2 dropdown
-                    String selectedTeam2Id = dbHelper.getTeamIdByName(team2DropdownVal);
+                    List<String> selectedTeamsIdArray = dbHelper.getTeamIdByName(dropdownValuesArray);
                     //Gets the id of the board that was selected in the board dropdown
                     String selectedBoardId = dbHelper.getBoardIdByName(boardDropdownVal);
 
@@ -138,7 +134,7 @@ public class SetupPage extends Activity {
                             public void onClick(DialogInterface dialog, int which) {
                                 Log.e("createNewGameSession", "A new game session should be created");
                                 dbHelper.deleteGameSession(selectedBoardId);
-                                dbHelper.setInitialGameSessionValues(selectedTeam1Id, selectedTeam2Id, selectedBoardId);
+                                dbHelper.setInitialGameSessionValues(selectedTeamsIdArray, selectedBoardId);
                                 changeToBoardPg(selectedBoardId);
                             }
                         });
@@ -156,7 +152,7 @@ public class SetupPage extends Activity {
                         dialog.show();
                     }else{
                         //This runs if a board of the given boardId doesn't already exist in the gameSession table
-                        dbHelper.setInitialGameSessionValues(selectedTeam1Id, selectedTeam2Id, selectedBoardId);
+                        dbHelper.setInitialGameSessionValues(selectedTeamsIdArray, selectedBoardId);
                         changeToBoardPg(selectedBoardId);
                     }
                 }
@@ -216,7 +212,7 @@ public class SetupPage extends Activity {
         ArrayList<String> spinnerTeamNames = new ArrayList<String>();
         spinnerTeamNames.add("Select Team");
         //Calls the method that will read the team names from the database and stores them in the teamNames list
-        List<String> teamNames = dbHelper.getTeamNames();
+        List<String> teamNames = dbHelper.getAllTeamNames();
 
         //Need to have a separate list for each of the spinners so that when the spinners values are edited it will only effect one spinner and not both of them
         ArrayList<String> team1Options = new ArrayList<String>();
