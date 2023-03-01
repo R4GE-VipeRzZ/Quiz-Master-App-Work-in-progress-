@@ -812,6 +812,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         return sessionTeamNamesList;
     }
+
     //This method gets the id of the team that should be asked the next question, this information is need when loading a game session
     public Integer getIdOfTeamToAskNext(String passedBoardId){
         //Creates a variable to store tha id of the team that should be asked the next question

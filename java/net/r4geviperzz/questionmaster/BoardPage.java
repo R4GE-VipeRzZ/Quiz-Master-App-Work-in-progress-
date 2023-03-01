@@ -39,10 +39,9 @@ public class BoardPage extends Activity {
     private String[] teamIdsArray;
     private String[] teamNamesArray;
     private ImageView[] teamCountersImgViewArray;
-    private int numTeam = 0;
+    private int numOfTeams = 0;
     private int currentTeamIndex = 0;
     private String winningTeam = null;
-    private static int screenWidth = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +51,6 @@ public class BoardPage extends Activity {
         // Get the screen width
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        screenWidth = displayMetrics.widthPixels;
 
         //This gets the boardId that was passed from the SetupPage as a result of a user selecting a board in the dropdown on that page
         idOfBoard = getIntent().getStringExtra("boardId");
@@ -64,7 +62,7 @@ public class BoardPage extends Activity {
         //Gets the names of the teams that have been selected for the board on the current session an stores them in the teamNamesArray
         teamNamesArray = (dbHelper.getTeamNamesForSession(teamIdsArray)).toArray(new String[0]);
         //This stores the number of teams that are playing
-        numTeam = teamIdsArray.length;
+        numOfTeams = teamIdsArray.length;
 
         Button askQuestionBtn = findViewById(R.id.askQuestionBtn);
 
@@ -72,11 +70,9 @@ public class BoardPage extends Activity {
             @Override
             public void onClick(View v) {
                 if (winningTeam == null) {
-                    //Gets the previous location value as it is needed to detect if there are any ImageViews in the previous location
-                    //that need resizing and positioning as a result of removing the ImageView from the cell
-                    int previousCounterPos = askQuestion();
-                    //Calls the method that will check if the position is the winning position and will call the appropriate methods to move the counters
-                    checkWinAndMove(previousCounterPos);
+                    //Calls the method that will display the dialog with the question and answers,
+                    //and will then call the appropriate methods to move the board counters
+                    askQuestion();
                 }
             }
         });
@@ -85,8 +81,11 @@ public class BoardPage extends Activity {
         gridLayout.setColumnCount(numColumns);
         gridLayout.setRowCount(numRows);
 
-        // Get the screen density
+        // Gets the screen density
         float density = getResources().getDisplayMetrics().density;
+
+        //Gets the screen width
+        int screenWidth = displayMetrics.widthPixels;
 
         // Calculate the margin size in pixels (10dp)
         int marginSize = (int) (10 * density);
@@ -245,7 +244,7 @@ public class BoardPage extends Activity {
 
         int nextTeamIndex = 0;
 
-        if (currentTeamIndex < (numTeam - 1)){
+        if (currentTeamIndex < (numOfTeams - 1)){
             nextTeamIndex = currentTeamIndex + 1;
         }else{
             nextTeamIndex = 0;
@@ -295,8 +294,30 @@ public class BoardPage extends Activity {
         return newBtnClickedVal;
     }
 
+    //This method changes the counters position value depending on the number of answers a user has got correct
+    private void updatePosValue(int passedCounterPosVal, int passedNumAnsCorrect){
+        if (passedCounterPosVal < posWinPosition) {
+            //This if statement checks if a user has got any answers correct, if they haven't then the counterPosVal doesn't need updating
+            if(passedNumAnsCorrect != 0) {
+                int newPos = passedCounterPosVal + passedNumAnsCorrect;
+
+                //Stops the new position value been larger than the max value for the board
+                if (newPos >= posWinPosition) {
+                    newPos = posWinPosition;
+                }
+                Log.e("numAnswersCorrect", "The number of answers correct is = " + passedNumAnsCorrect);
+                dbHelper.setCurrentPosByTeamId(idOfBoard, teamIdsArray[currentTeamIndex], newPos);
+            }
+
+            //Calls the method that will check if the position is the winning position and will call the appropriate methods to move the counters
+            //passes the position value before it was increased so that it can be check if there was other ImageViews in the counters previous position
+            //and then if there was resize the ImageViews to take into account that a counter has been removed
+            checkWinAndMove(passedCounterPosVal);
+        }
+    }
+
     //This method is responsible for asking the user the question
-    private int askQuestion(){
+    private void askQuestion(){
         // Create the dialog
         Dialog dialog = new Dialog(BoardPage.this);
 
@@ -304,8 +325,8 @@ public class BoardPage extends Activity {
         List<String> countersPosArray = dbHelper.getCurrentPosByTeamId(teamIdsArray, idOfBoard);
         int counterPosTotal = Integer.parseInt(countersPosArray.get(currentTeamIndex));
 
+        //Gets the card colour for the counters current board position
         String cardColour = dbHelper.getPosCardColour(counterPosTotal, idOfBoard);
-        Log.e("CardColour", "Card colour = " + cardColour);
 
         List<String> returnedQuestionAndAnsList = quest.getQuestionAndAnswers(cardColour);
         String questionString = returnedQuestionAndAnsList.remove(0);
@@ -352,14 +373,19 @@ public class BoardPage extends Activity {
             );
             answerTextView.setLayoutParams(layoutParams);
 
+            // Get the screen width
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+            int screenHeight = displayMetrics.heightPixels;
+
             //This int is used for setting with height and width of the left/incorrect and right/correct buttons
-            int dialogBtnsWidth = screenWidth / 10;
+            int dialogBtnsWidth = screenHeight / 20;
             //This int is used for setting the padding of the left/incorrect and right/correct buttons
             int buttonPadding = dialogBtnsWidth / 6;
 
             // Create the left button and set its properties
             Button leftBtn = new Button(BoardPage.this);
-            //leftBtn.setText("<");
             leftBtn.setBackgroundResource(R.drawable.incorrect_btn_background_clicked);
 
             //These lines of code generate an id for the button, store the generated id in the leftBtnIdList
@@ -375,7 +401,6 @@ public class BoardPage extends Activity {
 
             // Create the right button and set its properties
             Button rightBtn = new Button(BoardPage.this);
-            //rightBtn.setText(">");
             rightBtn.setBackgroundResource(R.drawable.correct_btn_background);
 
             //These lines of code generate an id for the button, store the generated id in the rightBtnIdList
@@ -455,28 +480,22 @@ public class BoardPage extends Activity {
         dialogSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                int numAnsCorrect = 0;
+
+                for(int j =0; j < ansCorrectList.size(); j++){
+                    if(ansCorrectList.get(j) == 1){
+                        numAnsCorrect++;
+                    }
+                }
+                //Calls the method that will update the position value in the database and will then
+                //call the appropriate methods to move the counters
+                updatePosValue(counterPosTotal, numAnsCorrect);
                 dialog.dismiss();
             }
         });
 
         // Show the dialog
         dialog.show();
-
-
-        if (counterPosTotal < posWinPosition) {
-            Random random = new Random();
-            int randomNumber = random.nextInt(5) + 1; // Generates a random number between 1 and 5
-            int newPos = counterPosTotal + randomNumber;
-
-            if (newPos >= posWinPosition) {
-                newPos = posWinPosition;
-            }
-            dbHelper.setCurrentPosByTeamId(idOfBoard, teamIdsArray[currentTeamIndex], newPos);
-        }
-
-        //This value is need so that it can be check if there was other ImageViews in the counters previous position
-        //and then if there was resize the ImageViews to take into account that a counter has been removed
-        return counterPosTotal;
     }
 
     //This method is responsible for detecting if the counter that is been moved is going to end up in the same location
