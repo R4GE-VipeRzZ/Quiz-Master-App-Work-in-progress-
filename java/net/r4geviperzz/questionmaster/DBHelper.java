@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -21,6 +22,8 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COL_GAME_BOARDS_TIME_LIMIT = "timeLimit";
     private static final String COL_GAME_BOARDS_BOARD_NAME = "boardName";
     private static final String COL_GAME_BOARDS_IMG_NAME = "boardImgName";
+    private static final String COL_GAME_BOARDS_QUESTION_ORDER = "questionOrder";
+    private static final String COL_GAME_BOARDS_QUESTION_ORDER_COUNT = "questionOrderCount";
     private static final String TABLE_TEAMS = "teams";
     private static final String COL_TEAMS_ID = "teamId";
     private static final String COL_TEAMS_NAME = "teamName";
@@ -83,7 +86,8 @@ public class DBHelper extends SQLiteOpenHelper {
         //Creates the gameBoards table
         String createGameBoardsTable = "CREATE TABLE " + TABLE_GAME_BOARDS + " (" + COL_GAME_BOARDS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
                 + COL_GAME_BOARDS_TOTAL_SPACES + " INTEGER NOT NULL, " + COL_GAME_BOARDS_TIME_LIMIT + " INTEGER NOT NULL, "
-                + COL_GAME_BOARDS_BOARD_NAME + " VARCHAR(20) NOT NULL, " + COL_GAME_BOARDS_IMG_NAME + " VARCHAR(30) NOT NULL" +");";
+                + COL_GAME_BOARDS_BOARD_NAME + " VARCHAR(20) NOT NULL, " + COL_GAME_BOARDS_IMG_NAME + " VARCHAR(30) NOT NULL, "
+                + COL_GAME_BOARDS_QUESTION_ORDER + " BLOB, " + COL_GAME_BOARDS_QUESTION_ORDER_COUNT + " BLOB" +");";
 
         try {
             db.execSQL(createGameBoardsTable);
@@ -486,6 +490,51 @@ public class DBHelper extends SQLiteOpenHelper {
         return returnList;
     }
 
+    //This method is used to execute the read queries for the database when reading a blob field
+    private byte[] readBlobDB(String sqlQuery) {
+        byte[] blob = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery(sqlQuery, null);
+
+            if (cursor.moveToFirst()) {
+                blob = cursor.getBlob(0);
+            }
+        } catch (Exception e) {
+            Log.e("readByteDB Method", "------ The readByteDB method was unable to read the data from the table ------");
+            Log.e("error", e.toString());
+        } finally {
+            if (cursor == null) {
+                Log.e("readByteDB Method", "No such values are contained in the database");
+            }
+            db.close();
+            cursor.close();
+        }
+
+        return blob;
+    }
+
+    //This method is used to write byte[] arrays to the database for blob fields
+    private void writeBlobDB(byte[] passedBytes, String sqlQuery, String whereClause) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteStatement statement = db.compileStatement(sqlQuery);
+        statement.bindBlob(1, passedBytes);
+        if (whereClause != null && !whereClause.isEmpty()) {
+            statement.bindString(2, whereClause);
+        }
+        try {
+            statement.execute();
+        } catch (Exception e) {
+            Log.e("writeDB Method", "------ The writeByteDB method was unable to add the data to the database ------");
+            Log.e("error", e.toString());
+        } finally {
+            statement.close();
+            db.close();
+        }
+    }
+
     //This method is used to execute the write queries for the database
     private void writeDB(String sqlQuery){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -589,6 +638,29 @@ public class DBHelper extends SQLiteOpenHelper {
         //Passes the sql query that needs to be executed
         writeDB(updatedCounterTotalPosQuery);
     }
+
+    //This method stores the serialised data from the questionOrderArray in the gameBoards table for the passed boardId
+    public void setBoardQuestionOrder(byte[] passedSerialisedData, String passedBoardId){
+        //Create the prepared sql statement
+        String byteInsertQuery = "UPDATE " + TABLE_GAME_BOARDS + " SET "
+                + COL_GAME_BOARDS_QUESTION_ORDER + " = ? WHERE "
+                + COL_GAME_BOARDS_ID + " = ?;";
+
+        //Pass the sql query and byte date that needs to be executed
+        writeBlobDB(passedSerialisedData, byteInsertQuery, passedBoardId);
+    }
+
+    //This method stores the serialised data from the cardColourCountArray in the gameBoards table for the passed boardId
+    public void setBoardQuestionCountOrder(byte[] passedSerialisedData, String passedBoardId){
+        //Create the prepared sql statement
+        String byteInsertQuery = "UPDATE " + TABLE_GAME_BOARDS + " SET "
+                + COL_GAME_BOARDS_QUESTION_ORDER_COUNT + " = ? WHERE "
+                + COL_GAME_BOARDS_ID + " = ?;";
+
+        //Pass the sql query and byte date that needs to be executed
+        writeBlobDB(passedSerialisedData, byteInsertQuery, passedBoardId);
+    }
+
     //This method is used to store the team that should be asked the question next so that when the game session is loaded again the correct team is asked the next question
     public void setTeamToAskNext (String passedTeamId, String passedBoardId){
         //This is the sql query that will be executed to reset the old ask next value
@@ -603,6 +675,7 @@ public class DBHelper extends SQLiteOpenHelper {
         //Passes the sql query that needs to be executed
         writeDB(updatedAskNextValue);
     }
+
     //This method gets the row and column values that correspond to the posId that is passed
     public List<String> getPosGridLocations(int passedPosValue, String passedBoardId){
         //Creates an array list to store the results from the query
@@ -762,7 +835,7 @@ public class DBHelper extends SQLiteOpenHelper {
         //This is the sql query that will be executed
         String readTeamNamesQuery = "SELECT " + COL_TEAMS_IMG_NAME +" FROM " + TABLE_TEAMS + " WHERE "
                 + COL_TEAMS_ID + " IN (" + sessionTeamIdsString + ");";
-        //Passes the sql query and stores the results in the sessionTeamNamesList
+        //Passes the sql query and stores the results in the teamImgList
         teamImgList = readDB(readTeamNamesQuery);
 
         return teamImgList;
@@ -783,5 +856,96 @@ public class DBHelper extends SQLiteOpenHelper {
         returnedCountersPos = readDB(readCurrentCounterPosQuery);
 
         return returnedCountersPos;
+    }
+
+    //This method returns the distinct card colour values that are in the boardPositions table for the given boardId
+    //For example, if the field of cardColour only ever stores the value of 0 or 1 then this method should return 0,1
+    public List<String> getBoardCardColours(String passedBoardId){
+        //Creates an array list to store the results from the query
+        List<String> cardColoursList = new ArrayList<>();
+        //This is the sql query that will be executed
+        String readTeamNamesQuery = "SELECT DISTINCT " + COL_BOARD_POSITIONS_CARD_COLOUR + " FROM "
+                + TABLE_BOARD_POSITIONS + " WHERE " + COL_GAME_BOARDS_ID + " = " + passedBoardId
+                + " AND " + COL_BOARD_POSITIONS_CARD_COLOUR + " IS NOT NULL ORDER BY "
+                + COL_BOARD_POSITIONS_CARD_COLOUR + " ASC" +";";
+        //Passes the sql query and stores the results in the cardColoursList
+        cardColoursList = readDB(readTeamNamesQuery);
+
+        return cardColoursList;
+    }
+
+    //This method gets the questions in the questions table that have cardColour value that was passed in
+    //p.s. the card colour should be a number e.g. 1 or 0
+    public List<String> getQuestionIdsByCardColour(String passedCardColour){
+        //Creates an array list to store the results from the query
+        List<String> questionOfColourList = new ArrayList<>();
+        //This is the sql query that will be executed
+        String questionIdsOfCardColourQuery = "SELECT " + COL_QUESTIONS_ID + " FROM " + TABLE_QUESTIONS
+                + " WHERE " + COL_BOARD_POSITIONS_CARD_COLOUR + " = " + passedCardColour +";";
+        //Passes the sql query and stores the results in the questionOfColourList
+        questionOfColourList = readDB(questionIdsOfCardColourQuery);
+
+        return questionOfColourList;
+    }
+
+    //This method get the Blob value for the questionOrder field from the gameBoards table for the given boardId
+    public byte[] getBoardQuestionOrder(String passedBoardId){
+        //Creates a byte[] to store the results from the query
+        byte[] resultBlob = null;
+        //This is the sql query that will be executed
+        String questionOrderBlobQuery = "SELECT " + COL_GAME_BOARDS_QUESTION_ORDER + " FROM "
+                + TABLE_GAME_BOARDS + " WHERE " + COL_GAME_BOARDS_ID + " = " + passedBoardId +";";
+        //Passes the sql query and stores the results in the questionOfColourList
+        resultBlob = readBlobDB(questionOrderBlobQuery);
+
+        return resultBlob;
+    }
+
+    //This method get the Blob value for the questionOrderCount field from the gameBoards table for the given boardId
+    public byte[] getBoardQuestionCountOrder(String passedBoardId){
+        //Creates a byte[] to store the results from the query
+        byte[] resultBlob = null;
+        //This is the sql query that will be executed
+        String questionCountOrderBlobQuery = "SELECT " + COL_GAME_BOARDS_QUESTION_ORDER_COUNT + " FROM "
+                + TABLE_GAME_BOARDS + " WHERE " + COL_GAME_BOARDS_ID + " = " + passedBoardId +";";
+        //Passes the sql query and stores the results in the questionOfColourList
+        resultBlob = readBlobDB(questionCountOrderBlobQuery);
+
+        return resultBlob;
+    }
+
+    //This method gets the cardColour value of the passed position for the passed boardId
+    public String getPosCardColour(int passedPosValue, String passedBoardId){
+        //Creates an string to store the results from the query
+        String posCardColour = null;
+        //This is the sql query that will be executed
+        String readPosCardColourQuery = "SELECT " + COL_BOARD_POSITIONS_CARD_COLOUR + " FROM " + TABLE_BOARD_POSITIONS
+                + " WHERE " + COL_GAME_BOARDS_ID + " = " + passedBoardId + " AND "
+                + COL_BOARD_POSITIONS_POS_ID + " = " + passedPosValue +";";
+        //Passes the sql query and stores the results in the cardColoursList
+        posCardColour = readDB(readPosCardColourQuery).get(0);
+
+        return posCardColour;
+    }
+
+    //This method gets the question from the questions table that corresponds to the passed card colour and question id
+    public List<String> getQuestionByColour(String passedCardColour, String passedQuestionId){
+        //Creates an array list to store the results from the query
+        List<String> questionAndAnswersList = new ArrayList<>();
+        //This is the sql query that will be executed
+        String questionAndAnswersQuery = "SELECT " + COL_QUESTIONS_QUESTION + ", " + COL_QUESTIONS_ANS_1 + ", "
+                + COL_QUESTIONS_ANS_2 + ", " + COL_QUESTIONS_ANS_3 + ", " + COL_QUESTIONS_ANS_4 + ", "
+                + COL_QUESTIONS_ANS_5 + ", " + COL_QUESTIONS_ANS_6 + ", " + COL_QUESTIONS_ANS_7
+                + ", " + COL_QUESTIONS_ANS_8 + ", " + COL_QUESTIONS_ANS_9 + ", " + COL_QUESTIONS_ANS_10 + " FROM "
+                + TABLE_QUESTIONS + " WHERE " + COL_QUESTIONS_ID + " = " + passedQuestionId + " AND "
+                + COL_BOARD_POSITIONS_CARD_COLOUR + " = " + passedCardColour + " ORDER BY " +
+                COL_QUESTIONS_QUESTION + " ASC," + COL_QUESTIONS_ANS_1 + ", " + COL_QUESTIONS_ANS_2 + ", "
+                + COL_QUESTIONS_ANS_3 + ", " + COL_QUESTIONS_ANS_4 + ", " + COL_QUESTIONS_ANS_5 + ", "
+                + COL_QUESTIONS_ANS_6 + ", " + COL_QUESTIONS_ANS_7 + ", " + COL_QUESTIONS_ANS_8 + ", "
+                + COL_QUESTIONS_ANS_9 + ", " + COL_QUESTIONS_ANS_10 + ";";
+        //Passes the sql query and stores the results in the questionOfColourList
+        questionAndAnswersList = readDB(questionAndAnswersQuery);
+
+        return questionAndAnswersList;
     }
 }

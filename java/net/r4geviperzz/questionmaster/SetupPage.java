@@ -22,6 +22,7 @@ import java.util.List;
 public class SetupPage extends Activity {
     //Instantiates an instance of the DBHelper class so that data can be read from the database
     private DBHelper dbHelper = new DBHelper(SetupPage.this);
+    private Question quest = new Question();
     private Boolean isUserInput = true;
     private final Handler handler = new Handler();
     private String team1DropdownPrevVal = null;
@@ -136,6 +137,7 @@ public class SetupPage extends Activity {
                                 dbHelper.deleteGameSession(selectedBoardId);
                                 dbHelper.setInitialGameSessionValues(selectedTeamsIdArray, selectedBoardId);
                                 changeToBoardPg(selectedBoardId);
+                                quest.createQuestionOrder(dbHelper, selectedBoardId);
                             }
                         });
 
@@ -144,6 +146,7 @@ public class SetupPage extends Activity {
                             public void onClick(DialogInterface dialog, int which) {
                                 Log.e("continueGameSession", "The old game session should be continued");
                                 changeToBoardPg(selectedBoardId);
+                                quest.loadQuestionOrder(dbHelper, selectedBoardId);
                             }
                         });
 
@@ -154,6 +157,7 @@ public class SetupPage extends Activity {
                         //This runs if a board of the given boardId doesn't already exist in the gameSession table
                         dbHelper.setInitialGameSessionValues(selectedTeamsIdArray, selectedBoardId);
                         changeToBoardPg(selectedBoardId);
+                        quest.createQuestionOrder(dbHelper, selectedBoardId);
                     }
                 }
             }
