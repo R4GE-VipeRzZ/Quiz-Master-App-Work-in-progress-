@@ -2,10 +2,15 @@ package net.r4geviperzz.questionmaster;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -13,8 +18,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.os.Handler;
+import android.widget.TextView;
+import android.widget.LinearLayout.LayoutParams;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,32 +36,24 @@ public class SetupPage extends Activity {
     private String team1DropdownPrevVal = null;
     private String team2DropdownPrevVal = null;
 
-    //Used to reference the board dropdown spinner
-    Spinner boardDropdown = null;
-
-    //Used to reference the team 1 dropdown spinner
-    Spinner team1Dropdown = null;
-
-    //Used to reference the team 2 dropdown spinner
-    Spinner team2Dropdown = null;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup_page);
 
         //Get a reference to the board spinner
-        boardDropdown = findViewById(R.id.setupPgBoardDropdown);
+        Spinner boardDropdown = findViewById(R.id.setupPgBoardDropdown);
 
         //Get a reference to the team 1 spinner
-        team1Dropdown = findViewById(R.id.setupPgTeam1Dropdown);
+        Spinner team1Dropdown = findViewById(R.id.setupPgTeam1Dropdown);
 
         //Get a reference to the team 2 spinner
-        team2Dropdown = findViewById(R.id.setupPgTeam2Dropdown);
+        Spinner team2Dropdown = findViewById(R.id.setupPgTeam2Dropdown);
 
-        teamSpinners();
-        boardSpinner();
-        submitBtnFunc();
+
+        teamSpinners(team1Dropdown, team2Dropdown);
+        boardSpinner(boardDropdown);
+        submitBtnFunc(boardDropdown, team1Dropdown, team2Dropdown);
     }
 
     //This method is called to change the activity to the boardPage activity
@@ -63,7 +63,46 @@ public class SetupPage extends Activity {
         startActivity(intent);
     }
 
-    private void submitBtnFunc(){
+    //This method is responsible for setting the background images on the spinners
+    private void setSpinnerBackground(Boolean passedValidValue, Spinner passedSpinner){
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
+            //This code is ran if the API level is than 23 / Marshmallow
+
+            if(passedValidValue == false) {
+                passedSpinner.setBackgroundResource(R.drawable.spinner_background_red_api_22_or_less);
+            }else{
+                passedSpinner.setBackgroundColor(Color.TRANSPARENT);
+            }
+
+            TextView textView = (TextView) (passedSpinner.getSelectedView());
+            Drawable drawable = ContextCompat.getDrawable(this, R.drawable.dropdown_arrow);
+            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, drawable, null);
+        }else{
+            //This code is ran if the API level is 23 or more
+
+            if (passedValidValue == false){
+                passedSpinner.setBackgroundResource(R.drawable.spinner_background_red);
+            }else{
+                passedSpinner.setBackgroundResource(R.drawable.spinner_background);
+            }
+        }
+    }
+
+    //Remove background and add dropdown arrow for spinners when running on API 22 or lower
+    private void setStandardSpinner(Spinner passedSpinner){
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            //This code is ran if the API level is than 23 / Marshmallow
+            passedSpinner.setBackgroundColor(Color.TRANSPARENT);
+            TextView textView = (TextView) (passedSpinner.getSelectedView());
+            Drawable drawable = ContextCompat.getDrawable(SetupPage.this, R.drawable.dropdown_arrow);
+            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, drawable, null);
+        }
+    }
+
+    //This method is responsible for checking if the value in the dropdown boxes are valid and if they aren't calling the method to change there background
+    //so that they are highlighted red, if the values are valid then it also checks if a game session already exists for the current board, and if it does
+    //gives a user the option of starting a new game or continuing the game
+    private void submitBtnFunc(Spinner passedBoardDropdown, Spinner passedTeam1Dropdown, Spinner passedTeam2Dropdown){
         Button submitBtn = findViewById(R.id.setupPgStartBtn);
 
         submitBtn.setOnClickListener(new View.OnClickListener() {
@@ -71,31 +110,31 @@ public class SetupPage extends Activity {
             public void onClick(View v) {
                 Boolean valuesValid = true;
 
-                String boardDropdownVal = boardDropdown.getSelectedItem().toString();
-                String[]dropdownValuesArray = {team1Dropdown.getSelectedItem().toString(), team2Dropdown.getSelectedItem().toString()};
+                String boardDropdownVal = passedBoardDropdown.getSelectedItem().toString();
+                String[]dropdownValuesArray = {passedTeam1Dropdown.getSelectedItem().toString(), passedTeam2Dropdown.getSelectedItem().toString()};
 
                 //Checks that the value selected in the board dropdown isn't the default value
                 if (boardDropdownVal.equals("Select Board")){
-                    boardDropdown.setBackgroundResource(R.drawable.spinner_background_red);
                     valuesValid = false;
+                    setSpinnerBackground(false, passedBoardDropdown);
                 }else{
-                    boardDropdown.setBackgroundResource(R.drawable.spinner_background);
+                    setSpinnerBackground(true, passedBoardDropdown);
                 }
 
                 //Checks that the value selected in the team 1 dropdown isn't the default value
                 if (dropdownValuesArray[0].equals("Select Team")){
-                    team1Dropdown.setBackgroundResource(R.drawable.spinner_background_red);
                     valuesValid = false;
+                    setSpinnerBackground(false, passedTeam1Dropdown);
                 }else{
-                    team1Dropdown.setBackgroundResource(R.drawable.spinner_background);
+                    setSpinnerBackground(true, passedTeam1Dropdown);
                 }
 
                 //Checks that the value selected in the team 2 dropdown isn't the default value
                 if (dropdownValuesArray[1].equals("Select Team")){
-                    team2Dropdown.setBackgroundResource(R.drawable.spinner_background_red);
                     valuesValid = false;
+                    setSpinnerBackground(false, passedTeam2Dropdown);
                 }else{
-                    team2Dropdown.setBackgroundResource(R.drawable.spinner_background);
+                    setSpinnerBackground(true, passedTeam2Dropdown);
                 }
 
                 //Checks that the value in the team 1 dropdown isn't the same as the selected value in the team 2 dropdown
@@ -103,9 +142,9 @@ public class SetupPage extends Activity {
                 //however, this if statement should catch the error if it some how happens
                 if (valuesValid == true){
                     if (dropdownValuesArray[0].equals(dropdownValuesArray[1])){
-                        team1Dropdown.setBackgroundResource(R.drawable.spinner_background_red);
-                        team2Dropdown.setBackgroundResource(R.drawable.spinner_background_red);
                         valuesValid = false;
+                        setSpinnerBackground(false, passedTeam1Dropdown);
+                        setSpinnerBackground(false, passedTeam2Dropdown);
                         Log.e("teamSelectionError", "The selected colour is the same for each team!");
                     }
                 }
@@ -164,7 +203,9 @@ public class SetupPage extends Activity {
         });
     }
 
-    private void boardSpinner(){
+    //This method setups the board spinner adding the boards that a read from the database to the spinner and then setting up the
+    //onclick listener that will change the drawable that is visible depending on the board that is selected in the dropdown
+    private void boardSpinner(Spinner passedBoardDropdown){
         //Calls the method that will read the team names from the database and stores them in the teamNames list
         List<String> boardNames = dbHelper.getGameBoardNames();
         boardNames.add(0, "Select Board");
@@ -172,16 +213,16 @@ public class SetupPage extends Activity {
         //Creates the ArrayAdapter that is to be used in the board spinner
         ArrayAdapter<String> boardAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, boardNames);
         //Binds the ArrayAdapter to the board spinner
-        boardDropdown.setAdapter(boardAdapter);
+        passedBoardDropdown.setAdapter(boardAdapter);
 
         //Sets a listener for the board spinner
-        boardDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        passedBoardDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             //This call back method is triggered when an item is selected in the board spinner
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 if (isUserInput == true) {
-                    String selectedBoard = boardDropdown.getSelectedItem().toString();
+                    String selectedBoard = passedBoardDropdown.getSelectedItem().toString();
                     if (!"Select Board".equals(selectedBoard)) {
                         String boardImgName = (DBHelper.getBoardImgStatic(selectedBoard, dbHelper.getReadableDatabase())) + "_icon";
 
@@ -201,18 +242,22 @@ public class SetupPage extends Activity {
                             Log.e("ErrFindingBoardDrawable", "Unable to find a game board image drawable of the specified file name");
                         }
                     }
+
+                    //This calls the method the sets the look of the spinner when running on API level 22 or less
+                    //If the API level is 23 or more then this method will do nothing
+                    setStandardSpinner(passedBoardDropdown);
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
-                // your code here
+                // Nothing
             }
         });
     }
 
     //This method is responsible for populating and controlling the values of the team dropdown spinners
-    private void teamSpinners(){
+    private void teamSpinners(Spinner passedTeam1Dropdown, Spinner passedTeam2Dropdown){
         ArrayList<String> spinnerTeamNames = new ArrayList<String>();
         spinnerTeamNames.add("Select Team");
         //Calls the method that will read the team names from the database and stores them in the teamNames list
@@ -236,23 +281,23 @@ public class SetupPage extends Activity {
         //Creates the ArrayAdapter that is to be used in the team 1 spinner
         ArrayAdapter<String> team1Adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, team1Options);
         //Binds the ArrayAdapter to the team 1 spinner
-        team1Dropdown.setAdapter(team1Adapter);
+        passedTeam1Dropdown.setAdapter(team1Adapter);
 
         ArrayAdapter<String> team2Adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, team2Options);
-        team2Dropdown.setAdapter(team2Adapter);
+        passedTeam2Dropdown.setAdapter(team2Adapter);
 
 
         //Sets a listener for the team 1 spinner
-        team1Dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        passedTeam1Dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             //This call back method is triggered when an item is selected in the team 1 spinner
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 if (isUserInput == true) {
-                    String selectedTeam = team1Dropdown.getSelectedItem().toString();
+                    String selectedTeam = passedTeam1Dropdown.getSelectedItem().toString();
                     if (!"Select Team".equals(selectedTeam)) {
                         //This gets the position of the value that is current selected in the other spinner
-                        int currentSelectionPos = team2Dropdown.getSelectedItemPosition();
+                        int currentSelectionPos = passedTeam2Dropdown.getSelectedItemPosition();
                         //This gets the position of the value that is going to be removed from the other spinner
                         int selectItemPosOfOtherSpinner = team2Adapter.getPosition(selectedTeam);
 
@@ -274,12 +319,12 @@ public class SetupPage extends Activity {
                             //the currently selected item in the list
 
                             //This line adjust the index position to account for earlier value being remove from the list
-                            updateSpinnerSelection(team2Dropdown, currentSelectionPos - 1);
+                            updateSpinnerSelection(passedTeam2Dropdown, currentSelectionPos - 1);
                         } else if (currentSelectionPos <= selectItemPosOfOtherSpinner) {
-                            //This like doesn't adjust the index position as the value that has been removed is after it in the list
+                            //This line doesn't adjust the index position as the value that has been removed is after it in the list
                             //However the updateSpinnerSelection method still needs to be called so that the user input is set to false
                             //so that the changes to the spinner won't trigger the code in the inItemSelected method
-                            updateSpinnerSelection(team2Dropdown, currentSelectionPos);
+                            updateSpinnerSelection(passedTeam2Dropdown, currentSelectionPos);
                         }else{
                             Log.e("UpdateTeamSpinnerError", "The team spinner is empty");
                         }
@@ -297,6 +342,10 @@ public class SetupPage extends Activity {
                     }
                     //Stores the new value of the spinner so that is can be used later if the value of the spinner is changed
                     team1DropdownPrevVal = selectedTeam;
+
+                    //This calls the method the sets the look of the spinner when running on API level 22 or less
+                    //If the API level is 23 or more then this method will do nothing
+                    setStandardSpinner(passedTeam1Dropdown);
                 }
             }
 
@@ -306,14 +355,15 @@ public class SetupPage extends Activity {
             }
         });
 
-        team2Dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        //Sets a listener for the team 2 spinner
+        passedTeam2Dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 if (isUserInput == true) {
-                    String selectedTeam = team2Dropdown.getSelectedItem().toString();
+                    String selectedTeam = passedTeam2Dropdown.getSelectedItem().toString();
                     if (!"Select Team".equals(selectedTeam)) {
                         //This gets the position of the value that is current selected in the other spinner
-                        int currentSelectionPos = team1Dropdown.getSelectedItemPosition();
+                        int currentSelectionPos = passedTeam1Dropdown.getSelectedItemPosition();
                         //This gets the position of the value that is going to be removed from the other spinner
                         int selectItemPosOfOtherSpinner = team1Adapter.getPosition(selectedTeam);
 
@@ -325,9 +375,9 @@ public class SetupPage extends Activity {
                             Log.e("removingValFromSpinner", "Unable to remove the select value from other spinner");
                         }
                         if (currentSelectionPos > selectItemPosOfOtherSpinner) {
-                            updateSpinnerSelection(team1Dropdown, currentSelectionPos - 1);
+                            updateSpinnerSelection(passedTeam1Dropdown, currentSelectionPos - 1);
                         } else if (currentSelectionPos <= selectItemPosOfOtherSpinner) {
-                            updateSpinnerSelection(team1Dropdown, currentSelectionPos);
+                            updateSpinnerSelection(passedTeam1Dropdown, currentSelectionPos);
                         }else{
                             Log.e("UpdateTeamSpinnerError", "The team spinner is empty");
                         }
@@ -345,6 +395,10 @@ public class SetupPage extends Activity {
                     }
                     //Stores the new value of the spinner so that is can be used later if the value of the spinner is changed
                     team2DropdownPrevVal = selectedTeam;
+
+                    //This calls the method the sets the look of the spinner when running on API level 22 or less
+                    //If the API level is 23 or more then this method will do nothing
+                    setStandardSpinner(passedTeam2Dropdown);
                 }
             }
 
@@ -375,6 +429,12 @@ public class SetupPage extends Activity {
                 //If their is no delay then changes made to the spinner will not be implemented before the isUserInput is set back to true
                 //meaning that the code inside the onItemSelected method will be ran buy inputs not as a result of a user selecting an option
                 isUserInput = true;
+                //This calls the method the sets the look of the spinner when running on API level 22 or less
+                //If the API level is 23 or more then this method will do nothing
+                //This needs to be called as this code will run as a result of the spinners item index positions changing
+                //and if the spinner index positions have been changed then the background of the spinner will have been changed
+                //back to the default and as a result will need setting back to the standard
+                setStandardSpinner(spinner);
             }
         }, 100);
     }

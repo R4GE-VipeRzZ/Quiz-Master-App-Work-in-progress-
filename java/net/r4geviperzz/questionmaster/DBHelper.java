@@ -374,7 +374,8 @@ public class DBHelper extends SQLiteOpenHelper {
                         {"\"UK Theme Parks\"","\"Alton Towers\"","\"Blackpool Pleasure Beach\"","\"Chessington\"","\"Drayton Manor\"", "\"Flamingo Land\"", "\"Legoland Windsor\"", "\"Lightwater Valley\"", "\"Oakwood Theme Park\"", "\"Paultons Park\"", "\"Thorpe Park\""},
                         {"\"Batman Characters\"","\"Alfred\"","\"Catwoman\"","\"Commissioner Gordon\"","\"Joker\"", "\"Mr. Freeze\"", "\"Penguin\"", "\"Poison Ivy\"", "\"Riddler\"", "\"Robin\"", "\"Two-Face\""},
                         {"\"Things In A Pencil Case\"","\"Calculator\"","\"Coloured pencils\"","\"Compass\"","\"Crayons\"", "\"Eraser\"", "\"Felt-tip pens\"", "\"Pen\"", "\"Pencil\"", "\"Ruler\"", "\"Sharpener\""},
-                        {"\"Types Of Boot\"","\"Car boots\"","\"Cowboy boots\"","\"Dr Martens boots\"","\"Football boots\"", "\"Riding boots\"", "\"Rugby boots\"", "\"Ski boots\"", "\"UGG boots\"", "\"Walking boots\"", "\"Wellington boots\""}};
+                        {"\"Types Of Boot\"","\"Car boots\"","\"Cowboy boots\"","\"Dr Martens boots\"","\"Football boots\"", "\"Riding boots\"", "\"Rugby boots\"", "\"Ski boots\"", "\"UGG boots\"", "\"Walking boots\"", "\"Wellington boots\""},
+                        {"\"This is a test question nothing but a question you\"","\"This is an answer just answer0\"","\"This is an answer just answer1\"","\"This is an answer just answer2\"","\"This is an answer just answer3\"", "\"This is an answer just answer4\"", "\"This is an answer just answer5\"", "\"This is an answer just answer6\"", "\"This is an answer just answer7\"", "\"This is an answer just answer8\"", "\"This is an answer just answer9\""}};
             } else if (j == 1) {    //This is true if the questions been added are for the purple colour
                 questionVals = new String[][]{{"\"Cricketing Nations\"","\"Afghanistan\"","\"Australia\"","\"Bangladesh\"","\"India\"", "\"New Zealand\"", "\"Pakistan\"", "\"South Africa\"", "\"Sri Lanka\"", "\"West Indies\"", "\"Zimbabwe\""},
                         {"\"Famous Robots\"","\"BB-8\"","\"Bender\"","\"C-3PO\"","\"Marvin\"", "\"Megatron\"", "\"Optimus Prime\"", "\"R2-D2\"", "\"RoboCop\"", "\"The Iron Giant\"", "\"WALL-E\""},
@@ -915,18 +916,19 @@ public class DBHelper extends SQLiteOpenHelper {
         return resultBlob;
     }
 
-    //This method gets the cardColour value of the passed position for the passed boardId
-    public String getPosCardColour(int passedPosValue, String passedBoardId){
+    //This method gets the cardColour and Special values of the passed position for the passed boardId
+    public List<String> getPosCardDetails(int passedPosValue, String passedBoardId){
         //Creates an string to store the results from the query
-        String posCardColour = null;
+        List<String> posCardDetails = null;
         //This is the sql query that will be executed
-        String readPosCardColourQuery = "SELECT " + COL_BOARD_POSITIONS_CARD_COLOUR + " FROM " + TABLE_BOARD_POSITIONS
+        String readPosCardColourQuery = "SELECT " + COL_BOARD_POSITIONS_CARD_COLOUR + ", "
+                + COL_BOARD_POSITIONS_SPECIAL + " FROM " + TABLE_BOARD_POSITIONS
                 + " WHERE " + COL_GAME_BOARDS_ID + " = " + passedBoardId + " AND "
                 + COL_BOARD_POSITIONS_POS_ID + " = " + passedPosValue +";";
         //Passes the sql query and stores the results in the cardColoursList
-        posCardColour = readDB(readPosCardColourQuery).get(0);
+        posCardDetails = readDB(readPosCardColourQuery);
 
-        return posCardColour;
+        return posCardDetails;
     }
 
     //This method gets the question from the questions table that corresponds to the passed card colour and question id

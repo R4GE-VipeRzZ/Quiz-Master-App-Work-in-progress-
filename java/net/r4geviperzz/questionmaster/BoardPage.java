@@ -3,6 +3,7 @@ package net.r4geviperzz.questionmaster;
 import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -11,19 +12,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.core.view.ViewCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 
@@ -112,9 +110,6 @@ public class BoardPage extends Activity {
         layoutParams.setMargins(marginSize, marginSize, marginSize, marginSize);
         gridLayout.setLayoutParams(layoutParams);
 
-        setupPlayerCounter(cellSize);
-
-
         // Create the image view for the drawable
         ImageView playBoardImg = new ImageView(this);
 
@@ -134,9 +129,23 @@ public class BoardPage extends Activity {
         playBoardParams.columnSpec = GridLayout.spec(0, numColumns);
 
         //Sets the elevation of the board image to a negative to ensure that it is always behind all other views in the grid
-        ViewCompat.setElevation(playBoardImg, -1);
+        //ViewCompat.setElevation(playBoardImg, -1);
+
+        //Checks if the API level is at least API 21
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // API level 21 and above support elevation
+            //This set the elevation of the board so that it is always at the back, meaning
+            //that newly added imaged will appear in front of it
+            //The elevation shouldn't need to be set as all the counters are added after the board,
+            //but this should make sure that the board is always at the back
+            ViewCompat.setElevation(playBoardImg, -1);
+        }
+
         // Add the image view to the grid
         gridLayout.addView(playBoardImg, playBoardParams);
+
+        //This method is called to setup the team counters on the grid
+        setupPlayerCounter();
     }
     //This method is responsible for running code when the back button is pressed
     @Override
@@ -153,8 +162,16 @@ public class BoardPage extends Activity {
         super.onBackPressed();
     }
 
+    //This method is used to generate a random positive number that can be assigned to a programmatically generated button
+    //Math.abs gets the absolute value of the generate hash code meaning that the number that is generated is positive
+    //the number needs to be positive as when running on API 25 or lower findViewById returns null if you try to find a view with a negative id
+    private int generateBtnId(){
+        int generatedBtnId = Math.abs(UUID.randomUUID().hashCode());
+        return generatedBtnId;
+    }
+
     //This method is responsible for setting up the counters and label text when a game session is started
-    private void setupPlayerCounter(int passedCellSize){
+    private void setupPlayerCounter(){
         //Used to get the image names for each of the teams
         String [] teamDrawableNamesArray = (dbHelper.getTeamImgByIds(teamIdsArray)).toArray(new String[0]);
         teamCountersImgViewArray = new ImageView[teamDrawableNamesArray.length];
@@ -163,7 +180,7 @@ public class BoardPage extends Activity {
             //Creates the imageView
             ImageView imageView = new ImageView(this);
             //Sets an id for the imageView
-            int generatedId = (UUID.randomUUID()).hashCode();
+            int generatedId = generateBtnId();
             Log.e("MyApp", "Generated ID: " + generatedId);
             imageView.setId(generatedId);
 
@@ -224,7 +241,7 @@ public class BoardPage extends Activity {
                 //Calls the method to position the counter in the grid
                 moveCounter(0,counterPosTotal, countersPosArray);
             }
-            //Sets the currentTeamIndex to the origional value that it had before the for loop
+            //Sets the currentTeamIndex to the original value that it had before the for loop
             currentTeamIndex = storedCurrentTeamIndex;
         }
 
@@ -316,19 +333,40 @@ public class BoardPage extends Activity {
         }
     }
 
-    //This method is responsible for asking the user the question
-    private void askQuestion(){
+    //This method is used to apply any multiplier or penalties that should be applied to the number of answer correct
+    private int calcNumPosToMove(int passedNumAnsCorrect, int passedWildCardVal){
+        //This checks to see if the wild card value is greater than 0, this is because if the wild
+        //card value is greater than 0 then it means that the counter is on square that multiples
+        //the number of moves, e.g. a wild card value of 1 meaning that the number of moves needs to be doubled
+        if (passedWildCardVal > 0){
+            passedNumAnsCorrect = passedNumAnsCorrect * (passedWildCardVal + 1);
+        }
+
+        return passedNumAnsCorrect;
+    }
+
+    //This method is responsible for creating the ask question dialog window
+    private void createAskQuestionDialog(int passedCounterPosTotal, String passedCardColour, int passedWildCardVal, int passedNumToGetCorrect){
         // Create the dialog
-        Dialog dialog = new Dialog(BoardPage.this);
+        Dialog dialog;
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            //This runs when on API 19 or lower
+            dialog = new Dialog(BoardPage.this, R.style.MyDialogThemeAPI19);
+        }else{
+            //This runs when running on API 22 or higher
 
-        //Gets the current counter position of the player counter
-        List<String> countersPosArray = dbHelper.getCurrentPosByTeamId(teamIdsArray, idOfBoard);
-        int counterPosTotal = Integer.parseInt(countersPosArray.get(currentTeamIndex));
+            //Checks if running on API 22 or less
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                dialog = new Dialog(BoardPage.this, R.style.MyDialogThemeAPI21And22);
+            }else{
+                dialog = new Dialog(BoardPage.this);
+            }
+        }
 
-        //Gets the card colour for the counters current board position
-        String cardColour = dbHelper.getPosCardColour(counterPosTotal, idOfBoard);
+        //This line stops the dialog window from closing when a user taps on a location out side of the dialog window
+        dialog.setCanceledOnTouchOutside(false);
 
-        List<String> returnedQuestionAndAnsList = quest.getQuestionAndAnswers(cardColour);
+        List<String> returnedQuestionAndAnsList = quest.getQuestionAndAnswers(passedCardColour);
         String questionString = returnedQuestionAndAnsList.remove(0);
         String[] ansArray = returnedQuestionAndAnsList.toArray(new String[0]);
 
@@ -345,6 +383,7 @@ public class BoardPage extends Activity {
 
         // Set the question text
         questionTextView.setText(questionString);
+        questionTextView.setTextSize(18);
 
         //This list is used to keep track of which button is in the clicked mode / which answers have been selected as correct
         List<Integer> ansCorrectList = new ArrayList<>();
@@ -358,12 +397,24 @@ public class BoardPage extends Activity {
             //Adds the initial value of 0 to the ansCorrectList as the left/incorrect button is set to be clicked when the dialog is first loaded
             ansCorrectList.add(0);
 
+            // Get the screen dimensions
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+            // Gets the screen height
+            int screenHeight = displayMetrics.heightPixels;
+
             // Create a horizontal LinearLayout to hold the answer TextView and buttons
             LinearLayout answerLayout = new LinearLayout(BoardPage.this);
+            //Sets the new linearLayout to Horizontal so that buttons can be placed ether side of the answer text
             answerLayout.setOrientation(LinearLayout.HORIZONTAL);
+            //Centres the content of the LinearLayout vertically
+            answerLayout.setGravity(Gravity.CENTER_VERTICAL);
 
-            // Create the answer TextView and set its properties
+            // Create the answer TextView
             TextView answerTextView = new TextView(BoardPage.this);
+
+            //Sets the answer TextView properties
             answerTextView.setText(answer);
             answerTextView.setGravity(Gravity.CENTER_HORIZONTAL);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
@@ -372,12 +423,7 @@ public class BoardPage extends Activity {
                     1
             );
             answerTextView.setLayoutParams(layoutParams);
-
-            // Get the screen width
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-
-            int screenHeight = displayMetrics.heightPixels;
+            answerTextView.setTextSize(14);
 
             //This int is used for setting with height and width of the left/incorrect and right/correct buttons
             int dialogBtnsWidth = screenHeight / 20;
@@ -390,7 +436,7 @@ public class BoardPage extends Activity {
 
             //These lines of code generate an id for the button, store the generated id in the leftBtnIdList
             //and then set the id of the button to the generated id
-            int leftBtnGenId = (UUID.randomUUID()).hashCode();
+            int leftBtnGenId = generateBtnId();
             leftBtnIdList.add(leftBtnGenId);
             leftBtn.setId(leftBtnGenId);
 
@@ -405,7 +451,7 @@ public class BoardPage extends Activity {
 
             //These lines of code generate an id for the button, store the generated id in the rightBtnIdList
             //and then set the id of the button to the generated id
-            int rightBtnGenId = (UUID.randomUUID()).hashCode();
+            int rightBtnGenId = generateBtnId();
             rightBtnIdList.add(rightBtnGenId);
             rightBtn.setId(rightBtnGenId);
 
@@ -487,15 +533,128 @@ public class BoardPage extends Activity {
                         numAnsCorrect++;
                     }
                 }
+
+                //Checks if the counter is on a position where they have to say how many they are
+                //going to get before they see the question
+                if (passedNumToGetCorrect != 0){
+                    //This if statement is then checks if the player got the amount
+                    // they said they would / more than they said they would
+                    if (passedNumToGetCorrect <= numAnsCorrect){
+                        //Runs if the team reaches there target number
+                        //Sets the number they said they would correct to the numAnsCorrect, as if they got
+                        //more than they said they would then they shouldn't count
+                        numAnsCorrect = passedNumToGetCorrect;
+                    }else{
+                        //Runs if the team didn't reach there target number
+                        numAnsCorrect = -passedNumToGetCorrect;
+                    }
+                }else {
+                    //This calls the method that will apply any modifiers to the number of positions to be move
+                    //For example, if the counter is on a 2x position then this method will double the number of spaces to be moved
+                    numAnsCorrect = calcNumPosToMove(numAnsCorrect, passedWildCardVal);
+                }
+
                 //Calls the method that will update the position value in the database and will then
                 //call the appropriate methods to move the counters
-                updatePosValue(counterPosTotal, numAnsCorrect);
+                updatePosValue(passedCounterPosTotal, numAnsCorrect);
+
                 dialog.dismiss();
             }
         });
 
         // Show the dialog
         dialog.show();
+    }
+
+    //This method is responsible for creating the number of questions to get correct dialog window
+    private void createNumToGetCorrectDialog(int passedCounterPosTotal, String passedCardColour, int passedWildCardVal){
+        // Create the dialog
+        Dialog dialog;
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            //This runs when on API 19 or lower
+            dialog = new Dialog(BoardPage.this, R.style.MyDialogThemeAPI19);
+        }else{
+            //This runs when running on API 22 or higher
+
+            //Checks if running on API 22 or less
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                dialog = new Dialog(BoardPage.this, R.style.MyDialogThemeAPI21And22);
+            }else{
+                dialog = new Dialog(BoardPage.this);
+            }
+        }
+
+        //This line stops the dialog window from closing when a user taps on a location out side of the dialog window
+        dialog.setCanceledOnTouchOutside(false);
+
+        // Inflate the dialog layout
+        LayoutInflater inflater = LayoutInflater.from(BoardPage.this);
+        View dialogView = inflater.inflate(R.layout.num_to_get_correct_dialog_layout, null);
+
+        //Set the content view of the dialog
+        dialog.setContentView(dialogView);
+
+        TextView teamToEnterText = dialogView.findViewById(R.id.numToGetCorrectTextView);
+        teamToEnterText.setText("Please enter the number of questions that team " + teamNamesArray[currentTeamIndex] + " is going to get correct");
+
+
+        // Set up the Submit button
+        Button dialogSubmitButton = dialog.findViewById(R.id.numToGetCorrectSubmitBtn);
+        dialogSubmitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EditText numToGetCorrectInput = dialog.findViewById(R.id.numToGetCorrectEditText);
+                int numToGetCorrect = 0;
+
+                TextView numToGetCorrectErrorText = dialog.findViewById(R.id.numToGetCorrectErrorText);
+
+                //This try checks that the users number input is valid
+                try{
+                    //Converts the input value to an int
+                    numToGetCorrect = Integer.parseInt(numToGetCorrectInput.getText().toString());
+
+                    if (numToGetCorrect == 0){
+                        //This runs if the user inputs zero
+                        numToGetCorrectErrorText.setText("The number can't be zero");
+                    } else if (numToGetCorrect > 10) {
+                        //This runs if a user inputs more than 10
+                        numToGetCorrectErrorText.setText("The number can't be more than ten");
+                    } else if (numToGetCorrect < 0){
+                        //This runs if a user inputs a negative number
+                        numToGetCorrectErrorText.setText("The number can't be negative");
+                    }else {
+                        createAskQuestionDialog(passedCounterPosTotal, passedCardColour, passedWildCardVal, numToGetCorrect);
+                        dialog.dismiss();
+                    }
+                }catch (NumberFormatException e){
+                    //This runs if the input is not an int
+                    numToGetCorrectErrorText.setText("The input needs to be a number");
+                }
+            }
+        });
+
+        // Show the dialog
+        dialog.show();
+    }
+
+    //This method is responsible for asking the user the question
+    private void askQuestion(){
+        //Gets the current counter position of the player counter
+        List<String> countersPosArray = dbHelper.getCurrentPosByTeamId(teamIdsArray, idOfBoard);
+        int counterPosTotal = Integer.parseInt(countersPosArray.get(currentTeamIndex));
+
+        //Gets the card colour and special value for the counters current board position
+        List<String> cardDetails = dbHelper.getPosCardDetails(counterPosTotal, idOfBoard);
+        //Sets the card colour for the question
+        String cardColour = cardDetails.get(0);
+        //Sets the special value for the card
+        int wildCardVal = Integer.parseInt(cardDetails.get(1));
+
+        if (wildCardVal == -1){
+            createNumToGetCorrectDialog(counterPosTotal, cardColour, wildCardVal);
+        }else {
+            createAskQuestionDialog(counterPosTotal, cardColour, wildCardVal, 0);
+        }
     }
 
     //This method is responsible for detecting if the counter that is been moved is going to end up in the same location
