@@ -1,0 +1,107 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/questionsPageRelativeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <!-- Question Text Label -->
+    <TextView
+        android:id="@+id/questionsPageTitleLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/questions_pg_title_label"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+
+    <!-- Horizontal LinearLayout -->
+    <LinearLayout
+        android:id="@+id/questionsPageLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/questionsPageTitleLabel"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
+
+        <!-- First Column: Card Colours -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/questionsPageCardColourLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:text="@string/questions_pg_card_colour_spinner_label" />
+
+            <Spinner
+                android:id="@+id/questionsPageCardColourSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/questions_pg_card_colour_spinner_description"/>
+
+        </LinearLayout>
+
+        <!-- Second Column: Order Type -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/questionsPageOrderTypeLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:text="@string/questions_pg_order_type_spinner_label" />
+
+            <Spinner
+                android:id="@+id/questionsPageOrderTypeSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/questions_pg_order_type_spinner_description"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Relative Layout to hold RecyclerView -->
+    <RelativeLayout
+        android:id="@+id/questionsPageRecyclerViewRelativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/questionsPageLinearLayout"
+        android:layout_above="@id/questionPageAddQuestionBtn">
+
+        <!-- RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/questionsPageRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:scrollbars="none" />
+
+    </RelativeLayout>
+
+    <!-- Button to add a new question -->
+    <Button
+        android:id="@+id/questionPageAddQuestionBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/questions_pg_add_new_question_btn"
+        android:layout_marginTop="6dp"
+        android:padding="18dp"
+        android:textSize="16sp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>

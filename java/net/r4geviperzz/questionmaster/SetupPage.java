@@ -59,6 +59,7 @@ public class SetupPage extends Activity {
     //This method is called to change the activity to the boardPage activity
     private void changeToBoardPg(String selectedBoardId){
         Intent intent = new Intent(SetupPage.this, BoardPage.class);
+        //Passes the id of the board that was selected to the BoardPage class
         intent.putExtra("boardId", selectedBoardId);
         startActivity(intent);
     }

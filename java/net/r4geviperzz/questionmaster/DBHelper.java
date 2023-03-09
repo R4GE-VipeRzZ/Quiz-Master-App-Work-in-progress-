@@ -28,6 +28,8 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COL_TEAMS_ID = "teamId";
     private static final String COL_TEAMS_NAME = "teamName";
     private static final String COL_TEAMS_IMG_NAME = "counterImgName";
+    private static final String TABLE_CARD_TYPE = "cardType";
+    private static final String COL_CARD_TYPE_CARD_COLOUR_NAME = "cardColourName";
     private static final String TABLE_BOARD_POSITIONS = "boardPositions";
     private static final String COL_BOARD_POSITIONS_POS_ID = "posId";
     private static final String COL_BOARD_POSITIONS_GRID_X = "gridX";
@@ -351,7 +353,7 @@ public class DBHelper extends SQLiteOpenHelper {
             Log.e("createQuestionsTable", "Unable to create questions table");
         }
 
-        //Insert values into the boardPositions table
+        //Insert values into the questions table
 
         //This array stores the values for the different types of questions
         //0 = Yellow, 1 = Purple
@@ -418,6 +420,29 @@ public class DBHelper extends SQLiteOpenHelper {
                 db.execSQL(insertQuestionsTable.toString());
             }catch (Exception e){
                 Log.e("insertQuestions", "Unable to insert values into the questions table for the given cardColour " + Integer.toString(questionTypeArray[j]));
+            }
+
+            //Creates the cardType table
+            String createCardTypeTable = "CREATE TABLE " + TABLE_CARD_TYPE + " ("
+                    + COL_BOARD_POSITIONS_CARD_COLOUR + " INTEGER NOT NULL, " + COL_CARD_TYPE_CARD_COLOUR_NAME
+                    + " VARCHAR(18) NOT NULL, PRIMARY KEY (" + COL_BOARD_POSITIONS_CARD_COLOUR + "), UNIQUE("
+                    + COL_CARD_TYPE_CARD_COLOUR_NAME + "));";
+
+            try {
+                db.execSQL(createCardTypeTable);
+            }catch (Exception e){
+                Log.e("createCardTypeTable", "Unable to create card type table");
+            }
+
+            //Insert values into cardType table
+            String insertCardTypeTable = "INSERT INTO " + TABLE_CARD_TYPE + "(" + COL_BOARD_POSITIONS_CARD_COLOUR + ", " + COL_CARD_TYPE_CARD_COLOUR_NAME + ") VALUES " +
+                    "(0, \"Yellow\")," +
+                    "(1, \"Purple\");";
+
+            try{
+                db.execSQL(insertCardTypeTable);
+            }catch (Exception e){
+                Log.e("insertCardType", "Unable to insert values into cardType table");
             }
         }
     }
@@ -550,6 +575,36 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
+    //This method will get the field name that corresponds to the index value that is passed to it with the index 1 been the first answer field in the table
+    //This method is used to convert the RecyclerView index positions when editing an answer to the correct field names for the value
+    private String convertIndexToFieldName(int passedIndexVal){
+        String fieldName = "";
+
+        if(passedIndexVal == 1){
+            fieldName = COL_QUESTIONS_ANS_1;
+        } else if (passedIndexVal == 2) {
+            fieldName = COL_QUESTIONS_ANS_2;
+        } else if (passedIndexVal == 3) {
+            fieldName = COL_QUESTIONS_ANS_3;
+        } else if (passedIndexVal == 4) {
+            fieldName = COL_QUESTIONS_ANS_4;
+        } else if (passedIndexVal == 5) {
+            fieldName = COL_QUESTIONS_ANS_5;
+        } else if (passedIndexVal == 6) {
+            fieldName = COL_QUESTIONS_ANS_6;
+        } else if (passedIndexVal == 7) {
+            fieldName = COL_QUESTIONS_ANS_7;
+        } else if (passedIndexVal == 8) {
+            fieldName = COL_QUESTIONS_ANS_8;
+        } else if (passedIndexVal == 9) {
+            fieldName = COL_QUESTIONS_ANS_9;
+        } else if (passedIndexVal == 10) {
+            fieldName = COL_QUESTIONS_ANS_10;
+        }
+
+        return fieldName;
+    }
+
     //This method return a boolean depending on it the last game on the specified board in the boardSession table ended with a team winning
     //returns true in a gameSession doesn't already exist for the given board or if a team had won in the gameSession for the given board
     //is a team has already won for the session the it will called the delete method to remove the entries for the given board from the
@@ -591,6 +646,69 @@ public class DBHelper extends SQLiteOpenHelper {
         return gameWon;
     }
 
+    //This method is used to check if a question with the given answers already exists in the questions table
+    public Boolean checkExactQuestionExists(List<String> passedQuestionAndAnsList){
+        Boolean questionExists = false;
+        //This list<String> is created to store any result that are returned
+        List<String> resultList = new ArrayList<>();
+        //This is the sql query that will be executed
+        String getQuestionQuery = "SELECT " + COL_QUESTIONS_ID + " FROM " + TABLE_QUESTIONS + " WHERE ";
+
+        //This string is used to store the actual where values
+        String whereString = "";
+        for (int i = 0; i < passedQuestionAndAnsList.size();i++){
+            if (i == 0){
+                //This is runs if it is the first item in the list, which should be the question
+                whereString = whereString + COL_QUESTIONS_QUESTION + " = \"" + passedQuestionAndAnsList.get(i) + "\"";
+            }else{
+                //This runs for all the other elements of the list, which should be the answers
+                //This line gets the field name that corresponds to the answer in the list depending on its index value
+                String fieldString = convertIndexToFieldName(i);
+                whereString = whereString + fieldString + " = \"" + passedQuestionAndAnsList.get(i) + "\"";
+            }
+
+            if (i == (passedQuestionAndAnsList.size() - 1)){
+                whereString = whereString + ";";
+            }else{
+                whereString = whereString + " AND ";
+            }
+        }
+
+        //Adds the rest of the where statement to the query
+        getQuestionQuery = getQuestionQuery + whereString;
+
+        //Passes the sql query and stores the results in the resultList
+        resultList = readDB(getQuestionQuery);
+
+        //If the resultList isn't 0 then in means that there is a question in the table with the same question and answers
+        if (resultList.size() > 0){
+            questionExists = true;
+        }
+
+        return questionExists;
+    }
+
+    //This method is used to check if a question already exists in the questions table
+    public Boolean checkQuestionExists(String passedQuestion){
+        Boolean questionExists = false;
+        //This list<String> is created to store any result that are returned
+        List<String> resultList = new ArrayList<>();
+        //This is the sql query that will be executed
+        String getQuestionQuery = "SELECT " + COL_QUESTIONS_ID + " FROM " + TABLE_QUESTIONS + " WHERE "
+                + COL_QUESTIONS_QUESTION + " = " + "\"" + passedQuestion + "\";";
+
+
+        //Passes the sql query and stores the results in the resultList
+        resultList = readDB(getQuestionQuery);
+
+        //If the resultList isn't 0 then in means that there is a question in the table with the same question and answers
+        if (resultList.size() > 0){
+            questionExists = true;
+        }
+
+        return questionExists;
+    }
+
     //This method deletes the entries in the gameSession table that have the boardId of the passed value
     public void deleteGameSession(String passedBoardId){
         //This is the sql query that will be executed
@@ -598,6 +716,37 @@ public class DBHelper extends SQLiteOpenHelper {
 
         //Passes the sql query that need to be executed
         writeDB(deleteGameSessionQuery);
+    }
+
+    //THis method deletes a question from the questions table for the passed card colour and question id
+    public void deleteQuestion(String passedCardColour, String passedQuestionId){
+        //This is the sql query that will be executed
+        String deleteQuestionQuery = "DELETE FROM " + TABLE_QUESTIONS + " WHERE " + COL_BOARD_POSITIONS_CARD_COLOUR + " = "
+                                    + passedCardColour + " AND " + COL_QUESTIONS_ID + " = " + passedQuestionId + ";";
+
+        //Passes the sql query that need to be executed
+        writeDB(deleteQuestionQuery);
+    }
+
+    //This method updates the question to the new values that have been entered
+    public void updateQuestionDetails(String passedCardColour, String passedQuestionId, List<Integer> passedIndexLocations, List<String> passedCharVals){
+        //This is the sql query that will be executed
+        String updateQuestionDetailsQuery = "UPDATE " + TABLE_QUESTIONS + " SET ";
+
+        String updateValsString = "";
+        for (int i = 0; i < passedIndexLocations.size(); i++){
+            updateValsString = updateValsString + convertIndexToFieldName(passedIndexLocations.get(i)) + " = \"" + passedCharVals.get(i) + "\"";
+
+            if (i != (passedIndexLocations.size() - 1)){
+                updateValsString = updateValsString + ", ";
+            }
+        }
+
+        updateQuestionDetailsQuery = updateQuestionDetailsQuery + updateValsString + " WHERE " + COL_BOARD_POSITIONS_CARD_COLOUR + " = " + passedCardColour
+                                    + " AND " + COL_QUESTIONS_ID + " = " + passedQuestionId + ";";
+
+        //Passes the sql query that needs to be executed
+        writeDB(updateQuestionDetailsQuery);
     }
 
     //This method inserts the required data to the gameSession table for when a new game is being created
@@ -677,6 +826,32 @@ public class DBHelper extends SQLiteOpenHelper {
         writeDB(updatedAskNextValue);
     }
 
+    //This method is used to add a new question to the questions table
+    public void setNewQuestion(String passedCardColourVal, String passedQuestionIDVal, List<String> passedQuestionAndAnsList){
+        //This is the sql query that will be executed
+        String addNewQuestionQuery = "INSERT INTO " + TABLE_QUESTIONS + " VALUES ("
+                            + passedCardColourVal + ", " + passedQuestionIDVal + ", ";
+
+        String questionAndAnsString = "";
+
+        //Create the part of the query that contains the question and all its answers
+        for (int x = 0; x < passedQuestionAndAnsList.size(); x++){
+            //Adds the question / answer value to the string
+            questionAndAnsString = questionAndAnsString + "\"" + passedQuestionAndAnsList.get(x) + "\"";
+
+            //Checks that it isn't at the end of the list as if it is then a comma shouldn't be added
+            if (x != (passedQuestionAndAnsList.size() - 1)){
+                questionAndAnsString = questionAndAnsString + ", ";
+            }
+        }
+
+        //Combines the addNewQuestionQuery with the question and answer values
+        addNewQuestionQuery = addNewQuestionQuery + questionAndAnsString + ");";
+
+        //Passes the sql query that needs to be executed
+        writeDB(addNewQuestionQuery);
+    }
+
     //This method gets the row and column values that correspond to the posId that is passed
     public List<String> getPosGridLocations(int passedPosValue, String passedBoardId){
         //Creates an array list to store the results from the query
@@ -684,7 +859,7 @@ public class DBHelper extends SQLiteOpenHelper {
         //This is the sql query that will be executed
         String readGridLocationsQuery = "SELECT " +  COL_BOARD_POSITIONS_GRID_X + ", " + COL_BOARD_POSITIONS_GRID_Y + " FROM " + TABLE_BOARD_POSITIONS + " WHERE "
                 + COL_GAME_BOARDS_ID + " = " + passedBoardId + " AND " + COL_BOARD_POSITIONS_POS_ID + " = " + Integer.toString(passedPosValue) +";";
-        //Passes the sql query and stores the results in the teamNameList
+        //Passes the sql query and stores the results in the gridLocations
         gridLocations = readDB(readGridLocationsQuery);
 
         return gridLocations;
@@ -737,7 +912,7 @@ public class DBHelper extends SQLiteOpenHelper {
         //This is the sql query that will be executed
         String readTeamIDByNameQuery = "SELECT " + COL_GAME_BOARDS_ID +" FROM " + TABLE_GAME_BOARDS + " WHERE " + COL_GAME_BOARDS_BOARD_NAME
                 + " = \"" + passedBoardName + "\";";
-        //Passes the sql query and stores the results in the returnedTeamId String
+        //Passes the sql query and stores the results in the returnedBoardId
         returnedBoardId = readDB(readTeamIDByNameQuery).get(0);
 
         return returnedBoardId;
@@ -749,7 +924,7 @@ public class DBHelper extends SQLiteOpenHelper {
         int returnedBoardSpaces = 0;
         //This is the sql query that will be executed
         String readBoardSpacesQuery = "SELECT " + COL_GAME_BOARDS_TOTAL_SPACES + " FROM " + TABLE_GAME_BOARDS + " WHERE " + COL_GAME_BOARDS_ID + " = " + passedBoardId + ";";
-        //Passes the sql query and stores the results in the returnedTeamId String
+        //Passes the sql query and stores the results in the returnedBoardSpaces
         returnedBoardSpaces = Integer.parseInt(readDB(readBoardSpacesQuery).get(0));
 
         return returnedBoardSpaces;
@@ -779,7 +954,7 @@ public class DBHelper extends SQLiteOpenHelper {
         //This is the sql query that will be executed
         String readTeamIDByNameQuery = "SELECT " + COL_TEAMS_ID +" FROM " + TABLE_TEAMS + " WHERE " + COL_TEAMS_NAME
                 + " IN (" + passedTeamNamesString + ");";
-        //Passes the sql query and stores the results in the returnedTeamId String
+        //Passes the sql query and stores the results in the returnedTeamIdsList
         returnedTeamIdsList = readDB(readTeamIDByNameQuery);
 
         return returnedTeamIdsList;
@@ -821,7 +996,7 @@ public class DBHelper extends SQLiteOpenHelper {
         //This is the sql query that will be executed
         String readTeamIdsQuery = "SELECT " + COL_TEAMS_ID +" FROM " + TABLE_GAME_SESSION + " WHERE "
                 + COL_GAME_BOARDS_ID + " = " + passedBoardId + " AND " + COL_GAME_SESSION_NEXT_TEAM_TO_ASK + " = 1;";
-        //Passes the sql query and stores the results in the sessionTeamIdsList
+        //Passes the sql query and stores the results in the teamToAskNextQuestion
         teamToAskNextQuestion = Integer.parseInt(readDB(readTeamIdsQuery).get(0));
 
         return teamToAskNextQuestion;
@@ -854,7 +1029,7 @@ public class DBHelper extends SQLiteOpenHelper {
         String readCurrentCounterPosQuery = "SELECT " + COL_GAME_SESSION_CURRENT_POS + " FROM " + TABLE_GAME_SESSION
                 + " WHERE  " +  COL_GAME_BOARDS_ID + " = " + passedBoardId + " AND "
                 + COL_TEAMS_ID + " IN (" + passedTeamIds + ");";
-        //Passes the sql query and stores the results in the returnedTeamId String
+        //Passes the sql query and stores the results in the returnedCountersPos
         returnedCountersPos = readDB(readCurrentCounterPosQuery);
 
         return returnedCountersPos;
@@ -897,7 +1072,7 @@ public class DBHelper extends SQLiteOpenHelper {
         //This is the sql query that will be executed
         String questionOrderBlobQuery = "SELECT " + COL_GAME_BOARDS_QUESTION_ORDER + " FROM "
                 + TABLE_GAME_BOARDS + " WHERE " + COL_GAME_BOARDS_ID + " = " + passedBoardId +";";
-        //Passes the sql query and stores the results in the questionOfColourList
+        //Passes the sql query and stores the results in the resultBlob
         resultBlob = readBlobDB(questionOrderBlobQuery);
 
         return resultBlob;
@@ -910,7 +1085,7 @@ public class DBHelper extends SQLiteOpenHelper {
         //This is the sql query that will be executed
         String questionCountOrderBlobQuery = "SELECT " + COL_GAME_BOARDS_QUESTION_ORDER_COUNT + " FROM "
                 + TABLE_GAME_BOARDS + " WHERE " + COL_GAME_BOARDS_ID + " = " + passedBoardId +";";
-        //Passes the sql query and stores the results in the questionOfColourList
+        //Passes the sql query and stores the results in the resultBlob
         resultBlob = readBlobDB(questionCountOrderBlobQuery);
 
         return resultBlob;
@@ -925,13 +1100,13 @@ public class DBHelper extends SQLiteOpenHelper {
                 + COL_BOARD_POSITIONS_SPECIAL + " FROM " + TABLE_BOARD_POSITIONS
                 + " WHERE " + COL_GAME_BOARDS_ID + " = " + passedBoardId + " AND "
                 + COL_BOARD_POSITIONS_POS_ID + " = " + passedPosValue +";";
-        //Passes the sql query and stores the results in the cardColoursList
+        //Passes the sql query and stores the results in the posCardDetails
         posCardDetails = readDB(readPosCardColourQuery);
 
         return posCardDetails;
     }
 
-    //This method gets the question from the questions table that corresponds to the passed card colour and question id
+    //This method gets the question along with the answers from the questions table that corresponds to the passed card colour and question id
     public List<String> getQuestionByColour(String passedCardColour, String passedQuestionId){
         //Creates an array list to store the results from the query
         List<String> questionAndAnswersList = new ArrayList<>();
@@ -946,9 +1121,160 @@ public class DBHelper extends SQLiteOpenHelper {
                 + COL_QUESTIONS_ANS_3 + ", " + COL_QUESTIONS_ANS_4 + ", " + COL_QUESTIONS_ANS_5 + ", "
                 + COL_QUESTIONS_ANS_6 + ", " + COL_QUESTIONS_ANS_7 + ", " + COL_QUESTIONS_ANS_8 + ", "
                 + COL_QUESTIONS_ANS_9 + ", " + COL_QUESTIONS_ANS_10 + ";";
-        //Passes the sql query and stores the results in the questionOfColourList
+        //Passes the sql query and stores the results in the questionAndAnswersList
         questionAndAnswersList = readDB(questionAndAnswersQuery);
 
         return questionAndAnswersList;
+    }
+
+    //This method gets the order by value that should be used in an sql statement depending on the orderByString is passed to it
+    private String getOrderBySQLValue(String passedOrderByString){
+        //Creates a string that is used to set the order by value
+        String orderBy = ";";
+
+        if (passedOrderByString == "Ascending"){
+            orderBy = " ASC;";
+        } else if (passedOrderByString == "Descending") {
+            orderBy = " DESC;";
+        }
+        return orderBy;
+    }
+
+    //This method gets all of the questions (not including the answers) from the database
+    public List<String> getAllQuestionsNoAnswers(String passedOrderByString){
+        String orderBy = getOrderBySQLValue(passedOrderByString);
+
+        //Creates an array list to store the results from the query
+        List<String> questionList = new ArrayList<>();
+        //This is the sql query that will be executed
+        String questionQuery = "SELECT " + COL_BOARD_POSITIONS_CARD_COLOUR + ", " + COL_QUESTIONS_ID + ", "
+                + COL_QUESTIONS_QUESTION + " FROM " + TABLE_QUESTIONS
+                +" ORDER BY " + COL_QUESTIONS_QUESTION;
+        questionQuery = questionQuery + orderBy;
+        //Passes the sql query and stores the results in the questionList
+        questionList = readDB(questionQuery);
+
+        return questionList;
+    }
+
+    //This method gets all of the questions (not including the answer) from the database that correspond to the passed card colour value
+    public List<String> getAllQuestionsNoAnswersByCardColour(String passedOrderByString, String passedCardColourVal){
+        String orderBy = getOrderBySQLValue(passedOrderByString);
+
+        //Creates an array list to store the results from the query
+        List<String> questionList = new ArrayList<>();
+        //This is the sql query that will be executed
+        String questionQuery = "SELECT " + COL_BOARD_POSITIONS_CARD_COLOUR + ", " + COL_QUESTIONS_ID + ", "
+                + COL_QUESTIONS_QUESTION + " FROM " + TABLE_QUESTIONS + " WHERE " + COL_BOARD_POSITIONS_CARD_COLOUR
+                + " = " + passedCardColourVal +" ORDER BY " + COL_QUESTIONS_QUESTION;
+        questionQuery = questionQuery + orderBy;
+        //Passes the sql query and stores the results in the questionList
+        questionList = readDB(questionQuery);
+
+        return questionList;
+    }
+
+    //This method gets the names of all the card types in the cardType table e.g. yellow, purple
+    public List<String> getAllCardTypeNames(){
+        //Creates an array list to store the results from the query
+        List<String> cardTyeNameList = new ArrayList<>();
+        //This is the sql query that will be executed
+        String cardTyeNameQuery = "SELECT " + COL_CARD_TYPE_CARD_COLOUR_NAME + " FROM " + TABLE_CARD_TYPE
+                +" ORDER BY " + COL_CARD_TYPE_CARD_COLOUR_NAME + " ASC" + ";";
+        //Passes the sql query and stores the results in the cardTyeNameList
+        cardTyeNameList = readDB(cardTyeNameQuery);
+
+        return cardTyeNameList;
+    }
+
+    //This method gets the card colour integer using the the passed card colour name
+    public String getCardColourIntByCardColourName(String passedCardColourName){
+        //Creates a String to store the results from the query
+        String cardColourIntVal = "";
+        //This is the sql query that will be executed
+        String cardColourIntQuery = "SELECT " + COL_BOARD_POSITIONS_CARD_COLOUR + " FROM " + TABLE_CARD_TYPE
+                            + " WHERE " + COL_CARD_TYPE_CARD_COLOUR_NAME + " = \"" + passedCardColourName + "\";";
+        //Passes the sql query and stores the results in the cardColourIntVal
+        cardColourIntVal = readDB(cardColourIntQuery).get(0);
+
+        return cardColourIntVal;
+    }
+
+    //This method gets the VARCHAR limit of the first answer in the questions table
+    public int getAnswerCharLimit(){
+        //Creates an array list to store the results from the query
+        List<String> tableParamsList = new ArrayList<>();
+        //This is the sql query that will be executed
+        String tableParamsQuery = "PRAGMA table_info(" + TABLE_QUESTIONS + ");";
+        //Passes the sql query and stores the results in the tableParamsList
+        tableParamsList = readDB(tableParamsQuery);
+
+        //Gets the index position of the ans1 field as the varchar is the next in the list after the ans1 field
+        int ans1FieldIndex = tableParamsList.indexOf(COL_QUESTIONS_ANS_1);
+        //Gets the field type of ans1 e.g. VARCHAR(30)
+        String fieldType = tableParamsList.get(ans1FieldIndex + 1);
+
+        //Gets the index location where the number first starts
+        int startIndex = fieldType.indexOf("(") + 1;
+        //Gets the index location where the substring should stop
+        int endIndex = fieldType.indexOf(")");
+
+        //Extracts the character limit from the fieldType string and converts it to an int
+        int charLimit = Integer.parseInt(fieldType.substring(startIndex, endIndex));
+
+        return charLimit;
+    }
+
+    //This method gets the VARCHAR limit of the question field in the questions table
+    public int getQuestionCharLimit(){
+        //Creates an array list to store the results from the query
+        List<String> tableParamsList = new ArrayList<>();
+        //This is the sql query that will be executed
+        String tableParamsQuery = "PRAGMA table_info(" + TABLE_QUESTIONS + ");";
+        //Passes the sql query and stores the results in the tableParamsList
+        tableParamsList = readDB(tableParamsQuery);
+
+        //Gets the index position of the question field as the varchar is the next in the list after the question field
+        int questionFieldIndex = tableParamsList.indexOf(COL_QUESTIONS_QUESTION);
+        //Gets the field type of question e.g. VARCHAR(50)
+        String fieldType = tableParamsList.get(questionFieldIndex + 1);
+
+        //Gets the index location where the number first starts
+        int startIndex = fieldType.indexOf("(") + 1;
+        //Gets the index location where the substring should stop
+        int endIndex = fieldType.indexOf(")");
+
+        //Extracts the character limit from the fieldType string and converts it to an int
+        int charLimit = Integer.parseInt(fieldType.substring(startIndex, endIndex));
+
+        return charLimit;
+    }
+
+    //This method will get the number of fields in the questions table
+    public int getNumFieldsInQuestionsTable(){
+        //This is the sql query that will be executed
+        String tableParamsQuery = "SELECT count(*) FROM pragma_table_info(\"" + TABLE_QUESTIONS + "\");";
+        //Passes the sql query and stores the results in the tableParamsList
+        int numOfField = Integer.parseInt(readDB(tableParamsQuery).get(0));
+        return numOfField;
+    }
+
+    //This method will get the next questionID value that should be used for the given cardColour when adding a new question to the question table
+    public String getNextQuestionId(String passedCardColourVal){
+        //Creates an int to store the results from the query
+        int currentMaxQuestionID = 0;
+        //This is the sql query that will be executed
+        String maxQuestionIdQuery = "SELECT MAX(" + COL_QUESTIONS_ID + ") FROM "
+                                + TABLE_QUESTIONS + " WHERE " + COL_BOARD_POSITIONS_CARD_COLOUR
+                                + " = " + passedCardColourVal;
+        //Passes the sql query and stores the results in the currentMaxQuestionID
+        currentMaxQuestionID = Integer.parseInt(readDB(maxQuestionIdQuery).get(0));
+        //Adds 1 on as currentMaxQuestionID is the highest questionID value in the table for
+        //the given card colour, so the id of the next question that is added needs to be 1 higher
+        currentMaxQuestionID++;
+
+        String nextQuestionID = Integer.toString(currentMaxQuestionID);
+
+        return nextQuestionID;
     }
 }

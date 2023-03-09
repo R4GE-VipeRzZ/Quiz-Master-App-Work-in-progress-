@@ -5,6 +5,7 @@
     <string name="menu_questions_btn">Questions</string>
     <string name="menu_settings_btn">Settings</string>
     <string name="menu_exit_btn">Exit</string>
+
     <string name="setup_pg_title_label">Select Team Colours</string>
     <string name="setup_pg_team1_label">Team 1</string>
     <string name="setup_pg_team2_label">Team 2</string>
@@ -14,5 +15,30 @@
     <string name="setup_pg_team1_dropdown_description">Dropdown box for selecting team 1</string>
     <string name="setup_pg_team2_dropdown_description">Dropdown box for selecting team 2</string>
     <string name="setup_pg_board_dropdown_description">Dropdown box for selecting game board</string>
+
     <string name="board_pg_ask_question_btn">Ask Question</string>
+    <string name="board_pg_team_ask_next_label">The team to be asked the \nnext question is:</string>
+
+    <string name="board_pg_question_dialog_submit_btn">Submit</string>
+
+    <string name="board_pg_num_to_get_correct_dialog_label_pt1">Please enter the number of questions that team</string>
+    <string name="board_pg_num_to_get_correct_dialog_label_pt2">is going to get correct</string>
+    <string name="board_pg_num_to_get_correct_dialog_submit_btn">Submit</string>
+    <string name="board_pg_dialog_input_not_num">The input needs to be a number</string>
+    <string name="board_pg_dialog_input_empty">Please enter a number</string>
+    <string name="board_pg_dialog_input_is_zero">The number can\'t be zero</string>
+    <string name="board_pg_dialog_input_more_than_ten">The number can\'t be more than ten</string>
+    <string name="board_pg_dialog_input_negative">The number can\'t be negative</string>
+    <string name="board_pg_dialog_input_hint">Enter number here</string>
+
+    <string name="questions_pg_title_label">Questions</string>
+    <string name="questions_pg_card_colour_spinner_label">Card Colours</string>
+    <string name="questions_pg_order_type_spinner_label">Order Type</string>
+    <string name="questions_pg_add_new_question_btn">Add New Question</string>
+    <string name="questions_pg_card_colour_spinner_description">Dropdown box for select the card colour of questions that are been shown</string>
+    <string name="questions_pg_order_type_spinner_description">Dropdown box for select the way that the questions are ordered</string>
+
+    <string name="item_individual_question_edit_text_layout_hint">Enter an answer for the question</string>
+
+    <string name="add_new_question_card_colour_spinner_label">Question Colour</string>
 </resources>

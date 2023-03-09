@@ -46,14 +46,14 @@ public class BoardPage extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_board_page);
 
-        // Get the screen width
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-
         //This gets the boardId that was passed from the SetupPage as a result of a user selecting a board in the dropdown on that page
         idOfBoard = getIntent().getStringExtra("boardId");
         //This gets the value of the winning position for the given board
         posWinPosition = dbHelper.getBoardTotalSpaces(idOfBoard);
+
+        // Get the screen width
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 
         //Gets the ids of the teams that have been selected for the board on the current session an stores them in the teamIdsArray
         teamIdsArray = (dbHelper.getTeamIdsFromSession(idOfBoard)).toArray(new String[0]);
@@ -246,7 +246,8 @@ public class BoardPage extends Activity {
         }
 
         TextView currentTeamTextView = findViewById(R.id.currentTeamLabel);
-        currentTeamTextView.setText("The team to be asked the \nnext question is: " + teamNamesArray[currentTeamIndex]);
+        //Sets the text for the team to be asked next label
+        currentTeamTextView.setText(getString(R.string.board_pg_team_ask_next_label) + " " + teamNamesArray[currentTeamIndex]);
     }
 
     //This method is responsible for reading the position values of the teams from the database, and then calling
@@ -372,7 +373,7 @@ public class BoardPage extends Activity {
 
         // Inflate the dialog layout
         LayoutInflater inflater = LayoutInflater.from(BoardPage.this);
-        View dialogView = inflater.inflate(R.layout.question_dialog_layout, null);
+        View dialogView = inflater.inflate(R.layout.dialog_question_layout, null);
 
         //Set the content view of the dialog
         dialog.setContentView(dialogView);
@@ -589,13 +590,13 @@ public class BoardPage extends Activity {
 
         // Inflate the dialog layout
         LayoutInflater inflater = LayoutInflater.from(BoardPage.this);
-        View dialogView = inflater.inflate(R.layout.num_to_get_correct_dialog_layout, null);
+        View dialogView = inflater.inflate(R.layout.dialog_num_to_get_correct_layout, null);
 
         //Set the content view of the dialog
         dialog.setContentView(dialogView);
 
         TextView teamToEnterText = dialogView.findViewById(R.id.numToGetCorrectTextView);
-        teamToEnterText.setText("Please enter the number of questions that team " + teamNamesArray[currentTeamIndex] + " is going to get correct");
+        teamToEnterText.setText(getString(R.string.board_pg_num_to_get_correct_dialog_label_pt1) + " " + teamNamesArray[currentTeamIndex] + " " + getString(R.string.board_pg_num_to_get_correct_dialog_label_pt2));
 
 
         // Set up the Submit button
@@ -611,24 +612,32 @@ public class BoardPage extends Activity {
                 //This try checks that the users number input is valid
                 try{
                     //Converts the input value to an int
-                    numToGetCorrect = Integer.parseInt(numToGetCorrectInput.getText().toString());
+                    String numInputBoxInput = numToGetCorrectInput.getText().toString();
+                    Log.e("NumLimitInput", "Text = " + numInputBoxInput);
+                     if (numInputBoxInput.length() > 0) {
+                         //Tries to convert the input to an int
+                         numToGetCorrect = Integer.parseInt(numInputBoxInput);
 
-                    if (numToGetCorrect == 0){
-                        //This runs if the user inputs zero
-                        numToGetCorrectErrorText.setText("The number can't be zero");
-                    } else if (numToGetCorrect > 10) {
-                        //This runs if a user inputs more than 10
-                        numToGetCorrectErrorText.setText("The number can't be more than ten");
-                    } else if (numToGetCorrect < 0){
-                        //This runs if a user inputs a negative number
-                        numToGetCorrectErrorText.setText("The number can't be negative");
-                    }else {
-                        createAskQuestionDialog(passedCounterPosTotal, passedCardColour, passedWildCardVal, numToGetCorrect);
-                        dialog.dismiss();
-                    }
+                         if (numToGetCorrect == 0){
+                             //This runs if the user inputs zero
+                             numToGetCorrectErrorText.setText(getString(R.string.board_pg_dialog_input_is_zero));
+                         } else if (numToGetCorrect > 10) {
+                             //This runs if a user inputs more than 10
+                             numToGetCorrectErrorText.setText(getString(R.string.board_pg_dialog_input_more_than_ten));
+                         } else if (numToGetCorrect < 0){
+                             //This runs if a user inputs a negative number
+                             numToGetCorrectErrorText.setText(getString(R.string.board_pg_dialog_input_negative));
+                         }else {
+                             createAskQuestionDialog(passedCounterPosTotal, passedCardColour, passedWildCardVal, numToGetCorrect);
+                             dialog.dismiss();
+                         }
+                     }else{
+                         //This runs if the user hasn't input anything into the input box
+                         numToGetCorrectErrorText.setText(getString(R.string.board_pg_dialog_input_empty));
+                     }
                 }catch (NumberFormatException e){
                     //This runs if the input is not an int
-                    numToGetCorrectErrorText.setText("The input needs to be a number");
+                    numToGetCorrectErrorText.setText(getString(R.string.board_pg_dialog_input_not_num));
                 }
             }
         });
