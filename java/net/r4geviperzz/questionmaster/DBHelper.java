@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
+import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -30,6 +31,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COL_TEAMS_IMG_NAME = "counterImgName";
     private static final String TABLE_CARD_TYPE = "cardType";
     private static final String COL_CARD_TYPE_CARD_COLOUR_NAME = "cardColourName";
+    private static final String COL_CARD_TYPE_HEX_COLOUR = "hexColour";
     private static final String TABLE_BOARD_POSITIONS = "boardPositions";
     private static final String COL_BOARD_POSITIONS_POS_ID = "posId";
     private static final String COL_BOARD_POSITIONS_GRID_X = "gridX";
@@ -425,8 +427,8 @@ public class DBHelper extends SQLiteOpenHelper {
             //Creates the cardType table
             String createCardTypeTable = "CREATE TABLE " + TABLE_CARD_TYPE + " ("
                     + COL_BOARD_POSITIONS_CARD_COLOUR + " INTEGER NOT NULL, " + COL_CARD_TYPE_CARD_COLOUR_NAME
-                    + " VARCHAR(18) NOT NULL, PRIMARY KEY (" + COL_BOARD_POSITIONS_CARD_COLOUR + "), UNIQUE("
-                    + COL_CARD_TYPE_CARD_COLOUR_NAME + "));";
+                    + " VARCHAR(18) NOT NULL, " + COL_CARD_TYPE_HEX_COLOUR + " VARCHAR(7) NOT NULL, " + " PRIMARY KEY (" + COL_BOARD_POSITIONS_CARD_COLOUR + "), UNIQUE("
+                    + COL_CARD_TYPE_CARD_COLOUR_NAME + ", " + COL_CARD_TYPE_HEX_COLOUR + "));";
 
             try {
                 db.execSQL(createCardTypeTable);
@@ -435,9 +437,10 @@ public class DBHelper extends SQLiteOpenHelper {
             }
 
             //Insert values into cardType table
-            String insertCardTypeTable = "INSERT INTO " + TABLE_CARD_TYPE + "(" + COL_BOARD_POSITIONS_CARD_COLOUR + ", " + COL_CARD_TYPE_CARD_COLOUR_NAME + ") VALUES " +
-                    "(0, \"Yellow\")," +
-                    "(1, \"Purple\");";
+            String insertCardTypeTable = "INSERT INTO " + TABLE_CARD_TYPE + "(" + COL_BOARD_POSITIONS_CARD_COLOUR + ", "
+                    + COL_CARD_TYPE_CARD_COLOUR_NAME + ", " + COL_CARD_TYPE_HEX_COLOUR + ") VALUES " +
+                    "(0, \"Yellow\", \"#ffe600\")," +
+                    "(1, \"Purple\", \"#8200ff\");";
 
             try{
                 db.execSQL(insertCardTypeTable);
@@ -472,6 +475,7 @@ public class DBHelper extends SQLiteOpenHelper {
             }
         }catch(Exception e){
             Log.e("readDB Method", "------ The readDB method was unable to read the data from the table ------");
+            Log.e("actualError", e.toString());
         }finally {
             if (cursor == null){
                 Log.e("readDBMethod", "No such values are contained in the database");
@@ -1252,10 +1256,24 @@ public class DBHelper extends SQLiteOpenHelper {
 
     //This method will get the number of fields in the questions table
     public int getNumFieldsInQuestionsTable(){
-        //This is the sql query that will be executed
-        String tableParamsQuery = "SELECT count(*) FROM pragma_table_info(\"" + TABLE_QUESTIONS + "\");";
-        //Passes the sql query and stores the results in the tableParamsList
-        int numOfField = Integer.parseInt(readDB(tableParamsQuery).get(0));
+        //This variable is used to store the number of fields in the table
+        int numOfField = 0;
+
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1){
+            //Runs if the app is running on API 25 or lower
+
+            //This is the sql query that will be executed
+            String tableRowQuery = "SELECT * FROM " + TABLE_QUESTIONS + " LIMIT 1;";
+            List<String> resultList = readDB(tableRowQuery);
+            numOfField = resultList.size();
+        }else {
+            //Runs if the app is running on API 26 or higher
+
+            //This is the sql query that will be executed
+            String tableParamsQuery = "SELECT count(*) FROM pragma_table_info(\"" + TABLE_QUESTIONS + "\");";
+            //Passes the sql query and stores the results in the tableParamsList
+            numOfField = Integer.parseInt(readDB(tableParamsQuery).get(0));
+        }
         return numOfField;
     }
 
@@ -1276,5 +1294,18 @@ public class DBHelper extends SQLiteOpenHelper {
         String nextQuestionID = Integer.toString(currentMaxQuestionID);
 
         return nextQuestionID;
+    }
+
+    //This method gets the hex colour of the passed card colour from the cardType table
+    public String getCardHexColour(String passedCardColourVal){
+        //Creates a String to store the results from the query
+        String cardHexColourVal = "";
+        //This is the sql query that will be executed
+        String cardHexColourQuery = "SELECT " + COL_CARD_TYPE_HEX_COLOUR + " FROM " + TABLE_CARD_TYPE + " WHERE "
+                                    + COL_BOARD_POSITIONS_CARD_COLOUR + " = " + passedCardColourVal + ";";
+        //Passes the sql query and stores the results in the cardHexColourVal
+        cardHexColourVal = readDB(cardHexColourQuery).get(0);
+
+        return cardHexColourVal;
     }
 }

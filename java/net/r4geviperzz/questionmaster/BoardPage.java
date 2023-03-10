@@ -2,6 +2,7 @@ package net.r4geviperzz.questionmaster;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -250,16 +251,8 @@ public class BoardPage extends Activity {
         currentTeamTextView.setText(getString(R.string.board_pg_team_ask_next_label) + " " + teamNamesArray[currentTeamIndex]);
     }
 
-    //This method is responsible for reading the position values of the teams from the database, and then calling
-    //the methods responsible for moving the counter along with changing the label text
-    private void checkWinAndMove(int passedPrevCounterPos){
-        TextView currentTeamTextView = findViewById(R.id.currentTeamLabel);
-
-        //This code is used get all the currentPos values off all the teams in the session
-        //The values are need for all of the teams so that it can be determined if more than one team is in the same position
-        List<String> countersPosArray = dbHelper.getCurrentPosByTeamId(teamIdsArray, idOfBoard);
-        int counterPosTotal = Integer.parseInt(countersPosArray.get(currentTeamIndex));
-
+    //This method is used to change the team that is asked the next question
+    public int changeTeam(){
         int nextTeamIndex = 0;
 
         if (currentTeamIndex < (numOfTeams - 1)){
@@ -268,13 +261,37 @@ public class BoardPage extends Activity {
             nextTeamIndex = 0;
         }
 
+        return nextTeamIndex;
+    }
+
+    //This method sets the contents of the next team to be asked label
+    public void changeNextTeamLabel(int indexOfTeamToAskNext){
+        TextView currentTeamTextView = findViewById(R.id.currentTeamLabel);
+
+        //Changes the labels text so that the user know what team will be asked a question next
+        currentTeamTextView.setText("The team to be asked the \nnext question is: " + teamNamesArray[indexOfTeamToAskNext]);
+    }
+
+    //This method is responsible for reading the position values of the teams from the database, and then calling
+    //the methods responsible for moving the counter along with changing the label text
+    private void checkWinAndMove(int passedPrevCounterPos){
+        //This code is used get all the currentPos values off all the teams in the session
+        //The values are need for all of the teams so that it can be determined if more than one team is in the same position
+        List<String> countersPosArray = dbHelper.getCurrentPosByTeamId(teamIdsArray, idOfBoard);
+        int counterPosTotal = Integer.parseInt(countersPosArray.get(currentTeamIndex));
+
+        //Calls the method that will get the index position of the team that needs to be ask a question next
+        int nextTeamIndex = changeTeam();
+
         //Checks if a user has won
         if (counterPosTotal < posWinPosition) {
             //Calls the method that moves the counter to grid position that corresponds to the position value for the board
             moveCounter(passedPrevCounterPos, counterPosTotal, countersPosArray);
-            //Changes the labels text so that the user know what team will be asked a question next
-            currentTeamTextView.setText("The team to be asked the \nnext question is: " + teamNamesArray[nextTeamIndex]);
+            //Calls this method so that the team to be ask next in the label is changed to the next team
+            changeNextTeamLabel(nextTeamIndex);
         } else {
+            TextView currentTeamTextView = findViewById(R.id.currentTeamLabel);
+
             //Calls the method that moves the counter to the winning position on the board
             moveCounter(passedPrevCounterPos,counterPosTotal, countersPosArray);
             //Gets the name of the winning team
@@ -316,6 +333,7 @@ public class BoardPage extends Activity {
     private void updatePosValue(int passedCounterPosVal, int passedNumAnsCorrect){
         if (passedCounterPosVal < posWinPosition) {
             //This if statement checks if a user has got any answers correct, if they haven't then the counterPosVal doesn't need updating
+            //and now counters will need moving
             if(passedNumAnsCorrect != 0) {
                 int newPos = passedCounterPosVal + passedNumAnsCorrect;
 
@@ -325,12 +343,18 @@ public class BoardPage extends Activity {
                 }
                 Log.e("numAnswersCorrect", "The number of answers correct is = " + passedNumAnsCorrect);
                 dbHelper.setCurrentPosByTeamId(idOfBoard, teamIdsArray[currentTeamIndex], newPos);
-            }
 
-            //Calls the method that will check if the position is the winning position and will call the appropriate methods to move the counters
-            //passes the position value before it was increased so that it can be check if there was other ImageViews in the counters previous position
-            //and then if there was resize the ImageViews to take into account that a counter has been removed
-            checkWinAndMove(passedCounterPosVal);
+                //Calls the method that will check if the position is the winning position and will call the appropriate methods to move the counters
+                //passes the position value before it was increased so that it can be check if there was other ImageViews in the counters previous position
+                //and then if there was resize the ImageViews to take into account that a counter has been removed
+                checkWinAndMove(passedCounterPosVal);
+            }else{
+                //Calls the method that will get the index position of the team that needs to be ask a question next,
+                //and then updates the currentTeamIndex to the next team
+                currentTeamIndex = changeTeam();
+                //Calls this method so that the team to be ask next in the label is changed to the next team
+                changeNextTeamLabel(currentTeamIndex);
+            }
         }
     }
 
@@ -349,18 +373,18 @@ public class BoardPage extends Activity {
     //This method is responsible for creating the ask question dialog window
     private void createAskQuestionDialog(int passedCounterPosTotal, String passedCardColour, int passedWildCardVal, int passedNumToGetCorrect){
         // Create the dialog
-        Dialog dialog;
+        CustomQuestionDialog dialog;
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
             //This runs when on API 19 or lower
-            dialog = new Dialog(BoardPage.this, R.style.MyDialogThemeAPI19);
+            dialog = new CustomQuestionDialog(BoardPage.this, R.style.MyDialogThemeAPI19);
         }else{
             //This runs when running on API 22 or higher
 
             //Checks if running on API 22 or less
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                dialog = new Dialog(BoardPage.this, R.style.MyDialogThemeAPI21And22);
+                dialog = new CustomQuestionDialog(BoardPage.this, R.style.MyDialogThemeAPI21And22);
             }else{
-                dialog = new Dialog(BoardPage.this);
+                dialog = new CustomQuestionDialog(BoardPage.this);
             }
         }
 
@@ -374,6 +398,11 @@ public class BoardPage extends Activity {
         // Inflate the dialog layout
         LayoutInflater inflater = LayoutInflater.from(BoardPage.this);
         View dialogView = inflater.inflate(R.layout.dialog_question_layout, null);
+
+        String hexColour = dbHelper.getCardHexColour(passedCardColour);
+        int colour = Color.parseColor(hexColour);
+        int alphaColour = Color.argb(25, Color.red(colour), Color.green(colour), Color.blue(colour));
+        dialogView.setBackgroundColor(alphaColour);
 
         //Set the content view of the dialog
         dialog.setContentView(dialogView);
@@ -570,18 +599,18 @@ public class BoardPage extends Activity {
     //This method is responsible for creating the number of questions to get correct dialog window
     private void createNumToGetCorrectDialog(int passedCounterPosTotal, String passedCardColour, int passedWildCardVal){
         // Create the dialog
-        Dialog dialog;
+        CustomQuestionDialog dialog;
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
             //This runs when on API 19 or lower
-            dialog = new Dialog(BoardPage.this, R.style.MyDialogThemeAPI19);
+            dialog = new CustomQuestionDialog(BoardPage.this, R.style.MyDialogThemeAPI19);
         }else{
             //This runs when running on API 22 or higher
 
             //Checks if running on API 22 or less
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                dialog = new Dialog(BoardPage.this, R.style.MyDialogThemeAPI21And22);
+                dialog = new CustomQuestionDialog(BoardPage.this, R.style.MyDialogThemeAPI21And22);
             }else{
-                dialog = new Dialog(BoardPage.this);
+                dialog = new CustomQuestionDialog(BoardPage.this);
             }
         }
 

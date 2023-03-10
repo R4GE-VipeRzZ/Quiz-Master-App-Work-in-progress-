@@ -5,9 +5,11 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -92,6 +94,24 @@ public class IndividualQuestionAdapter extends RecyclerView.Adapter<RecyclerView
 
                 // If the view holder is an EditTextViewHolder, set the text of the questionEditText to the value at the current position in the list
                 ((EditTextViewHolder) holder).questionEditText.setText(dbQuestionsList.get(position));
+
+                // Set an OnEditorActionListener on the EditText view, so that the EditText view focus is
+                // changed to the next one in the RecyclerView when the enter button is pressed
+                ((EditTextViewHolder) holder).questionEditText.setOnKeyListener(new View.OnKeyListener() {
+                    @Override
+                    public boolean onKey(View v, int keyCode, KeyEvent event) {
+                        if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                            // Handle Enter key pressed on the on-screen keyboard
+                            // Move the focus to the next EditText view in the RecyclerView
+                            View nextView = holder.itemView.focusSearch(View.FOCUS_DOWN);
+                            if (nextView != null) {
+                                nextView.requestFocus();
+                            }
+                            return true;
+                        }
+                        return false;
+                    }
+                });
             }
 
             // Update the value at the current position in the list with the current text in the EditText
@@ -99,6 +119,7 @@ public class IndividualQuestionAdapter extends RecyclerView.Adapter<RecyclerView
             dbQuestionsList.set(position, ((EditTextViewHolder) holder).questionEditText.getText().toString());
         }
     }
+
 
 
     // getItemCount returns the number of items in the list
