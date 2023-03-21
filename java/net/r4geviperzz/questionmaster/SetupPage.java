@@ -177,6 +177,7 @@ public class SetupPage extends Activity {
                                 dbHelper.deleteGameSession(selectedBoardId);
                                 dbHelper.setInitialGameSessionValues(selectedTeamsIdArray, selectedBoardId);
                                 changeToBoardPg(selectedBoardId);
+                                //Calls the method that will create the questions arrays and store them in the gameBoards table
                                 quest.createQuestionOrder(dbHelper, selectedBoardId);
                             }
                         });
@@ -186,7 +187,18 @@ public class SetupPage extends Activity {
                             public void onClick(DialogInterface dialog, int which) {
                                 Log.e("continueGameSession", "The old game session should be continued");
                                 changeToBoardPg(selectedBoardId);
-                                quest.loadQuestionOrder(dbHelper, selectedBoardId);
+
+                                //Gets the questionOrderCount Blob from the gameBoards table, this is needed to that it can
+                                //be checked if it is null, as if a new question is added or deleted then it will be null
+                                byte[] oneDSerialisedData = dbHelper.getBoardQuestionCountOrder(selectedBoardId);
+
+                                if (oneDSerialisedData == null){
+                                    //Calls the method that will create the questions arrays and store them in the gameBoards table
+                                    quest.createQuestionOrder(dbHelper, selectedBoardId);
+                                }else {
+                                    //Calls the method that will load the questions array from the gameBoards table
+                                    quest.loadQuestionOrder(dbHelper, selectedBoardId);
+                                }
                             }
                         });
 

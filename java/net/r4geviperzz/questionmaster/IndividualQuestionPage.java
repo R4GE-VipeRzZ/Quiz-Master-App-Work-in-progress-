@@ -82,7 +82,7 @@ public class IndividualQuestionPage extends Activity {
         //This line detects if there are any duplicate answers in the list
         Boolean areDuplicateAnswers = CheckAnsList.checkForListDuplicates(questionAndAnsList);
 
-        //This if checks if there are any duplicate answer in the list
+        //This if checks if there are were duplicate answer in the list
         if (areDuplicateAnswers == false) {
             //This for loop checks than none of the values in the questionAndAnsList are blank
             for (String updatedValue : questionAndAnsList){
@@ -100,6 +100,7 @@ public class IndividualQuestionPage extends Activity {
             List<String> charValOfEditedField = new ArrayList<>();
 
             if (allValuesValid == true) {
+                //This line calls the method that will check if the new list is in alphabetical order
                 Boolean isUpdatedListInAlphabeticalOrder = CheckAnsList.checkAnswerInAlphabeticalOrder(questionAndAnsList);
 
                 //Checks if the new answers are in alphabetical order and it they aren't puts them in alphabetical order
@@ -111,9 +112,11 @@ public class IndividualQuestionPage extends Activity {
                     adapter.setList(questionAndAnsList);
                 }
 
+                //This line makes sure that all of the strings in the questionAndAnsList has no leading or trailing white spaces
+                questionAndAnsList = CheckAnsList.removeWhiteSpaceListString(questionAndAnsList);
                 //This line makes sure that all of the strings in the questionAndAnsList begin with a capital letter
                 questionAndAnsList = CheckAnsList.capitaliseListStrings(questionAndAnsList);
-                //Updates the data in the adapter so that all the items in the RecyclerView and List are capitalised
+                //Updates the data in the adapter so that all the items in the RecyclerView and List are capitalised and any white space is removed
                 adapter.setList(questionAndAnsList);
                 for (int i = 1; i < oldQuestionAndAnsList.size(); i++) {
                     String updatedValue = questionAndAnsList.get(i);
@@ -180,10 +183,25 @@ public class IndividualQuestionPage extends Activity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Log.e("questionDelete", "The question should be deleted");
-                Toast.makeText(IndividualQuestionPage.this, "Question Deleted", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(IndividualQuestionPage.this, QuestionsPage.class);
                 startActivity(intent);
-                dbHelper.deleteQuestion(questionCardColour, questionId);
+
+                //Calls the method that will delete the question from the database
+                Boolean success = dbHelper.deleteQuestion(questionCardColour, questionId);
+
+                //Checks that the delete method call returned true, if it didn't then that means there isn't more than one
+                //question of the given colour in the table
+                if (success == true) {
+                    Toast.makeText(IndividualQuestionPage.this, "Question Deleted", Toast.LENGTH_SHORT).show();
+                    //Nulls the questionOrder Blob in the gameBoards table as it needs
+                    //recreating in order to account for the deleted question
+                    dbHelper.nullQuestionOrderFromGameBoards();
+                    //Nulls the questionOrderCount Blob in the gameBoards table as it needs
+                    //recreating in order to account for the deleted question
+                    dbHelper.nullQuestionOrderCountFromGameBoards();
+                }else{
+                    Toast.makeText(IndividualQuestionPage.this, "Unable to delete question, as it is the last card of such a colour in the database", Toast.LENGTH_LONG).show();
+                }
             }
         });
 

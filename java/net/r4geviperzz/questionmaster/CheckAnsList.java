@@ -119,4 +119,23 @@ public class CheckAnsList {
         }
         return capitalizedList;
     }
+
+    //This method will remove any white space from the start / end of each element in the list if any white space exists
+    public static List<String> removeWhiteSpaceListString(List<String> passedQuestionAndAnsList){
+        //Create a new ArrayList to store the processed strings
+        List<String> whiteSpaceRemovedList = new ArrayList<>();
+
+        //Iterate through the input list and process each element
+        for (int x = 0; x < passedQuestionAndAnsList.size(); x++){
+            //Get the current element from the input list
+            String currentElement = passedQuestionAndAnsList.get(x);
+            //Remove leading and trailing whitespace from the current element using the trim() method
+            String trimmedElement = currentElement.trim();
+            //Add the trimmed element to the output list
+            whiteSpaceRemovedList.add(trimmedElement);
+        }
+
+        //Return the processed list
+        return whiteSpaceRemovedList;
+    }
 }

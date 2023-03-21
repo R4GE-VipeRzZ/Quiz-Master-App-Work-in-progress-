@@ -41,6 +41,7 @@ public class BoardPage extends Activity {
     private int numOfTeams = 0;
     private int currentTeamIndex = 0;
     private String winningTeam = null;
+    private Boolean gameSessionNeedsSaving = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,9 +130,6 @@ public class BoardPage extends Activity {
         playBoardParams.rowSpec = GridLayout.spec(0, numRows);
         playBoardParams.columnSpec = GridLayout.spec(0, numColumns);
 
-        //Sets the elevation of the board image to a negative to ensure that it is always behind all other views in the grid
-        //ViewCompat.setElevation(playBoardImg, -1);
-
         //Checks if the API level is at least API 21
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             // API level 21 and above support elevation
@@ -148,19 +146,48 @@ public class BoardPage extends Activity {
         //This method is called to setup the team counters on the grid
         setupPlayerCounter();
     }
-    //This method is responsible for running code when the back button is pressed
+
+    //Runs when the back button is pressed
     @Override
     public void onBackPressed(){
-        //Gets the team id that corresponds to the currentTeamIndex
-        String teamIdToPass = teamIdsArray[currentTeamIndex];
-
-        //Sets the teamToAksNext value for the specified team id in the gameSession table to 1,
-        //this is so that if the game session is reloaded then it will ask the correct team the next question
-        dbHelper.setTeamToAskNext(teamIdToPass, idOfBoard);
-        //This is called so that the index positions of how far into a question colour set a user is, is stored
-        //in the questionOrderCount field of the gameBoards table
-        quest.saveQuestionCountOrder();
         super.onBackPressed();
+
+        updateGameSessionData("Back btn pressed");
+    }
+
+    //Runs when the activity is destroyed
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+
+        updateGameSessionData("The app has been closed");
+    }
+
+    //Runs when the app is put into the background
+    @Override
+    public void onStop(){
+        super.onStop();
+
+        updateGameSessionData("The app is now in the background");
+    }
+
+    //This method updates the values in the gameSession table to the current values for the given session
+    private void updateGameSessionData(String passedMessage){
+        if (gameSessionNeedsSaving == true) {
+            Log.e("closeMessage", passedMessage);
+
+            //Gets the team id that corresponds to the currentTeamIndex
+            String teamIdToPass = teamIdsArray[currentTeamIndex];
+
+            //Sets the teamToAksNext value for the specified team id in the gameSession table to 1,
+            //this is so that if the game session is reloaded then it will ask the correct team the next question
+            dbHelper.setTeamToAskNext(teamIdToPass, idOfBoard);
+            //This is called so that the index positions of how far into a question colour set a user is, is stored
+            //in the questionOrderCount field of the gameBoards table
+            quest.saveQuestionCountOrder();
+
+            gameSessionNeedsSaving = false;
+        }
     }
 
     //This method is used to generate a random positive number that can be assigned to a programmatically generated button
@@ -391,217 +418,223 @@ public class BoardPage extends Activity {
         //This line stops the dialog window from closing when a user taps on a location out side of the dialog window
         dialog.setCanceledOnTouchOutside(false);
 
-        List<String> returnedQuestionAndAnsList = quest.getQuestionAndAnswers(passedCardColour);
-        String questionString = returnedQuestionAndAnsList.remove(0);
-        String[] ansArray = returnedQuestionAndAnsList.toArray(new String[0]);
+        List<String> returnedQuestionAndAnsList = quest.getQuestionAndAnswers(passedCardColour, BoardPage.this);
 
-        // Inflate the dialog layout
-        LayoutInflater inflater = LayoutInflater.from(BoardPage.this);
-        View dialogView = inflater.inflate(R.layout.dialog_question_layout, null);
+        if (returnedQuestionAndAnsList != null) {
+            String questionString = returnedQuestionAndAnsList.remove(0);
+            String[] ansArray = returnedQuestionAndAnsList.toArray(new String[0]);
 
-        String hexColour = dbHelper.getCardHexColour(passedCardColour);
-        int colour = Color.parseColor(hexColour);
-        int alphaColour = Color.argb(25, Color.red(colour), Color.green(colour), Color.blue(colour));
-        dialogView.setBackgroundColor(alphaColour);
+            // Inflate the dialog layout
+            LayoutInflater inflater = LayoutInflater.from(BoardPage.this);
+            View dialogView = inflater.inflate(R.layout.dialog_question_layout, null);
 
-        //Set the content view of the dialog
-        dialog.setContentView(dialogView);
+            String hexColour = dbHelper.getCardHexColour(passedCardColour);
+            int colour = Color.parseColor(hexColour);
+            int alphaColour = Color.argb(25, Color.red(colour), Color.green(colour), Color.blue(colour));
+            dialogView.setBackgroundColor(alphaColour);
 
-        // Get references to the views in the layout
-        TextView questionTextView = dialogView.findViewById(R.id.questionTextView);
-        LinearLayout ansLinLayout = dialogView.findViewById(R.id.ansLinLayout);
+            //Set the content view of the dialog
+            dialog.setContentView(dialogView);
 
-        // Set the question text
-        questionTextView.setText(questionString);
-        questionTextView.setTextSize(18);
+            // Get references to the views in the layout
+            TextView questionTextView = dialogView.findViewById(R.id.questionTextView);
+            LinearLayout ansLinLayout = dialogView.findViewById(R.id.ansLinLayout);
 
-        //This list is used to keep track of which button is in the clicked mode / which answers have been selected as correct
-        List<Integer> ansCorrectList = new ArrayList<>();
-        //This list is used to store all the ids of the left/incorrect buttons so that they can be reference later on
-        List<Integer> leftBtnIdList = new ArrayList<>();
-        //This list is used to store all the ids of the right/correct buttons so that they can be reference later on
-        List<Integer> rightBtnIdList = new ArrayList<>();
+            // Set the question text
+            questionTextView.setText(questionString);
+            questionTextView.setTextSize(18);
 
-        // Add the answer TextViews and buttons to the answers layout
-        for (String answer : ansArray) {
-            //Adds the initial value of 0 to the ansCorrectList as the left/incorrect button is set to be clicked when the dialog is first loaded
-            ansCorrectList.add(0);
+            //This list is used to keep track of which button is in the clicked mode / which answers have been selected as correct
+            List<Integer> ansCorrectList = new ArrayList<>();
+            //This list is used to store all the ids of the left/incorrect buttons so that they can be reference later on
+            List<Integer> leftBtnIdList = new ArrayList<>();
+            //This list is used to store all the ids of the right/correct buttons so that they can be reference later on
+            List<Integer> rightBtnIdList = new ArrayList<>();
 
-            // Get the screen dimensions
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            // Add the answer TextViews and buttons to the answers layout
+            for (String answer : ansArray) {
+                //Adds the initial value of 0 to the ansCorrectList as the left/incorrect button is set to be clicked when the dialog is first loaded
+                ansCorrectList.add(0);
 
-            // Gets the screen height
-            int screenHeight = displayMetrics.heightPixels;
+                // Get the screen dimensions
+                DisplayMetrics displayMetrics = new DisplayMetrics();
+                getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 
-            // Create a horizontal LinearLayout to hold the answer TextView and buttons
-            LinearLayout answerLayout = new LinearLayout(BoardPage.this);
-            //Sets the new linearLayout to Horizontal so that buttons can be placed ether side of the answer text
-            answerLayout.setOrientation(LinearLayout.HORIZONTAL);
-            //Centres the content of the LinearLayout vertically
-            answerLayout.setGravity(Gravity.CENTER_VERTICAL);
+                // Gets the screen height
+                int screenHeight = displayMetrics.heightPixels;
 
-            // Create the answer TextView
-            TextView answerTextView = new TextView(BoardPage.this);
+                // Create a horizontal LinearLayout to hold the answer TextView and buttons
+                LinearLayout answerLayout = new LinearLayout(BoardPage.this);
+                //Sets the new linearLayout to Horizontal so that buttons can be placed ether side of the answer text
+                answerLayout.setOrientation(LinearLayout.HORIZONTAL);
+                //Centres the content of the LinearLayout vertically
+                answerLayout.setGravity(Gravity.CENTER_VERTICAL);
 
-            //Sets the answer TextView properties
-            answerTextView.setText(answer);
-            answerTextView.setGravity(Gravity.CENTER_HORIZONTAL);
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    1
-            );
-            answerTextView.setLayoutParams(layoutParams);
-            answerTextView.setTextSize(14);
+                // Create the answer TextView
+                TextView answerTextView = new TextView(BoardPage.this);
 
-            //This int is used for setting with height and width of the left/incorrect and right/correct buttons
-            int dialogBtnsWidth = screenHeight / 20;
-            //This int is used for setting the padding of the left/incorrect and right/correct buttons
-            int buttonPadding = dialogBtnsWidth / 6;
+                //Sets the answer TextView properties
+                answerTextView.setText(answer);
+                answerTextView.setGravity(Gravity.CENTER_HORIZONTAL);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        1
+                );
+                answerTextView.setLayoutParams(layoutParams);
+                answerTextView.setTextSize(14);
 
-            // Create the left button and set its properties
-            Button leftBtn = new Button(BoardPage.this);
-            leftBtn.setBackgroundResource(R.drawable.incorrect_btn_background_clicked);
+                //This int is used for setting with height and width of the left/incorrect and right/correct buttons
+                int dialogBtnsWidth = screenHeight / 20;
+                //This int is used for setting the padding of the left/incorrect and right/correct buttons
+                int buttonPadding = dialogBtnsWidth / 6;
 
-            //These lines of code generate an id for the button, store the generated id in the leftBtnIdList
-            //and then set the id of the button to the generated id
-            int leftBtnGenId = generateBtnId();
-            leftBtnIdList.add(leftBtnGenId);
-            leftBtn.setId(leftBtnGenId);
+                // Create the left button and set its properties
+                Button leftBtn = new Button(BoardPage.this);
+                leftBtn.setBackgroundResource(R.drawable.incorrect_btn_background_clicked);
 
-            //These lines of code set the height and width of the button, along with its padding
-            LinearLayout.LayoutParams buttonLayoutParams = new LinearLayout.LayoutParams(dialogBtnsWidth, dialogBtnsWidth);
-            buttonLayoutParams.setMargins(buttonPadding, buttonPadding, buttonPadding, buttonPadding);
-            leftBtn.setLayoutParams(buttonLayoutParams);
+                //These lines of code generate an id for the button, store the generated id in the leftBtnIdList
+                //and then set the id of the button to the generated id
+                int leftBtnGenId = generateBtnId();
+                leftBtnIdList.add(leftBtnGenId);
+                leftBtn.setId(leftBtnGenId);
 
-            // Create the right button and set its properties
-            Button rightBtn = new Button(BoardPage.this);
-            rightBtn.setBackgroundResource(R.drawable.correct_btn_background);
+                //These lines of code set the height and width of the button, along with its padding
+                LinearLayout.LayoutParams buttonLayoutParams = new LinearLayout.LayoutParams(dialogBtnsWidth, dialogBtnsWidth);
+                buttonLayoutParams.setMargins(buttonPadding, buttonPadding, buttonPadding, buttonPadding);
+                leftBtn.setLayoutParams(buttonLayoutParams);
 
-            //These lines of code generate an id for the button, store the generated id in the rightBtnIdList
-            //and then set the id of the button to the generated id
-            int rightBtnGenId = generateBtnId();
-            rightBtnIdList.add(rightBtnGenId);
-            rightBtn.setId(rightBtnGenId);
+                // Create the right button and set its properties
+                Button rightBtn = new Button(BoardPage.this);
+                rightBtn.setBackgroundResource(R.drawable.correct_btn_background);
 
-            //These lines of code set the height and width of the button, along with its padding
-            rightBtn.setLayoutParams(buttonLayoutParams);
-            rightBtn.setLayoutParams(buttonLayoutParams);
+                //These lines of code generate an id for the button, store the generated id in the rightBtnIdList
+                //and then set the id of the button to the generated id
+                int rightBtnGenId = generateBtnId();
+                rightBtnIdList.add(rightBtnGenId);
+                rightBtn.setId(rightBtnGenId);
 
-            // Attach an OnClickListener to the left button
-            leftBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //Gets a reference to the button that has been clicked
-                    Button clickedBtn = (Button) v;
-                    //Gets the id of the click button
-                    int idOfClickedBtn = clickedBtn.getId();
+                //These lines of code set the height and width of the button, along with its padding
+                rightBtn.setLayoutParams(buttonLayoutParams);
+                rightBtn.setLayoutParams(buttonLayoutParams);
 
-                    int leftBtnIndexPos = -1;
+                // Attach an OnClickListener to the left button
+                leftBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //Gets a reference to the button that has been clicked
+                        Button clickedBtn = (Button) v;
+                        //Gets the id of the click button
+                        int idOfClickedBtn = clickedBtn.getId();
 
-                    for(int p = 0; p < leftBtnIdList.size(); p++){
-                        if(leftBtnIdList.get(p) == idOfClickedBtn){
-                            leftBtnIndexPos = p;
-                            break;
+                        int leftBtnIndexPos = -1;
+
+                        for (int p = 0; p < leftBtnIdList.size(); p++) {
+                            if (leftBtnIdList.get(p) == idOfClickedBtn) {
+                                leftBtnIndexPos = p;
+                                break;
+                            }
                         }
+
+                        //This store which button is currently in the clicked mode 0 for left and 1 for right
+                        int btnClickedVal = ansCorrectList.get(leftBtnIndexPos);
+                        //This calls the method that changes the left/incorrect and right/correct button backgrounds and then updates the ansCorrectList
+                        ansCorrectList.set(leftBtnIndexPos, changeDialogLeftRightBtnBg(dialog, btnClickedVal,
+                                leftBtnIdList.get(leftBtnIndexPos), rightBtnIdList.get(leftBtnIndexPos)));
                     }
+                });
 
-                    //This store which button is currently in the clicked mode 0 for left and 1 for right
-                    int btnClickedVal = ansCorrectList.get(leftBtnIndexPos);
-                    //This calls the method that changes the left/incorrect and right/correct button backgrounds and then updates the ansCorrectList
-                    ansCorrectList.set(leftBtnIndexPos, changeDialogLeftRightBtnBg(dialog, btnClickedVal,
-                            leftBtnIdList.get(leftBtnIndexPos), rightBtnIdList.get(leftBtnIndexPos)));
-                }
-            });
+                // Attach an OnClickListener to the right button
+                rightBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //Gets a reference to the button that has been clicked
+                        Button clickedBtn = (Button) v;
+                        //Gets the id of the click button
+                        int idOfClickedBtn = clickedBtn.getId();
 
-            // Attach an OnClickListener to the right button
-            rightBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //Gets a reference to the button that has been clicked
-                    Button clickedBtn = (Button) v;
-                    //Gets the id of the click button
-                    int idOfClickedBtn = clickedBtn.getId();
+                        int rightBtnIndexPos = -1;
 
-                    int rightBtnIndexPos = -1;
-
-                    for(int n = 0; n < rightBtnIdList.size(); n++){
-                        if(rightBtnIdList.get(n) == idOfClickedBtn){
-                            rightBtnIndexPos = n;
-                            break;
+                        for (int n = 0; n < rightBtnIdList.size(); n++) {
+                            if (rightBtnIdList.get(n) == idOfClickedBtn) {
+                                rightBtnIndexPos = n;
+                                break;
+                            }
                         }
+
+                        //This store which button is currently in the clicked mode 0 for left and 1 for right
+                        int btnClickedVal = ansCorrectList.get(rightBtnIndexPos);
+                        //This calls the method that changes the left/incorrect and right/correct button backgrounds and then updates the ansCorrectList
+                        ansCorrectList.set(rightBtnIndexPos, changeDialogLeftRightBtnBg(dialog, btnClickedVal,
+                                leftBtnIdList.get(rightBtnIndexPos), rightBtnIdList.get(rightBtnIndexPos)));
                     }
+                });
 
-                    //This store which button is currently in the clicked mode 0 for left and 1 for right
-                    int btnClickedVal = ansCorrectList.get(rightBtnIndexPos);
-                    //This calls the method that changes the left/incorrect and right/correct button backgrounds and then updates the ansCorrectList
-                    ansCorrectList.set(rightBtnIndexPos, changeDialogLeftRightBtnBg(dialog, btnClickedVal,
-                            leftBtnIdList.get(rightBtnIndexPos), rightBtnIdList.get(rightBtnIndexPos)));
-                }
-            });
+                // Add the answer TextView and buttons to the answer layout
+                answerLayout.addView(leftBtn);
+                answerLayout.addView(answerTextView);
+                answerLayout.addView(rightBtn);
 
-            // Add the answer TextView and buttons to the answer layout
-            answerLayout.addView(leftBtn);
-            answerLayout.addView(answerTextView);
-            answerLayout.addView(rightBtn);
-
-            // Add the answer layout to the answers layout
-            ansLinLayout.addView(answerLayout);
-        }
-
-
-        // Set up the Submit button
-        Button dialogSubmitButton = dialog.findViewById(R.id.submitBtn);
-        dialogSubmitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int numAnsCorrect = 0;
-
-                //Iterates through the list to get the number of questions answered correctly
-                for(int j =0; j < ansCorrectList.size(); j++){
-                    //If it is 1 then that means it was a correct answer
-                    if(ansCorrectList.get(j) == 1){
-                        numAnsCorrect++;
-                    }
-                }
-
-                //Calls the method that will update the questionsAsked value in the gameSession table
-                dbHelper.setGameSessionAskedQuestions(teamIdsArray[currentTeamIndex], idOfBoard);
-
-                //Calls the method that will update the correctAns value in the gameSession table
-                dbHelper.setGameSessionCorrectAns(teamIdsArray[currentTeamIndex], idOfBoard, numAnsCorrect);
-
-                //Checks if the counter is on a position where they have to say how many they are
-                //going to get before they see the question
-                if (passedNumToGetCorrect != 0){
-                    //This if statement is then checks if the player got the amount
-                    // they said they would / more than they said they would
-                    if (passedNumToGetCorrect <= numAnsCorrect){
-                        //Runs if the team reaches there target number
-                        //Sets the number they said they would correct to the numAnsCorrect, as if they got
-                        //more than they said they would then they shouldn't count
-                        numAnsCorrect = passedNumToGetCorrect;
-                    }else{
-                        //Runs if the team didn't reach there target number
-                        numAnsCorrect = -passedNumToGetCorrect;
-                    }
-                }else {
-                    //This calls the method that will apply any modifiers to the number of positions to be move
-                    //For example, if the counter is on a 2x position then this method will double the number of spaces to be moved
-                    numAnsCorrect = calcNumPosToMove(numAnsCorrect, passedWildCardVal);
-                }
-
-                //Calls the method that will update the position value in the database and will then
-                //call the appropriate methods to move the counters
-                updatePosValue(passedCounterPosTotal, numAnsCorrect);
-
-                dialog.dismiss();
+                // Add the answer layout to the answers layout
+                ansLinLayout.addView(answerLayout);
             }
-        });
 
-        // Show the dialog
-        dialog.show();
+
+            // Set up the Submit button
+            Button dialogSubmitButton = dialog.findViewById(R.id.submitBtn);
+            dialogSubmitButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int numAnsCorrect = 0;
+
+                    //Iterates through the list to get the number of questions answered correctly
+                    for (int j = 0; j < ansCorrectList.size(); j++) {
+                        //If it is 1 then that means it was a correct answer
+                        if (ansCorrectList.get(j) == 1) {
+                            numAnsCorrect++;
+                        }
+                    }
+
+                    //Calls the method that will update the questionsAsked value in the gameSession table
+                    dbHelper.setGameSessionAskedQuestions(teamIdsArray[currentTeamIndex], idOfBoard);
+
+                    //Checks that the user has got at least 1 correct answer
+                    if (numAnsCorrect > 0) {
+                        //Calls the method that will update the correctAns value in the gameSession table
+                        dbHelper.setGameSessionCorrectAns(teamIdsArray[currentTeamIndex], idOfBoard, numAnsCorrect);
+                    }
+
+                    //Checks if the counter is on a position where they have to say how many they are
+                    //going to get before they see the question
+                    if (passedNumToGetCorrect != 0) {
+                        //This if statement is then checks if the player got the amount
+                        // they said they would / more than they said they would
+                        if (passedNumToGetCorrect <= numAnsCorrect) {
+                            //Runs if the team reaches there target number
+                            //Sets the number they said they would correct to the numAnsCorrect, as if they got
+                            //more than they said they would then they shouldn't count
+                            numAnsCorrect = passedNumToGetCorrect;
+                        } else {
+                            //Runs if the team didn't reach there target number
+                            numAnsCorrect = -passedNumToGetCorrect;
+                        }
+                    } else {
+                        //This calls the method that will apply any modifiers to the number of positions to be move
+                        //For example, if the counter is on a 2x position then this method will double the number of spaces to be moved
+                        numAnsCorrect = calcNumPosToMove(numAnsCorrect, passedWildCardVal);
+                    }
+
+                    //Calls the method that will update the position value in the database and will then
+                    //call the appropriate methods to move the counters
+                    updatePosValue(passedCounterPosTotal, numAnsCorrect);
+
+                    dialog.dismiss();
+                }
+            });
+
+            // Show the dialog
+            dialog.show();
+        }
     }
 
     //This method is responsible for creating the number of questions to get correct dialog window

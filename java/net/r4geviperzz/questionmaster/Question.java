@@ -1,6 +1,8 @@
 package net.r4geviperzz.questionmaster;
 
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,9 +17,9 @@ import java.util.List;
 public class Question {
     private static DBHelper dbHelper;
     private static String idOfBoard = null;
-    private static String[][] questionOrderArray;
-    private static String[] cardColoursArray;
-    private static int[] cardColourCountArray;
+    private static String[][] questionOrderArray = null;
+    private static String[] cardColoursArray = null;
+    private static int[] cardColourCountArray = null;
 
     //This method will deserialise the date that is passed to it and return the date in the form of an object
     private Object deserialiseArray(byte[] passedSerialisedData) {
@@ -173,7 +175,7 @@ public class Question {
     }
 
     //This method will get the next question for the specified card colour from the database
-    public List<String> getQuestionAndAnswers(String passedCardColour){
+    public List<String> getQuestionAndAnswers(String passedCardColour, Context passedContext){
         //This variable stores the row index location that should be used when reading the question id from the array
         //if this isn't set to the correct value then it will end up reading the wrong colour question from the database
         int questionOrderRowIndex = 0;
@@ -185,14 +187,22 @@ public class Question {
             }
         }
 
+        Log.e("cardColourArray", String.join(" ", cardColoursArray));
         //Reads the questionId from the questionOrderArray with the correct row set depending on the card colour and the index of the
         //row set correctly depending on how far a user has already got into the row
-        String questionIdToRead = questionOrderArray[questionOrderRowIndex][cardColourCountArray[questionOrderRowIndex]];
-        List<String> resultQuestionAndAnsList = dbHelper.getQuestionByColour(passedCardColour, questionIdToRead);
 
-        //Increase the count so that the next time this colour question is asked it will ask the next one int the row of the questionOrderArray for this colour
-        //If the new cardColourCountArray is large than the length of the row within the questionOrderArray then it sets it back to 0
-        cardColourCountArray[questionOrderRowIndex] = (cardColourCountArray[questionOrderRowIndex] + 1) % questionOrderArray[questionOrderRowIndex].length;
+        String questionIdToRead = null;
+        List<String> resultQuestionAndAnsList = null;
+        try {
+            questionIdToRead = questionOrderArray[questionOrderRowIndex][cardColourCountArray[questionOrderRowIndex]];
+            resultQuestionAndAnsList = dbHelper.getQuestionByColour(passedCardColour, questionIdToRead);
+            //Increase the count so that the next time this colour question is asked it will ask the next one int the row of the questionOrderArray for this colour
+            //If the new cardColourCountArray is large than the length of the row within the questionOrderArray then it sets it back to 0
+            cardColourCountArray[questionOrderRowIndex] = (cardColourCountArray[questionOrderRowIndex] + 1) % questionOrderArray[questionOrderRowIndex].length;
+        }catch (ArrayIndexOutOfBoundsException e){
+            Log.e("questionOfColourError", "Question of space colour doesn't exist" + e);
+            Toast.makeText(passedContext, "No Question Of Given Space Colour Exists", Toast.LENGTH_SHORT).show();
+        }
 
         return resultQuestionAndAnsList;
     }

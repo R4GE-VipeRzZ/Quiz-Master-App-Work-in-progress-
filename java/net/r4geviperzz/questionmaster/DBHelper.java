@@ -776,18 +776,74 @@ public class DBHelper extends SQLiteOpenHelper {
         //This is the sql query that will be executed
         String deleteGameSessionQuery = "DELETE FROM " + TABLE_GAME_SESSION + " WHERE " + COL_GAME_BOARDS_ID + " = " + passedBoardId + ";";
 
-        //Passes the sql query that need to be executed
+        //Passes the sql query that needs to be executed
         writeDB(deleteGameSessionQuery);
     }
 
-    //THis method deletes a question from the questions table for the passed card colour and question id
-    public void deleteQuestion(String passedCardColour, String passedQuestionId){
-        //This is the sql query that will be executed
-        String deleteQuestionQuery = "DELETE FROM " + TABLE_QUESTIONS + " WHERE " + COL_BOARD_POSITIONS_CARD_COLOUR + " = "
-                                    + passedCardColour + " AND " + COL_QUESTIONS_ID + " = " + passedQuestionId + ";";
+    //This method will checks that there is more than 1 question of the passed cardColour in the questions table
+    //This needs to be done so that a question of a given colour can't end up with no question in it, as when a user trys to
+    //delete a question there needs to be at least 2 of them in the table
+    private Boolean checkNotLastQuestion(String passedCardColour){
+        Boolean moreThanOneQuestionLeft = true;
 
-        //Passes the sql query that need to be executed
-        writeDB(deleteQuestionQuery);
+        //Creates the int that is used to store the results from the query
+        int returnedInt = 0;
+        //This is the sql query that will be executed
+        //This query selects the passedCardColour from the questions table where the cardColour is the passedCardColour, and there exists another
+        //row in the questions table with a cardColour that corresponds to the passedCardColour. The query is limited to returning 1 row as
+        //no more than 1 query is needed, the query works this way as we don't need to know the total amount of questions in the questions table
+        //with the given cardColour, we just need to know there is more than 1 of them
+        String readTeamIDByNameQuery = "SELECT " + COL_BOARD_POSITIONS_CARD_COLOUR + " FROM " + TABLE_QUESTIONS + " AS query1" + " WHERE "
+                                        + COL_BOARD_POSITIONS_CARD_COLOUR + " = " + passedCardColour + " AND EXISTS (SELECT 1 FROM "
+                                        + TABLE_QUESTIONS + " AS query2 WHERE query1." + COL_QUESTIONS_ID + "<> query2." + COL_QUESTIONS_ID + " AND query2."
+                                        + COL_BOARD_POSITIONS_CARD_COLOUR + " = " + passedCardColour + ") LIMIT 1;";
+        //Passes the sql query and stores the results in the returnedBoardId
+        returnedInt = readDB(readTeamIDByNameQuery).size();
+
+        //Uses the returned value to decide if there is more than one question in the table for the given colour
+        if (returnedInt == 0){
+            //Runs if there is one or less of the questions with the given cardColour in the table
+            moreThanOneQuestionLeft = false;
+        }
+
+        return moreThanOneQuestionLeft;
+    }
+
+    //This method deletes a question from the questions table for the passed card colour and question id
+    public Boolean deleteQuestion(String passedCardColour, String passedQuestionId){
+        //Calls the method that will check if there is more than on question of the given colour in the table
+        Boolean successful = checkNotLastQuestion(passedCardColour);
+
+        //Checks if there was more than one question with the passCardColour in the questions table
+        if (successful == true) {
+            //Runs if there is more than one question in the questions table with the given cardColour
+            //This is the sql query that will be executed
+            String deleteQuestionQuery = "DELETE FROM " + TABLE_QUESTIONS + " WHERE " + COL_BOARD_POSITIONS_CARD_COLOUR + " = "
+                    + passedCardColour + " AND " + COL_QUESTIONS_ID + " = " + passedQuestionId + ";";
+
+            //Passes the sql query that needs to be executed
+            writeDB(deleteQuestionQuery);
+        }
+
+        return successful;
+    }
+
+    //This method sets all the values in the questionOrder BLOB field to null in the gameBoards table
+    public void nullQuestionOrderFromGameBoards(){
+        //This is the sql query that will be executed
+        String nullQuestionOrderQuery = "UPDATE " + TABLE_GAME_BOARDS + " SET " + COL_GAME_BOARDS_QUESTION_ORDER + " = NULL;" ;
+
+        //Passes the sql query that needs to be executed
+        writeDB(nullQuestionOrderQuery);
+    }
+
+    //This method sets all the values in the questionOrderCount BLOB field to null in the gameBoards table
+    public void nullQuestionOrderCountFromGameBoards(){
+        //This is the sql query that will be executed
+        String nullQuestionOrderQuery = "UPDATE " + TABLE_GAME_BOARDS + " SET " + COL_GAME_BOARDS_QUESTION_ORDER_COUNT + " = NULL;" ;
+
+        //Passes the sql query that needs to be executed
+        writeDB(nullQuestionOrderQuery);
     }
 
     //This method updates the question to the new values that have been entered

@@ -83,9 +83,11 @@ public class AddNewQuestionPage extends Activity {
 
             //This if statement checks that none of the answer are blank before making any more checks
             if (anAnswerIsBlank == false) {
+                //This line makes sure that all of the strings in the questionAndAnsList has no leading or trailing white spaces
+                questionAndAnsList = CheckAnsList.removeWhiteSpaceListString(questionAndAnsList);
                 //This line makes sure that all of the strings in the questionAndAnsList begin with a capital letter
                 questionAndAnsList = CheckAnsList.capitaliseListStrings(questionAndAnsList);
-                //Updates the data in the adapter so that all the items in the RecyclerView and List are capitalised
+                //Updates the data in the adapter so that all the items in the RecyclerView and List are capitalised and any white space is removed
                 adapter.setList(questionAndAnsList);
 
                 //This line detects if there are any duplicate answers in the list
