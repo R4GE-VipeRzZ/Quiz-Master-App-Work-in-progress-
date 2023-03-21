@@ -1,0 +1,60 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/questionsPageRelativeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/settingsPgTitleLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_pg_title_label"
+        android:textColor="#000000"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"/>
+
+    <!-- Horizontal LinearLayout -->
+    <LinearLayout
+        android:id="@+id/settingsPgLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/settingsPgTitleLabel"
+        android:layout_marginTop="4dp"
+        android:orientation="vertical"
+        android:baselineAligned="false"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/settingsPgErrorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FF0000"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"/>
+
+        <Button
+            android:id="@+id/settingsBackupBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Backup Database" />
+
+        <Button
+            android:id="@+id/settingsLoadBackupBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Load Backup Database" />
+
+        <Button
+            android:id="@+id/settingsLoadDefaultBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Load Default Database" />
+    </LinearLayout>
+
+</RelativeLayout>

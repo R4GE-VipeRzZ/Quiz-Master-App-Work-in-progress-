@@ -1,0 +1,129 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/questionsPageRelativeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/setupPgTitleLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/setup_pg_title_label"
+        android:textColor="#000000"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"/>
+
+    <!-- Vertical LinearLayout -->
+    <LinearLayout
+        android:id="@+id/setupPgLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/setupPgTitleLabel"
+        android:layout_marginTop="40dp"
+        android:orientation="vertical"
+        android:baselineAligned="false"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:gravity="center_vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp">
+
+            <TextView
+                android:id="@+id/setupPgTeam1Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/setup_pg_team1_label"
+                android:textColor="#000000"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignBaseline="@+id/setupPgTeam1Dropdown"/>
+
+            <Spinner
+                android:id="@+id/setupPgTeam1Dropdown"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:spinnerMode="dropdown"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:contentDescription="@string/setup_pg_team1_dropdown_description"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp">
+
+            <TextView
+                android:id="@+id/setupPgTeam2Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/setup_pg_team2_label"
+                android:textColor="#000000"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignBaseline="@+id/setupPgTeam2Dropdown"/>
+
+            <Spinner
+                android:id="@+id/setupPgTeam2Dropdown"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:spinnerMode="dropdown"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:contentDescription="@string/setup_pg_team2_dropdown_description"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp">
+
+            <TextView
+                android:id="@+id/setupPgBoardLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/setup_pg_board_label"
+                android:textColor="#000000"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignBaseline="@+id/setupPgBoardDropdown"/>
+
+            <Spinner
+                android:id="@+id/setupPgBoardDropdown"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:contentDescription="@string/setup_pg_board_dropdown_description"/>
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/setupPgBoardImg"
+            android:layout_width="130dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="10dp"
+            android:contentDescription="@string/setup_pg_img_description"
+           android:layout_gravity="center_horizontal"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/setupPgStartBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/setup_pg_start_btn"
+        android:textSize="20sp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"/>
+</RelativeLayout>
