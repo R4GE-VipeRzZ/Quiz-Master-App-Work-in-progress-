@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -17,6 +18,7 @@ import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.core.view.ViewCompat;
@@ -42,6 +44,7 @@ public class BoardPage extends Activity {
     private int currentTeamIndex = 0;
     private String winningTeam = null;
     private Boolean gameSessionNeedsSaving = true;
+    private QuestionCountDownTimer countDownTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -420,6 +423,7 @@ public class BoardPage extends Activity {
 
         List<String> returnedQuestionAndAnsList = quest.getQuestionAndAnswers(passedCardColour, BoardPage.this);
 
+        //Checks that the returnedQuestionAndAnsList is populated
         if (returnedQuestionAndAnsList != null) {
             String questionString = returnedQuestionAndAnsList.remove(0);
             String[] ansArray = returnedQuestionAndAnsList.toArray(new String[0]);
@@ -427,6 +431,76 @@ public class BoardPage extends Activity {
             // Inflate the dialog layout
             LayoutInflater inflater = LayoutInflater.from(BoardPage.this);
             View dialogView = inflater.inflate(R.layout.dialog_question_layout, null);
+
+            // Get the screen dimensions
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+            // Get the height of the status bar
+            int statusBarHeight = 0;
+            int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+            if (resourceId > 0) {
+                statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+            }
+
+            // Get the height of the navigation bar
+            int navigationBarHeight = 0;
+            int resourceId2 = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+            if (resourceId2 > 0) {
+                navigationBarHeight = getResources().getDimensionPixelSize(resourceId2);
+            }
+
+            //Gets the screen height and removed the statusBar and navigationBar height from the value
+            int screenHeight = (displayMetrics.heightPixels - statusBarHeight) - navigationBarHeight;
+            //Reduces the screenHeight value as the ansLinLayout takes up 63% of the screen height
+            screenHeight = (int) (screenHeight * 0.68);
+
+            //Adjust the size of the buttons depending on the number of answers
+            int dialogBtnsWidth = 0;
+
+            //This if makes it so that the buttons sizes won't adjust unless there is more than 10 answers in the ansArray
+            //This is because if there is less than 10 then the blank space is ok and if there is more than the buttons
+            //will need to be made smaller in order to fit on the screen
+            if (ansArray.length > 10) {
+                //Runs if the are more than 10 answers in the ansArray
+                dialogBtnsWidth = (int) (screenHeight / ansArray.length);
+            }else{
+                //Runs if there are 10 of less answers in the ansArray
+                dialogBtnsWidth = (int) (screenHeight / ansArray.length);
+            }
+
+            //This int is used to calculate the padding using the buttons width
+            int buttonPadding = dialogBtnsWidth / 12;
+
+            //Removes the padding from the button width
+            dialogBtnsWidth = dialogBtnsWidth - (buttonPadding * 2);
+
+            //Gets the time limit for the card colour for the cardType table
+            int timeInSeconds = dbHelper.getCardTimeColour(passedCardColour);
+            //Sets the time limit for the timer
+            int timeLimit = (timeInSeconds * 1000);
+            //Sets the countdown increment for the timer
+            int countDownIncrement = 30;
+
+            //Gets a reference to the left progress bar
+            ProgressBar leftProgressBar = dialogView.findViewById(R.id.progressBarLeft);
+            //Sets the progress bars max value
+            leftProgressBar.setMax(timeLimit);
+            //Sets the progress value to the max value so that the bar starts at full
+            leftProgressBar.setProgress(timeLimit);
+
+
+            //Gets a reference to the right progress bar
+            ProgressBar rightProgressBar = dialogView.findViewById(R.id.progressBarRight);
+            //Sets the progress bars max value
+            rightProgressBar.setMax(timeLimit);
+            //Sets the progress value to the max value so that the bar starts at full
+            rightProgressBar.setProgress(timeLimit);
+
+            //Creates a new instance of QuestionCountDownTimer with the left and right progress bars, time limit, and count down increment
+            QuestionCountDownTimer countDownTimer = new QuestionCountDownTimer(BoardPage.this, leftProgressBar, rightProgressBar, timeLimit, countDownIncrement);
+            //Starts the count down timer
+            countDownTimer.startCountDownTimer();
 
             String hexColour = dbHelper.getCardHexColour(passedCardColour);
             int colour = Color.parseColor(hexColour);
@@ -442,7 +516,9 @@ public class BoardPage extends Activity {
 
             // Set the question text
             questionTextView.setText(questionString);
-            questionTextView.setTextSize(18);
+
+            //questionTextView.setTextSize(18);
+            questionTextView.setTextSize(18 * TextScale.getFontAdjustValue());
 
             //This list is used to keep track of which button is in the clicked mode / which answers have been selected as correct
             List<Integer> ansCorrectList = new ArrayList<>();
@@ -455,13 +531,6 @@ public class BoardPage extends Activity {
             for (String answer : ansArray) {
                 //Adds the initial value of 0 to the ansCorrectList as the left/incorrect button is set to be clicked when the dialog is first loaded
                 ansCorrectList.add(0);
-
-                // Get the screen dimensions
-                DisplayMetrics displayMetrics = new DisplayMetrics();
-                getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-
-                // Gets the screen height
-                int screenHeight = displayMetrics.heightPixels;
 
                 // Create a horizontal LinearLayout to hold the answer TextView and buttons
                 LinearLayout answerLayout = new LinearLayout(BoardPage.this);
@@ -482,12 +551,7 @@ public class BoardPage extends Activity {
                         1
                 );
                 answerTextView.setLayoutParams(layoutParams);
-                answerTextView.setTextSize(14);
-
-                //This int is used for setting with height and width of the left/incorrect and right/correct buttons
-                int dialogBtnsWidth = screenHeight / 20;
-                //This int is used for setting the padding of the left/incorrect and right/correct buttons
-                int buttonPadding = dialogBtnsWidth / 6;
+                answerTextView.setTextSize(14 * TextScale.getFontAdjustValue());
 
                 // Create the left button and set its properties
                 Button leftBtn = new Button(BoardPage.this);
@@ -582,9 +646,13 @@ public class BoardPage extends Activity {
 
             // Set up the Submit button
             Button dialogSubmitButton = dialog.findViewById(R.id.submitBtn);
+            dialogSubmitButton.setTextSize(14  * TextScale.getFontAdjustValue());
             dialogSubmitButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    //Called to stop the timer that is running on a background thread
+                    countDownTimer.stopCountDownTimer();
+
                     int numAnsCorrect = 0;
 
                     //Iterates through the list to get the number of questions answered correctly

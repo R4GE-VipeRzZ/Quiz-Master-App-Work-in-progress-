@@ -39,6 +39,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String TABLE_CARD_TYPE = "cardType";
     private static final String COL_CARD_TYPE_CARD_COLOUR_NAME = "cardColourName";
     private static final String COL_CARD_TYPE_HEX_COLOUR = "hexColour";
+    private static final String COL_CARD_TYPE_TIME_LIMIT = "timeLimit";
     private static final String TABLE_BOARD_POSITIONS = "boardPositions";
     private static final String COL_BOARD_POSITIONS_POS_ID = "posId";
     private static final String COL_BOARD_POSITIONS_GRID_X = "gridX";
@@ -433,7 +434,8 @@ public class DBHelper extends SQLiteOpenHelper {
         //Creates the cardType table
         String createCardTypeTable = "CREATE TABLE " + TABLE_CARD_TYPE + " ("
                 + COL_BOARD_POSITIONS_CARD_COLOUR + " INTEGER NOT NULL, " + COL_CARD_TYPE_CARD_COLOUR_NAME
-                + " VARCHAR(18) NOT NULL, " + COL_CARD_TYPE_HEX_COLOUR + " VARCHAR(7) NOT NULL, " + " PRIMARY KEY (" + COL_BOARD_POSITIONS_CARD_COLOUR + "), UNIQUE("
+                + " VARCHAR(18) NOT NULL, " + COL_CARD_TYPE_HEX_COLOUR + " VARCHAR(7) NOT NULL, "
+                + COL_CARD_TYPE_TIME_LIMIT + " INTEGER NOT NULL, " + " PRIMARY KEY (" + COL_BOARD_POSITIONS_CARD_COLOUR + "), UNIQUE("
                 + COL_CARD_TYPE_CARD_COLOUR_NAME + ", " + COL_CARD_TYPE_HEX_COLOUR + "));";
 
         try {
@@ -444,9 +446,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
 //        //Insert values into cardType table
 //        String insertCardTypeTable = "INSERT INTO " + TABLE_CARD_TYPE + "(" + COL_BOARD_POSITIONS_CARD_COLOUR + ", "
-//                + COL_CARD_TYPE_CARD_COLOUR_NAME + ", " + COL_CARD_TYPE_HEX_COLOUR + ") VALUES " +
-//                "(0, \"Yellow\", \"#ffe600\")," +
-//                "(1, \"Purple\", \"#8200ff\");";
+//                + COL_CARD_TYPE_CARD_COLOUR_NAME + ", " + COL_CARD_TYPE_HEX_COLOUR + ", " + COL_CARD_TYPE_TIME_LIMIT + ") VALUES " +
+//                "(0, \"Yellow\", \"#ffe600\", 60)," +
+//                "(1, \"Purple\", \"#8200ff\", 60);";
 //
 //        try{
 //            db.execSQL(insertCardTypeTable);
@@ -1582,5 +1584,18 @@ public class DBHelper extends SQLiteOpenHelper {
         cardHexColourVal = readDB(cardHexColourQuery).get(0);
 
         return cardHexColourVal;
+    }
+
+    //This method gets the time limit of the passed card colour from the cardType table
+    public int getCardTimeColour(String passedCardColourVal){
+        //Creates a int to store the results from the query
+        int cardTimeLimitVal = 0;
+        //This is the sql query that will be executed
+        String cardHexColourQuery = "SELECT " + COL_CARD_TYPE_TIME_LIMIT + " FROM " + TABLE_CARD_TYPE + " WHERE "
+                + COL_BOARD_POSITIONS_CARD_COLOUR + " = " + passedCardColourVal + ";";
+        //Passes the sql query and stores the results in the cardTimeLimitVal
+        cardTimeLimitVal = Integer.parseInt(readDB(cardHexColourQuery).get(0));
+
+        return cardTimeLimitVal;
     }
 }

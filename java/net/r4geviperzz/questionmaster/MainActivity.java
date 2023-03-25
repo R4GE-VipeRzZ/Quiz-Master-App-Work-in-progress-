@@ -31,12 +31,16 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Checks if the fontAdjustValue has been set in the TextScale class
+        if (TextScale.getFontAdjustValue() == 0.0){
+            TextScale.setFontAdjustValue(MainActivity.this);
+        }
+
         dbHelper = new DBHelper(this);
 
         if (dbHelper.checkDBExists(MainActivity.this)){
             dbHelper.loadDBFile(MainActivity.this, null, true);
         }
-        //db = dbHelper.getReadableDatabase();
 
         //Calls the method that will setup the onClickListeners for the menu buttons
         setupBtnOnClickListeners();
