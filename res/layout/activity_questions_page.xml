@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/leftVerticalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.04"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/leftSecondVerticalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.07"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/leftThirdVerticalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.22"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/leftFourthVerticalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.48"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/rightVerticalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.96"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/rightSecondVerticalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.93"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/rightThirdVerticalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.78"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/rightFourthVerticalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.52"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topHorizontalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.03"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topSecondHorizontalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.088"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topThirdHorizontalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.105"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topFourthHorizontalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.14"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topFifthHorizontalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.155"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topSixthHorizontalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.185"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topSeventhHorizontalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.205"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottomHorizontalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.974"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottomSecondHorizontalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.88"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottomThirdHorizontalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.868"/>
+
+    <!-- Question Text Label -->
+    <TextView
+        android:id="@+id/questionsPageTitleLabel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/questions_pg_title_label"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="18sp"
+        app:autoSizeMaxTextSize="50sp"
+        app:autoSizeStepGranularity="2sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine"
+        app:layout_constraintTop_toTopOf="@id/topHorizontalGuideLine"
+        app:layout_constraintBottom_toBottomOf="@id/topSecondHorizontalGuideLine"/>
+
+    <!-- Card colours selection -->
+    <TextView
+        android:id="@+id/questionsPageCardColourLabel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="12sp"
+        app:autoSizeMaxTextSize="26sp"
+        app:autoSizeStepGranularity="2sp"
+        android:text="@string/questions_pg_card_colour_spinner_label"
+        app:layout_constraintStart_toStartOf="@id/leftSecondVerticalGuideLine"
+        app:layout_constraintEnd_toEndOf="@id/leftFourthVerticalGuideLine"
+        app:layout_constraintTop_toTopOf="@id/topThirdHorizontalGuideLine"
+        app:layout_constraintBottom_toBottomOf="@id/topFourthHorizontalGuideLine"/>
+
+    <Spinner
+        android:id="@+id/questionsPageCardColourSpinner"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:autoSizeTextType="uniform"
+        android:contentDescription="@string/questions_pg_card_colour_spinner_description"
+        app:layout_constraintStart_toStartOf="@id/leftSecondVerticalGuideLine"
+        app:layout_constraintEnd_toEndOf="@id/leftFourthVerticalGuideLine"
+        app:layout_constraintTop_toTopOf="@id/topFifthHorizontalGuideLine"
+        app:layout_constraintBottom_toBottomOf="@id/topSixthHorizontalGuideLine"/>
+
+    <!-- Order type selection -->
+    <TextView
+        android:id="@+id/questionsPageOrderTypeLabel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="12sp"
+        app:autoSizeMaxTextSize="26sp"
+        app:autoSizeStepGranularity="2sp"
+        android:text="@string/questions_pg_order_type_spinner_label"
+        app:layout_constraintStart_toStartOf="@id/rightFourthVerticalGuideLine"
+        app:layout_constraintEnd_toEndOf="@id/rightSecondVerticalGuideLine"
+        app:layout_constraintTop_toTopOf="@id/topThirdHorizontalGuideLine"
+        app:layout_constraintBottom_toBottomOf="@id/topFourthHorizontalGuideLine"/>
+
+    <Spinner
+        android:id="@+id/questionsPageOrderTypeSpinner"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/questions_pg_order_type_spinner_description"
+        app:layout_constraintStart_toStartOf="@id/rightFourthVerticalGuideLine"
+        app:layout_constraintEnd_toEndOf="@id/rightSecondVerticalGuideLine"
+        app:layout_constraintTop_toTopOf="@id/topFifthHorizontalGuideLine"
+        app:layout_constraintBottom_toBottomOf="@id/topSixthHorizontalGuideLine"/>
+
+    <!-- RecyclerView to hold the questions -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/questionsPageRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:scrollbars="none"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine"
+        app:layout_constraintTop_toTopOf="@id/topSeventhHorizontalGuideLine"
+        app:layout_constraintBottom_toBottomOf="@id/bottomThirdHorizontalGuideLine"/>
+
+    <!-- Button to add a new question -->
+    <Button
+        android:id="@+id/questionPageAddQuestionBtn"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/questions_pg_add_new_question_btn"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="10sp"
+        app:autoSizeMaxTextSize="32sp"
+        app:autoSizeStepGranularity="2sp"
+        app:layout_constraintStart_toStartOf="@id/leftThirdVerticalGuideLine"
+        app:layout_constraintEnd_toEndOf="@id/rightThirdVerticalGuideLine"
+        app:layout_constraintTop_toTopOf="@id/bottomSecondHorizontalGuideLine"
+        app:layout_constraintBottom_toBottomOf="@id/bottomHorizontalGuideLine"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

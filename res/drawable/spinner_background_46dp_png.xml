@@ -1,0 +1,13 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <layer-list>
+            <item
+                android:gravity="center_vertical|right"
+                android:right="-12dp">
+                <bitmap
+                    android:src="@drawable/dropdown_arrow_25px"
+                    android:gravity="center"/>
+            </item>
+        </layer-list>
+    </item>
+</layer-list>
