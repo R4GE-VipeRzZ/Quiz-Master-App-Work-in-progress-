@@ -1,6 +1,0 @@
-<!-- This file is used to set the background of the dialog windows when running on API 21 or 22
- to a style that is similar to the one used in API 23-->
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-    <solid android:color="?attr/colorSurface" />
-</shape>
