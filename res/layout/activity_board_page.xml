@@ -2,45 +2,119 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/boardConstraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#e9e9f2">
 
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topHorizontalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.015"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.685"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.695"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.762"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine4"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.82"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottomHorizontalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.92"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/leftVerticalGuideLine1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.025"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/leftVerticalGuideLine2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.20"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/rightVerticalGuideLine1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.975"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/rightVerticalGuideLine2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.80"/>
+
     <GridLayout
         android:id="@+id/boardPgGrid"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:alignmentMode="alignMargins"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:columnOrderPreserved="false"
         android:useDefaultMargins="false"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine1"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine1"
+        app:layout_constraintTop_toTopOf="@id/topHorizontalGuideLine">
     </GridLayout>
-
-    <Button
-        android:id="@+id/askQuestionBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/board_pg_ask_question_btn"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.9"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/boardPgGrid"
-        app:layout_constraintVertical_bias="0.757" />
 
     <TextView
         android:id="@+id/currentTeamLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/askQuestionBtn"
-        app:layout_constraintHorizontal_bias="0.416"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/boardPgGrid"
-        app:layout_constraintVertical_bias="0.749" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="10sp"
+        app:autoSizeMaxTextSize="34sp"
+        app:autoSizeStepGranularity="2sp"
+        android:gravity="center_horizontal"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine2"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine2"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine2"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine3"/>
+
+    <Button
+        android:id="@+id/askQuestionBtn"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="10sp"
+        app:autoSizeMaxTextSize="64sp"
+        app:autoSizeStepGranularity="2sp"
+        android:text="@string/board_pg_ask_question_btn"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine2"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine2"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine4"
+        app:layout_constraintBottom_toBottomOf="@id/bottomHorizontalGuideLine"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

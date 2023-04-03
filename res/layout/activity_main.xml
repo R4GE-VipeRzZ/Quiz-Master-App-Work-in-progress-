@@ -1,73 +1,180 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/questionsPageRelativeLayout"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
 
-    <!-- Vertical LinearLayout -->
-    <LinearLayout
-        android:id="@+id/mainPgLinearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="40dp"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topHorizontalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.10"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.185"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.265"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.35"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine4"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.38"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine5"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.465"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine6"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.495"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine7"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.58"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine8"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.61"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottomHorizontalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.695"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/leftVerticalGuideLine1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:orientation="vertical"
-        android:baselineAligned="false"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:gravity="center_vertical">
+        app:layout_constraintGuide_percent="0.09"/>
 
-        <TextView
-            android:id="@+id/menuTitleLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/menu_title_label"
-            android:textColor="#2684ff"
-            android:textSize="38sp"
-            android:textStyle="bold"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"/>
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/leftVerticalGuideLine2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.30"/>
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/rightVerticalGuideLine1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.91"/>
 
-        <Button
-            android:id="@+id/menuPlayBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="70dp"
-            android:text="@string/menu_play_btn"
-            android:textSize="20sp"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"/>
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/rightVerticalGuideLine2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.70"/>
 
-        <Button
-            android:id="@+id/menuQuestionsBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/menu_questions_btn"
-            android:textSize="20sp"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"/>
+    <TextView
+        android:id="@+id/menuTitleLabel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/menu_title_label"
+        android:textColor="#2684ff"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="18sp"
+        app:autoSizeMaxTextSize="86sp"
+        app:autoSizeStepGranularity="2sp"
+        android:textStyle="bold"
+        android:gravity="center_horizontal"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine1"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine1"
+        app:layout_constraintTop_toTopOf="@id/topHorizontalGuideLine"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine1" />
 
-        <Button
-            android:id="@+id/menuSettingsBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/menu_settings_btn"
-            android:textSize="20sp"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"/>
+    <Button
+        android:id="@+id/menuPlayBtn"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/menu_play_btn"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="10sp"
+        app:autoSizeMaxTextSize="50sp"
+        app:autoSizeStepGranularity="2sp"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine2"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine2"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine2"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine3"/>
 
-        <Button
-            android:id="@+id/menuExitBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/menu_exit_btn"
-            android:textSize="20sp"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"/>
-    </LinearLayout>
-</RelativeLayout>
+    <Button
+        android:id="@+id/menuQuestionsBtn"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/menu_questions_btn"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="10sp"
+        app:autoSizeMaxTextSize="50sp"
+        app:autoSizeStepGranularity="2sp"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine2"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine2"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine4"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine5"/>
+
+    <Button
+        android:id="@+id/menuSettingsBtn"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/menu_settings_btn"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="10sp"
+        app:autoSizeMaxTextSize="50sp"
+        app:autoSizeStepGranularity="2sp"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine2"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine2"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine6"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine7"/>
+
+    <Button
+        android:id="@+id/menuExitBtn"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/menu_exit_btn"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="10sp"
+        app:autoSizeMaxTextSize="50sp"
+        app:autoSizeStepGranularity="2sp"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine2"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine2"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine8"
+        app:layout_constraintBottom_toBottomOf="@id/bottomHorizontalGuideLine"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

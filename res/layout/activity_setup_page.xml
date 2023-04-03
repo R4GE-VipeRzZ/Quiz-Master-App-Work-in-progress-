@@ -1,129 +1,261 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/questionsPageRelativeLayout"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/setupConstraintLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topHorizontalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.05"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.11"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.18"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.50"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine4"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.51"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine5"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.55"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine6"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.57"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine7"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.815"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine8"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.835"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottomHorizontalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.935"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/leftVerticalGuideLine1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.06"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/leftVerticalGuideLine2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.16"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/leftVerticalGuideLine3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.32"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/leftVerticalGuideLine4"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.465"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/rightVerticalGuideLine1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.94"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/rightVerticalGuideLine2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.84"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/rightVerticalGuideLine3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.68"/>
 
     <TextView
         android:id="@+id/setupPgTitleLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:text="@string/setup_pg_title_label"
         android:textColor="#000000"
-        android:textSize="34sp"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="20sp"
+        app:autoSizeMaxTextSize="68sp"
+        app:autoSizeStepGranularity="2sp"
         android:textStyle="bold"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"/>
+        android:gravity="center_horizontal"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine1"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine1"
+        app:layout_constraintTop_toTopOf="@id/topHorizontalGuideLine"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine1"/>
 
-    <!-- Vertical LinearLayout -->
     <LinearLayout
-        android:id="@+id/setupPgLinearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:id="@+id/setupPgParentLinearLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_below="@+id/setupPgTitleLabel"
-        android:layout_marginTop="40dp"
         android:orientation="vertical"
         android:baselineAligned="false"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:gravity="center_vertical">
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine2"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine2"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine2"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine3">
 
-        <RelativeLayout
+        <LinearLayout
+            android:id="@+id/setupPgChildLinearLayout1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp">
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/setupPgTeam1Label"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="0.55"
                 android:text="@string/setup_pg_team1_label"
                 android:textColor="#000000"
                 android:textSize="26sp"
-                android:textStyle="bold"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignBaseline="@+id/setupPgTeam1Dropdown"/>
+                android:textStyle="bold"/>
 
             <Spinner
                 android:id="@+id/setupPgTeam1Dropdown"
-                android:layout_width="150dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="0.45"
                 android:spinnerMode="dropdown"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
                 android:contentDescription="@string/setup_pg_team1_dropdown_description"/>
-        </RelativeLayout>
 
-        <RelativeLayout
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/setupPgSpinnerLinearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp">
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/setupPgTeam2Label"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="0.55"
                 android:text="@string/setup_pg_team2_label"
                 android:textColor="#000000"
-                android:textSize="26sp"
-                android:textStyle="bold"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignBaseline="@+id/setupPgTeam2Dropdown"/>
+                android:textSize="21sp"
+                android:textStyle="bold"/>
 
             <Spinner
                 android:id="@+id/setupPgTeam2Dropdown"
-                android:layout_width="150dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="0.45"
                 android:spinnerMode="dropdown"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
                 android:contentDescription="@string/setup_pg_team2_dropdown_description"/>
-        </RelativeLayout>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp">
 
-            <TextView
-                android:id="@+id/setupPgBoardLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/setup_pg_board_label"
-                android:textColor="#000000"
-                android:textSize="26sp"
-                android:textStyle="bold"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignBaseline="@+id/setupPgBoardDropdown"/>
-
-            <Spinner
-                android:id="@+id/setupPgBoardDropdown"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:contentDescription="@string/setup_pg_board_dropdown_description"/>
-        </RelativeLayout>
-
-        <ImageView
-            android:id="@+id/setupPgBoardImg"
-            android:layout_width="130dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="10dp"
-            android:contentDescription="@string/setup_pg_img_description"
-           android:layout_gravity="center_horizontal"/>
+        </LinearLayout>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/setupPgBoardLabel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/setup_pg_board_label"
+        android:textColor="#000000"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="18sp"
+        app:autoSizeMaxTextSize="46sp"
+        app:autoSizeStepGranularity="2sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine2"
+        app:layout_constraintEnd_toEndOf="@id/leftVerticalGuideLine4"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine4"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine5"/>
+
+    <Spinner
+        android:id="@+id/setupPgBoardDropdown"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/setup_pg_board_dropdown_description"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine4"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine2"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine4"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine5"/>
+
+    <ImageView
+        android:id="@+id/setupPgBoardImg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/setup_pg_img_description"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine3"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine3"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine6"/>
 
     <Button
         android:id="@+id/setupPgStartBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:text="@string/setup_pg_start_btn"
-        android:textSize="20sp"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="50dp"/>
-</RelativeLayout>
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="18sp"
+        app:autoSizeMaxTextSize="86sp"
+        app:autoSizeStepGranularity="2sp"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine3"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine3"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine8"
+        app:layout_constraintBottom_toBottomOf="@id/bottomHorizontalGuideLine"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

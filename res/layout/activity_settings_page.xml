@@ -1,60 +1,181 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/questionsPageRelativeLayout"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topHorizontalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.04"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.105"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.1125"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.1475"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine4"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.155"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine5"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.235"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine6"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.24"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine7"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.32"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine8"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.325"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine9"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.405"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/leftVerticalGuideLine1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.055"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/leftVerticalGuideLine2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.32"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/rightVerticalGuideLine1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.945"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/rightVerticalGuideLine2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.68"/>
 
     <TextView
         android:id="@+id/settingsPgTitleLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:text="@string/settings_pg_title_label"
         android:textColor="#000000"
-        android:textSize="34sp"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="16sp"
+        app:autoSizeMaxTextSize="62sp"
+        app:autoSizeStepGranularity="2sp"
         android:textStyle="bold"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"/>
+        android:gravity="center_horizontal"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine2"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine2"
+        app:layout_constraintTop_toTopOf="@id/topHorizontalGuideLine"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine1"/>
 
-    <!-- Horizontal LinearLayout -->
-    <LinearLayout
-        android:id="@+id/settingsPgLinearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/settingsPgTitleLabel"
-        android:layout_marginTop="4dp"
-        android:orientation="vertical"
-        android:baselineAligned="false"
-        android:gravity="center_vertical">
+    <TextView
+        android:id="@+id/settingsPgErrorLabel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:textColor="#FF0000"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="10sp"
+        app:autoSizeMaxTextSize="38sp"
+        app:autoSizeStepGranularity="2sp"
+        android:gravity="center_horizontal"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine1"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine1"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine2"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine3"/>
 
-        <TextView
-            android:id="@+id/settingsPgErrorLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#FF0000"
-            android:textSize="14sp"
-            android:layout_marginBottom="4dp"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"/>
+    <Button
+        android:id="@+id/settingsBackupBtn"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="10sp"
+        app:autoSizeMaxTextSize="72sp"
+        app:autoSizeStepGranularity="2sp"
+        android:text="Backup Database"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine1"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine1"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine4"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine5"/>
 
-        <Button
-            android:id="@+id/settingsBackupBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Backup Database" />
+    <Button
+        android:id="@+id/settingsLoadBackupBtn"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="10sp"
+        app:autoSizeMaxTextSize="72sp"
+        app:autoSizeStepGranularity="2sp"
+        android:text="Load Backup Database"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine1"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine1"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine6"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine7"/>
 
-        <Button
-            android:id="@+id/settingsLoadBackupBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Load Backup Database" />
+    <Button
+        android:id="@+id/settingsLoadDefaultBtn"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="10sp"
+        app:autoSizeMaxTextSize="72sp"
+        app:autoSizeStepGranularity="2sp"
+        android:text="Load Default Database"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine1"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine1"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine8"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine9"/>
 
-        <Button
-            android:id="@+id/settingsLoadDefaultBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Load Default Database" />
-    </LinearLayout>
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

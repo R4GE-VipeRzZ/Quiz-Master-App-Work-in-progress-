@@ -38,6 +38,9 @@
     <string name="questions_pg_card_colour_spinner_description">Dropdown box for select the card colour of questions that are been shown</string>
     <string name="questions_pg_order_type_spinner_description">Dropdown box for select the way that the questions are ordered</string>
 
+    <string name="new_individual_question_title_label">Add A New Question</string>
+    <string name="new_individual_question_add_btn">Add New Question</string>
+
     <string name="item_individual_question_edit_text_layout_hint">Enter an answer for the question</string>
 
     <string name="add_new_question_card_colour_spinner_label">Question Colour</string>

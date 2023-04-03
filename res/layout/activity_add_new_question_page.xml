@@ -1,71 +1,193 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/questionsPageRelativeLayout"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topHorizontalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.03"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.085"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.095"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.125"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine4"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.1325"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine5"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.1675"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine6"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.175"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine7"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.835"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine8"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.865"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottomHorizontalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.965"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/leftVerticalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.07"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/leftVerticalGuideLine2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.22"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/rightVerticalGuideLine"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.93"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/rightVerticalGuideLine2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.78"/>
 
     <TextView
         android:id="@+id/newQuestionTitleLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="26sp"
-        android:padding="6dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="18sp"
+        app:autoSizeMaxTextSize="54sp"
+        app:autoSizeStepGranularity="2sp"
         android:textStyle="bold"
-        android:text="Add A New Question"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginBottom="6dp"
-        android:layout_marginTop="10dp"/>
+        android:text="@string/new_individual_question_title_label"
+        android:gravity="center_horizontal"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine"
+        app:layout_constraintTop_toTopOf="@id/topHorizontalGuideLine"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine1"/>
 
     <TextView
         android:id="@+id/newQuestionErrorLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/newQuestionTitleLabel"
-        android:text=""
-        android:layout_centerHorizontal="true"
-        android:textSize="16sp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="12sp"
+        app:autoSizeMaxTextSize="30sp"
+        app:autoSizeStepGranularity="2sp"
         android:textColor="#FF0000"
-        android:gravity="center_horizontal"/>
+        android:gravity="center_horizontal"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine2"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine3"/>
 
-    <TextView
-        android:id="@+id/newQuestionCardColourLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/newQuestionErrorLabel"
-        android:paddingLeft="12dp"
-        android:paddingRight="8dp"
-        android:layout_alignParentStart="true"
-        android:textSize="16sp"
-        android:text="@string/add_new_question_card_colour_spinner_label"
-        android:layout_alignBaseline="@+id/newQuestionCardColourSpinner"/>
+    <LinearLayout
+        android:id="@+id/newQuestionCardColourLinearLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine2"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine4"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine5">
 
-    <Spinner
-        android:id="@+id/newQuestionCardColourSpinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/newQuestionErrorLabel"
-        android:layout_toRightOf="@+id/newQuestionCardColourLabel"
-        android:contentDescription="@string/questions_pg_card_colour_spinner_description"/>
+        <TextView
+            android:id="@+id/newQuestionCardColourLabel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.4"
+            android:text="@string/add_new_question_card_colour_spinner_label"
+            android:textColor="#000000"
+            app:autoSizeMaxTextSize="28sp"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeStepGranularity="2sp"
+            app:autoSizeTextType="uniform" />
+
+        <Spinner
+            android:id="@+id/newQuestionCardColourSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.6"
+            android:spinnerMode="dropdown"
+            android:contentDescription="@string/questions_pg_card_colour_spinner_description"/>
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/newQuestionRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/newQuestionCardColourSpinner"
-        android:layout_above="@+id/newQuestionAddNewQuestionBtn"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        android:scrollbars="none"/>
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scrollbars="none"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine6"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine7"/>
 
     <Button
         android:id="@+id/newQuestionAddNewQuestionBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:padding="16dp"
-        android:text="Add Question"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="10dp"/>
-</RelativeLayout>
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="16sp"
+        app:autoSizeMaxTextSize="60sp"
+        app:autoSizeStepGranularity="2sp"
+        android:text="@string/new_individual_question_add_btn"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine2"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine2"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine8"
+        app:layout_constraintBottom_toBottomOf="@id/bottomHorizontalGuideLine"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
