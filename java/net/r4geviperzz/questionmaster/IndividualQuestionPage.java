@@ -53,7 +53,11 @@ public class IndividualQuestionPage extends AppCompatActivity {
         //Calls the method that sets up the recycler view
         setupRecyclerView();
 
+        Float heightAdjustValue = TextScale.getFontAdjustHeightValue();
+        int padding = (int) ((22 * heightAdjustValue) * DeviceSize.getDeviceDensity());
+
         Button saveChangesBtn = findViewById(R.id.individualQuestionSaveChangesBtn);
+        saveChangesBtn.setPadding(padding, padding, padding, padding);
 
         saveChangesBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,6 +67,8 @@ public class IndividualQuestionPage extends AppCompatActivity {
         });
 
         Button deleteQuestionBtn = findViewById(R.id.individualQuestionDeleteBtn);
+        padding = (int) ((18 * heightAdjustValue) * DeviceSize.getDeviceDensity());
+        deleteQuestionBtn.setPadding(padding, padding, padding, padding);
 
         deleteQuestionBtn.setOnClickListener(new View.OnClickListener() {
             @Override

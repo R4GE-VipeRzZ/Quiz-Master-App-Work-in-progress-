@@ -33,8 +33,6 @@ public class SettingsPage extends AppCompatActivity {
     private DocumentFile returnedBackupDir;
     private DocumentFile returnedBackupFile;
 
-    private int permissionRequestCode = 0;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,12 +40,20 @@ public class SettingsPage extends AppCompatActivity {
 
         userSelectDirectory = new UserSelectDirectory(this);
         userSelectFile = new UserSelectFile(this);
+
+        Float heightAdjustValue = TextScale.getFontAdjustHeightValue();
+        int padding = (int) ((18 * heightAdjustValue) * DeviceSize.getDeviceDensity());
+
+        setupBackupBtns(padding);
+    }
+
+    private void setupBackupBtns(int passedPadding){
         Button backupBtn = findViewById(R.id.settingsBackupBtn);
+        backupBtn.setPadding(passedPadding, passedPadding, passedPadding, passedPadding);
 
         backupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                permissionRequestCode = 1;
                 grantedStoragePerms = StoragePermissions.checkStoragePermissions(SettingsPage.this, STORAGE_PERMISSION_REQUEST_CODE); // call the checkStoragePermissions method
                 if (grantedStoragePerms == false) {
                     loadRequested = false;
@@ -68,11 +74,11 @@ public class SettingsPage extends AppCompatActivity {
         });
 
         Button loadBackupBtn = findViewById(R.id.settingsLoadBackupBtn);
+        loadBackupBtn.setPadding(passedPadding, passedPadding, passedPadding, passedPadding);
 
         loadBackupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                permissionRequestCode = 2;
                 grantedStoragePerms = StoragePermissions.checkStoragePermissions(SettingsPage.this, STORAGE_PERMISSION_REQUEST_CODE); // call the checkStoragePermissions method
                 if (grantedStoragePerms == false){
                     loadRequested = true;
@@ -105,6 +111,7 @@ public class SettingsPage extends AppCompatActivity {
         });
 
         Button loadDefaultBtn = findViewById(R.id.settingsLoadDefaultBtn);
+        loadDefaultBtn.setPadding(passedPadding, passedPadding, passedPadding, passedPadding);
 
         loadDefaultBtn.setOnClickListener(new View.OnClickListener() {
             @Override

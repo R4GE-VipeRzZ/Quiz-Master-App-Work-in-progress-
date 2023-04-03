@@ -5,6 +5,7 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +35,7 @@ public class IndividualQuestionAdapter extends RecyclerView.Adapter<RecyclerView
     private static final int textViewType = 1;
     //This variable stores the integer that corresponds to a EditText view type
     private static final int editTextViewType = 2;
+    private Float heightAdjustValue;
 
     public IndividualQuestionAdapter(Context context, List<String> dbQuestionsList, int ansCharLimit, int questionCharLimit, Boolean forEditingQuestion) {
         this.itemLayoutInflater = LayoutInflater.from(context);
@@ -41,6 +43,7 @@ public class IndividualQuestionAdapter extends RecyclerView.Adapter<RecyclerView
         this.editViewCharLimit = ansCharLimit;
         this.questionEditViewCharLimit = questionCharLimit;
         this.editInstance = forEditingQuestion;
+        this.heightAdjustValue = TextScale.getFontAdjustHeightValue();
     }
 
     // onCreateViewHolder is called when the RecyclerView needs a new view holder
@@ -67,6 +70,9 @@ public class IndividualQuestionAdapter extends RecyclerView.Adapter<RecyclerView
         if (holder instanceof TextViewHolder) {
             // If the view holder is a TextViewHolder, set the text of the questionTextView to the value at the current position in the list
             ((TextViewHolder) holder).questionTextView.setText(dbQuestionsList.get(position));
+
+            //Sets the text size of the item in the recyclerView
+            ((TextViewHolder) holder).questionTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, (16 * heightAdjustValue));
         } else if (holder instanceof EditTextViewHolder) {
             //This is needed as if the adapter is being used for adding a new question then the first EditView will need a different hint value and character limit
             if (editInstance == true) {
@@ -113,6 +119,8 @@ public class IndividualQuestionAdapter extends RecyclerView.Adapter<RecyclerView
                     }
                 });
             }
+            //Sets the text size of the item in the recyclerView
+            ((EditTextViewHolder) holder).questionEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, (14 * heightAdjustValue));
 
             // Update the value at the current position in the list with the current text in the EditText
             //This is needed so that the data in the adapter updates to the data that is in the EditViews

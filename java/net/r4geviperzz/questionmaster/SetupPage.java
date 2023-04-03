@@ -19,6 +19,8 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
@@ -37,6 +39,14 @@ public class SetupPage extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup_page);
+
+        Float heightAdjustValue = TextScale.getFontAdjustHeightValue();
+        TextView team1Label = findViewById(R.id.setupPgTeam1Label);
+        TextView team2Label = findViewById(R.id.setupPgTeam2Label);
+
+        //Adjusts the size of the team spinner labels
+        team1Label.setTextSize((int) (21 * heightAdjustValue));
+        team2Label.setTextSize((int) (21 * heightAdjustValue));
 
         //Get a reference to the board spinner
         Spinner boardDropdown = findViewById(R.id.setupPgBoardDropdown);
@@ -102,6 +112,10 @@ public class SetupPage extends AppCompatActivity {
     //gives a user the option of starting a new game or continuing the game
     private void submitBtnFunc(Spinner passedBoardDropdown, Spinner passedTeam1Dropdown, Spinner passedTeam2Dropdown){
         Button submitBtn = findViewById(R.id.setupPgStartBtn);
+
+        Float heightAdjustValue = TextScale.getFontAdjustHeightValue();
+        int padding = (int) ((14 * heightAdjustValue) * DeviceSize.getDeviceDensity());
+        submitBtn.setPadding(padding, padding, padding, padding);
 
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -234,6 +248,7 @@ public class SetupPage extends AppCompatActivity {
                 if (isUserInput == true) {
                     String selectedBoard = passedBoardDropdown.getSelectedItem().toString();
                     if (!"Select Board".equals(selectedBoard)) {
+                        //Gets the name that should be used to find the boards image resource
                         String boardImgName = (DBHelper.getBoardImgStatic(selectedBoard, dbHelper.getReadableDatabase())) + "_icon";
 
                         int boardImgDrawableId = 0;
@@ -248,6 +263,27 @@ public class SetupPage extends AppCompatActivity {
                             //Get a reference to the board image ImageView
                             ImageView boardImgObj = findViewById(R.id.setupPgBoardImg);
                             boardImgObj.setImageResource(boardImgDrawableId);
+
+                            int numRows = 12;
+                            int numColumns = 13;
+
+                            //Gets the reference to the setup pages constraint layout
+                            ConstraintLayout constraintLayout = findViewById(R.id.setupConstraintLayout);
+
+                            //Creates a new ConstraintSet object so that the current state of the Constraint layout can be stored in it
+                            ConstraintSet constraintSet = new ConstraintSet();
+                            //Clones the current state of the ConstraintLayout and stores it in the constraintSet Object
+                            constraintSet.clone(constraintLayout);
+
+                            //Calculates the aspect ratio based on the number of columns and rows
+                            float aspectRatio = ((float) numColumns / (float) numRows);
+                            //Sets the aspect ratio for the ImageView using the setDimensionRatio() method
+                            //The "H," prefix indicates that the ratio is based on the height of the view, this needs
+                            //to be done so that the height is set in relation to the width of the board icon
+                            constraintSet.setDimensionRatio(boardImgObj.getId(), "H," + aspectRatio);
+
+                            //Applies the modified ConstraintSet to the ConstraintLayout to update the layouts aspect ratio
+                            constraintSet.applyTo(constraintLayout);
                         }else{
                             Log.e("ErrFindingBoardDrawable", "Unable to find a game board image drawable of the specified file name");
                         }

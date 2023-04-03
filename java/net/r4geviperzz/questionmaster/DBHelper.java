@@ -1791,9 +1791,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public void test(String passedCardColour, String passedQuestionId, String newValue){
-        String testQuery = "UPDATE " + TABLE_QUESTIONS + " SET " + COL_QUESTIONS_ANS_10 + " = \"" + newValue
-                + "\" WHERE " + COL_BOARD_POSITIONS_CARD_COLOUR + " = " + passedCardColour + " AND "
-                + COL_QUESTIONS_ID + " = " + passedQuestionId + ";";
-        writeDB(testQuery);
+
+
     }
 }

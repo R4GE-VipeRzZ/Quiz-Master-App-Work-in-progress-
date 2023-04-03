@@ -47,13 +47,17 @@ public class MainActivity extends AppCompatActivity{
             dbHelper.loadDBFile(MainActivity.this, null, true);
         }
 
-        //Calls the method that will setup the onClickListeners for the menu buttons
-        setupBtnOnClickListeners();
+        //Calls the method that will setup the buttons and onClickListeners for the menu buttons
+        setupBtns();
     }
 
-    //This method is responsible for setting up the onClickListeners for the menu buttons
-    private void setupBtnOnClickListeners(){
+    //This method is responsible for setting up the buttons and onClickListeners for the menu buttons
+    private void setupBtns(){
+        Float heightAdjustValue = TextScale.getFontAdjustHeightValue();
+        int padding = (int) ((14 * heightAdjustValue) * DeviceSize.getDeviceDensity());
+
         Button playBtn = (Button) findViewById(R.id.menuPlayBtn);
+        playBtn.setPadding(padding, padding, padding, padding);
 
         playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,6 +68,7 @@ public class MainActivity extends AppCompatActivity{
         });
 
         Button questionsBtn =(Button) findViewById(R.id.menuQuestionsBtn);
+        questionsBtn.setPadding(padding, padding, padding, padding);
 
         questionsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,6 +79,7 @@ public class MainActivity extends AppCompatActivity{
         });
 
         Button settingsBtn = (Button) findViewById(R.id.menuSettingsBtn);
+        settingsBtn.setPadding(padding, padding, padding, padding);
 
         settingsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,12 +90,12 @@ public class MainActivity extends AppCompatActivity{
         });
 
         Button exitBtn = (Button) findViewById(R.id.menuExitBtn);
+        exitBtn.setPadding(padding, padding, padding, padding);
 
         exitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Exit
-                dbHelper.test("0", "1", "null");
             }
         });
     }

@@ -21,6 +21,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.view.ViewCompat;
 
 import java.util.ArrayList;
@@ -71,7 +73,11 @@ public class BoardPage extends AppCompatActivity {
         //This stores the number of teams that are playing
         numOfTeams = teamIdsArray.length;
 
+        Float heightAdjustValue = TextScale.getFontAdjustHeightValue();
+        int padding = (int) ((19 * heightAdjustValue) * DeviceSize.getDeviceDensity());
+
         Button askQuestionBtn = findViewById(R.id.askQuestionBtn);
+        askQuestionBtn.setPadding(padding, padding, padding, padding);
 
         askQuestionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,17 +99,31 @@ public class BoardPage extends AppCompatActivity {
 
         //Gets the screen width
         int screenWidth = displayMetrics.widthPixels;
+        //Reduces the screen width by 5% as there is a 2.5% board on each size of the board
+        screenWidth = (int) (screenWidth * 0.95);
 
-        // Calculate the margin size in pixels (10dp)
-        int marginSize = (int) (10 * density);
+        //Gets the reference to the board pages constraint layout
+        ConstraintLayout constraintLayout = findViewById(R.id.boardConstraintLayout);
 
-        // Subtract the total margin width from the screen width
-        int availableWidth = screenWidth - (2 * marginSize);
+        //Creates a new ConstraintSet object so that the current state of the Constraint layout can be stored in it
+        ConstraintSet constraintSet = new ConstraintSet();
+        //Clones the current state of the ConstraintLayout and stores it in the constraintSet Object
+        constraintSet.clone(constraintLayout);
+
+        //Calculates the aspect ratio based on the number of columns and rows
+        float aspectRatio = ((float) numColumns / (float) numRows);
+        //Sets the aspect ratio for the GridLayout using the setDimensionRatio() method
+        //The "H," prefix indicates that the ratio is based on the height of the view, this needs
+        //to be done so that the height is set in relation to the width of the board
+        constraintSet.setDimensionRatio(gridLayout.getId(), "H," + aspectRatio);
+
+        //Applies the modified ConstraintSet to the ConstraintLayout to update the layouts aspect ratio
+        constraintSet.applyTo(constraintLayout);
 
         // Set the width of each cell to fit the screen
-        cellSize = availableWidth / numColumns;
+        cellSize = screenWidth / numColumns;
 
-        // Create the checkerboard pattern
+        // Creates the cells for the grid layout
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numColumns; j++) {
                 TextView cell = new TextView(this);
@@ -113,11 +133,6 @@ public class BoardPage extends AppCompatActivity {
                 gridLayout.addView(cell);
             }
         }
-
-        // Set the margins of the grid layout
-        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) gridLayout.getLayoutParams();
-        layoutParams.setMargins(marginSize, marginSize, marginSize, marginSize);
-        gridLayout.setLayoutParams(layoutParams);
 
         // Create the image view for the drawable
         ImageView playBoardImg = new ImageView(this);

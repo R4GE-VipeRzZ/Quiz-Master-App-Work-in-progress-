@@ -1,6 +1,7 @@
 package net.r4geviperzz.questionmaster;
 
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +22,13 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
     //This listener is needed so that an OnItemClickListener can be set for each item in the RecyclerView
     private ItemClickListener questionsRecyclerAdapterListenerInterface;
 
-    // Data is passed into the constructor
+    private Float heightAdjustValue;
+
+    //The constructor
     public QuestionsRecyclerViewAdapter(Context context, List<String> data) {
         this.itemLayoutInflater = LayoutInflater.from(context);
         this.dbQuestionsList = data;
+        this.heightAdjustValue = TextScale.getFontAdjustHeightValue();
     }
 
     // This method updates the list of questions in the adapter with a new list of questions
@@ -60,8 +64,12 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
     // This method binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        //Get the question at the current position in the List of questions from the database.
         String question = dbQuestionsList.get(position);
+        //Set the text of the TextView in the ViewHolder to the question text.
         holder.myTextView.setText(question);
+        //Sets the text size
+        holder.myTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, (18 * heightAdjustValue));
     }
 
     // This method gets the total number of rows in the RecyclerView so that the adapter knows how many items need to be displayed
