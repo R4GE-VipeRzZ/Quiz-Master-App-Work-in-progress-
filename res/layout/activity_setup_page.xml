@@ -26,45 +26,59 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.18"/>
+        app:layout_constraintGuide_percent="0.15"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/horizontalGuideLine3"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.50"/>
+        app:layout_constraintGuide_percent="0.43"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/horizontalGuideLine4"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.51"/>
+        app:layout_constraintGuide_percent="0.44"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/horizontalGuideLine5"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.55"/>
+        app:layout_constraintGuide_percent="0.50"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/horizontalGuideLine6"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.57"/>
+        app:layout_constraintGuide_percent="0.53"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/horizontalGuideLine7"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.815"/>
+        app:layout_constraintGuide_percent="0.57"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/horizontalGuideLine8"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.58"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine9"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.825"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideLine10"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="horizontal"
@@ -85,13 +99,6 @@
         app:layout_constraintGuide_percent="0.06"/>
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/leftVerticalGuideLine2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.16"/>
-
-    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/leftVerticalGuideLine3"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -103,7 +110,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.465"/>
+        app:layout_constraintGuide_percent="0.38"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/rightVerticalGuideLine1"
@@ -117,10 +124,17 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.84"/>
+        app:layout_constraintGuide_percent="0.90"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/rightVerticalGuideLine3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.795"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/rightVerticalGuideLine4"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="vertical"
@@ -143,71 +157,38 @@
         app:layout_constraintTop_toTopOf="@id/topHorizontalGuideLine"
         app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine1"/>
 
-    <LinearLayout
-        android:id="@+id/setupPgParentLinearLayout"
+    <ScrollView
+        android:id="@+id/setupPgParentLinearLayoutScrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_below="@+id/setupPgTitleLabel"
-        android:orientation="vertical"
-        android:baselineAligned="false"
-        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine2"
+        android:scrollbars="vertical"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine1"
         app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine2"
         app:layout_constraintTop_toTopOf="@id/horizontalGuideLine2"
         app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine3">
-
         <LinearLayout
-            android:id="@+id/setupPgChildLinearLayout1"
+            android:id="@+id/setupPgParentLinearLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/setupPgTeam1Label"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.55"
-                android:text="@string/setup_pg_team1_label"
-                android:textColor="#000000"
-                android:textSize="26sp"
-                android:textStyle="bold"/>
-
-            <Spinner
-                android:id="@+id/setupPgTeam1Dropdown"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.45"
-                android:spinnerMode="dropdown"
-                android:contentDescription="@string/setup_pg_team1_dropdown_description"/>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:baselineAligned="false">
 
         </LinearLayout>
+    </ScrollView>
 
-        <LinearLayout
-            android:id="@+id/setupPgSpinnerLinearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/setupPgTeam2Label"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.55"
-                android:text="@string/setup_pg_team2_label"
-                android:textColor="#000000"
-                android:textSize="21sp"
-                android:textStyle="bold"/>
-
-            <Spinner
-                android:id="@+id/setupPgTeam2Dropdown"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.45"
-                android:spinnerMode="dropdown"
-                android:contentDescription="@string/setup_pg_team2_dropdown_description"/>
-
-
-        </LinearLayout>
-    </LinearLayout>
+    <Button
+        android:id="@+id/setupPgAddAnotherTeamBtn"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/setup_pg_add_another_team_btn"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="10sp"
+        app:autoSizeMaxTextSize="26sp"
+        app:autoSizeStepGranularity="2sp"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine3"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine4"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine4"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine5"/>
 
     <TextView
         android:id="@+id/setupPgBoardLabel"
@@ -220,10 +201,10 @@
         app:autoSizeMaxTextSize="46sp"
         app:autoSizeStepGranularity="2sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine2"
+        app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine1"
         app:layout_constraintEnd_toEndOf="@id/leftVerticalGuideLine4"
-        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine4"
-        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine5"/>
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine6"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine7"/>
 
     <Spinner
         android:id="@+id/setupPgBoardDropdown"
@@ -231,18 +212,21 @@
         android:layout_height="0dp"
         android:contentDescription="@string/setup_pg_board_dropdown_description"
         app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine4"
-        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine2"
-        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine4"
-        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine5"/>
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine3"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine6"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine7"/>
 
     <ImageView
         android:id="@+id/setupPgBoardImg"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:contentDescription="@string/setup_pg_img_description"
+        android:src="@drawable/blank_board_icon"
+        app:layout_constraintDimensionRatio="13:12"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine4"
         app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine3"
-        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine3"
-        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine6"/>
+        app:layout_constraintTop_toBottomOf="@id/horizontalGuideLine8"
+        app:layout_constraintBottom_toTopOf="@id/horizontalGuideLine9" />
 
     <Button
         android:id="@+id/setupPgStartBtn"
@@ -254,8 +238,8 @@
         app:autoSizeMaxTextSize="86sp"
         app:autoSizeStepGranularity="2sp"
         app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine3"
-        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine3"
-        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine8"
+        app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine4"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideLine10"
         app:layout_constraintBottom_toBottomOf="@id/bottomHorizontalGuideLine"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -78,7 +78,7 @@
             app:layout_constraintDimensionRatio="1:1.56"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="@id/leftVerticalGuideLine"
-            app:layout_constraintTop_toTopOf="@+id/topSecondHorizontalGuideLine"
+            app:layout_constraintTop_toTopOf="@id/topSecondHorizontalGuideLine"
             app:layout_constraintBottom_toBottomOf="@id/topThirdHorizontalGuideLine" />
 
         <ProgressBar

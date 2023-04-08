@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dialogRelativeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/topHorizontalGuideLine"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.10"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontalGuideLine1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.26"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontalGuideLine2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.315"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontalGuideLine3"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.67"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontalGuideLine4"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.785"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/bottomHorizontalGuideLine"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.885"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/leftVerticalGuideLine1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.08"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/rightVerticalGuideLine1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.92"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/rightVerticalGuideLine2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.90"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/rightVerticalGuideLine3"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.82"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/rightVerticalGuideLine4"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.685"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/rightVerticalGuideLine5"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.625"/>
+
+        <TextView
+            android:id="@+id/alertDialogTitle"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="start"
+            android:textColor="#2e2e2e"
+            app:autoSizeTextType="uniform"
+            app:autoSizeMinTextSize="18sp"
+            app:autoSizeMaxTextSize="46sp"
+            app:autoSizeStepGranularity="2sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine1"
+            app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine1"
+            app:layout_constraintTop_toTopOf="@id/topHorizontalGuideLine"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine1"/>
+
+        <TextView
+            android:id="@+id/alertDialogMessage"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="start"
+            android:textColor="#484848"
+            app:autoSizeTextType="uniform"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeMaxTextSize="36sp"
+            app:autoSizeStepGranularity="2sp"
+            app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine1"
+            app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine1"
+            app:layout_constraintTop_toTopOf="@id/horizontalGuideLine2"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine3"/>
+
+        <Button
+            android:id="@+id/alertDialogBtnNo"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="No"
+            app:autoSizeTextType="uniform"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeMaxTextSize="36sp"
+            app:autoSizeStepGranularity="2sp"
+            android:background="@null"
+            android:textColor="#008577"
+            app:layout_constraintStart_toStartOf="@id/rightVerticalGuideLine5"
+            app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine4"
+            app:layout_constraintTop_toTopOf="@id/horizontalGuideLine4"
+            app:layout_constraintBottom_toBottomOf="@id/bottomHorizontalGuideLine"/>
+
+        <Button
+            android:id="@+id/alertDialogBtnYes"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="Yes"
+            app:autoSizeTextType="uniform"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeMaxTextSize="36sp"
+            app:autoSizeStepGranularity="2sp"
+            android:background="@null"
+            android:textColor="#008577"
+            app:layout_constraintStart_toStartOf="@id/rightVerticalGuideLine3"
+            app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine2"
+            app:layout_constraintTop_toTopOf="@id/horizontalGuideLine4"
+            app:layout_constraintBottom_toBottomOf="@id/bottomHorizontalGuideLine"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</RelativeLayout>

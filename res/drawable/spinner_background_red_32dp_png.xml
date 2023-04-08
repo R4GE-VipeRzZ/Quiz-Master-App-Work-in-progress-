@@ -1,5 +1,11 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
+        <!-- This 9-patch image is used to add a red border around the spinner-->
+        <nine-patch
+            android:src="@drawable/spinner_red_border"
+            android:gravity="fill" />
+    </item>
+    <item>
         <bitmap
             android:src="@drawable/dropdown_arrow_18px"
             android:gravity="center"/>

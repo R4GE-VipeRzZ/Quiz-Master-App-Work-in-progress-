@@ -7,8 +7,7 @@
     <string name="menu_exit_btn">Exit</string>
 
     <string name="setup_pg_title_label">Select Team Colours</string>
-    <string name="setup_pg_team1_label">Team 1</string>
-    <string name="setup_pg_team2_label">Team 2</string>
+    <string name="setup_pg_add_another_team_btn">Add Another Team</string>
     <string name="setup_pg_board_label">Board</string>
     <string name="setup_pg_start_btn">Start</string>
     <string name="setup_pg_img_description">Preview Image Of The Selected Play Board</string>
