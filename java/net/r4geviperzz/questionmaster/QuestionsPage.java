@@ -37,6 +37,7 @@ public class QuestionsPage extends AppCompatActivity implements QuestionsRecycle
     private Boolean firstTimeCardColourSpinnerLoad;
     private Boolean firstTimeOrdBySpinnerLoad;
     private List<String> questionsDetailsList = new ArrayList<>();
+    private List<String> questionColourNumList = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -143,12 +144,12 @@ public class QuestionsPage extends AppCompatActivity implements QuestionsRecycle
         if (passedSelectedItem == "All") {
             questionsDetailsList = dbHelper.getAllQuestionsNoAnswers(passedOrderByValue);
             //Calls the method that will setup the multimap for the new question that have been read from the database
-            setupQuestionMultiMap(false);
+            setupQuestionMultiMap(false, false);
         } else {
             //Calls the method that will get the question details from the database for the given question colour
             getQuestionsOfCardColour(passedSelectedItem, passedOrderByValue);
             //Calls the method that will setup the multimap for the new question that have been read from the database
-            setupQuestionMultiMap(false);
+            setupQuestionMultiMap(false, true);
         }
     }
 
@@ -176,9 +177,11 @@ public class QuestionsPage extends AppCompatActivity implements QuestionsRecycle
     }
 
     //This method sets up the MultiMap that corresponds to the questions
-    private List<String> setupQuestionMultiMap(Boolean initialSetup){
+    private List<String> setupQuestionMultiMap(Boolean initialSetup, Boolean singleColour){
         //This List<String> contains all the questions that need to be displayed in the RecyclerView
         List<String> questionsToDisplayList = new ArrayList<>();
+        //Clears the questionColourNumList list so that it doesn't have any old values in it
+        questionColourNumList.clear();
         List<String> tempList = new ArrayList<>();
 
         //This variable is used to control where the values in the questionsDetailsList are added
@@ -186,15 +189,26 @@ public class QuestionsPage extends AppCompatActivity implements QuestionsRecycle
         //This variable sets the key that is used when adding a List of values to the questionsDetailsMultiMap
         int keyVal = 0;
         for (int x = 0; x < questionsDetailsList.size(); x++){
-            if (count == 2){
+            if (count == 2) {
                 //Adds the question to the questionsDetailsList
                 questionsToDisplayList.add(questionsDetailsList.get(x));
                 //Adds the card colour and question id for the question to the multimap
                 questionsDetailsMultiMap.put(keyVal, new ArrayList<>(tempList));
                 tempList.clear();
                 keyVal++;
+            }else if (count == 0){
+                String cardColourNum = questionsDetailsList.get(x);
+
+                //Checks that a single card colour isn't been displayed as if it is then only a single card colour number
+                //need to be set in the List as the card colour number doesn't need to be tracked for each question
+                if (singleColour == false) {
+                    //Adds the question card colour number to the questionColourNumList
+                    questionColourNumList.add(cardColourNum);
+                }
+                //Adds the card colour to the list
+                tempList.add(cardColourNum);
             }else{
-                //Adds ether the card colour of question id to the list depending on the x value
+                //Adds the question id to the list
                 tempList.add(questionsDetailsList.get(x));
             }
 
@@ -203,6 +217,11 @@ public class QuestionsPage extends AppCompatActivity implements QuestionsRecycle
             if(count == 3){
                 count = 0;
             }
+        }
+
+        //Sets the single card colour value that is need if only one colour of card is been displayed
+        if (singleColour == true){
+            questionColourNumList.add(questionsDetailsList.get(0));
         }
 
         //This if statement checks if the method has been called during the initial creation of the RecyclerView or if
@@ -220,16 +239,16 @@ public class QuestionsPage extends AppCompatActivity implements QuestionsRecycle
 
     //This method sets up the RecyclerView for all of the questions
     private void setupRecycler(){
-        //This line gets all the questions from the database along with thee card colour value and question id
+        //This line gets all the questions from the database along with the card colour value and question id
         questionsDetailsList = dbHelper.getAllQuestionsNoAnswers("Ascending");
 
-        List<String> questionsToDisplayList = setupQuestionMultiMap(true);
+        List<String> questionsToDisplayList = setupQuestionMultiMap(true, false);
 
         // Get a reference to the RecyclerView in your layout
         RecyclerView myRecyclerView = findViewById(R.id.questionsPageRecyclerView);
 
         // Create an instance of your adapter class
-        recyclerAdapter = new QuestionsRecyclerViewAdapter(QuestionsPage.this, questionsToDisplayList);
+        recyclerAdapter = new QuestionsRecyclerViewAdapter(QuestionsPage.this, questionsToDisplayList, questionColourNumList);
 
         // Set the click listener for the adapter
         recyclerAdapter.setClickListener(QuestionsPage.this);

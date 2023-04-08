@@ -1,6 +1,8 @@
 package net.r4geviperzz.questionmaster;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,26 +11,45 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<QuestionsRecyclerViewAdapter.ViewHolder> {
 
     //This list stores all the questions that need to be displayed in the RecyclerView
     private List<String> dbQuestionsList;
+    //This list stores the card colour number for all of the questions that need to be displayed in the RecyclerView
+    private List<String> dbQuestionColourNumList;
 
     //This class variable is used to inflate the layout of each item in the RecyclerView
     private LayoutInflater itemLayoutInflater;
 
     //This listener is needed so that an OnItemClickListener can be set for each item in the RecyclerView
     private ItemClickListener questionsRecyclerAdapterListenerInterface;
-
     private Float heightAdjustValue;
 
+    private Map<String, String> cardNumToHexMultiMap = new HashMap<>();
+
     //The constructor
-    public QuestionsRecyclerViewAdapter(Context context, List<String> data) {
+    public QuestionsRecyclerViewAdapter(Context context, List<String> data, List<String> colourData) {
         this.itemLayoutInflater = LayoutInflater.from(context);
         this.dbQuestionsList = data;
+        this.dbQuestionColourNumList = colourData;
         this.heightAdjustValue = TextScale.getFontAdjustHeightValue();
+
+        DBHelper dbHelper = new DBHelper(context);
+        setupCardColourHashMap(dbHelper);
+    }
+
+    //This method gets the hex colour for each card type
+    private void setupCardColourHashMap(DBHelper passedDBHelper){
+        List<String> cardColourHexList = passedDBHelper.getCardColourNumAndHex();
+
+        //Adds the card colour and hex value to the multi map with the card colour num being used as the key value
+        for (int x = 0; x < cardColourHexList.size(); x = x + 2){
+            cardNumToHexMultiMap.put(cardColourHexList.get(x), cardColourHexList.get(x + 1));
+        }
     }
 
     // This method updates the list of questions in the adapter with a new list of questions
@@ -70,6 +91,20 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
         holder.myTextView.setText(question);
         //Sets the text size
         holder.myTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, (18 * heightAdjustValue));
+
+        String cardHexColour = "";
+
+        //Checks if the dbQuestionColourNumList has more than one element in it, if it has only 1 element then that
+        //means that a specific card colour has been chosen in the display dropdown, as such all of the displayed
+        //questions will be of the same colour so the card colour number doesn't need to be tracked for each question
+        if (dbQuestionColourNumList.size() > 1) {
+            //Runs when questions of multiple different colours are being displayed
+            cardHexColour = cardNumToHexMultiMap.get(dbQuestionColourNumList.get(position));
+        }else{
+            //Runs when the questions of a single colour is being displayed
+            cardHexColour = cardNumToHexMultiMap.get(dbQuestionColourNumList.get(0));
+        }
+        holder.myQuestionShape.setColour(Color.parseColor(cardHexColour));
     }
 
     // This method gets the total number of rows in the RecyclerView so that the adapter knows how many items need to be displayed
@@ -81,11 +116,13 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
     // This class stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView myTextView;
+        QuestionColourShape myQuestionShape;
 
         // ViewHolder constructor takes a view as a parameter and initializes the myTextView field and click listener
         ViewHolder(View itemView) {
             super(itemView);
             myTextView = itemView.findViewById(R.id.myTextView); // Find the myTextView TextView in the item view
+            myQuestionShape = itemView.findViewById(R.id.myQuestionShape);        //Find the question circle in the item view
             itemView.setOnClickListener(this); // Set click listener on the entire item view
         }
 

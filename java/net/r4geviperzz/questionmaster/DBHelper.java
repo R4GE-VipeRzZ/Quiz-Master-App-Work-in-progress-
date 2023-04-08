@@ -1633,6 +1633,19 @@ public class DBHelper extends SQLiteOpenHelper {
         return cardColourIntVal;
     }
 
+    //This method gets all of the card colour numbers along with there hex values from the database
+    public List<String> getCardColourNumAndHex(){
+        //Creates a List<String> to store the results from the query
+        List<String> cardColourAndHex = new ArrayList<>();
+        //This is the sql query that will be executed
+        String cardColourIntQuery = "SELECT " + COL_BOARD_POSITIONS_CARD_COLOUR + ", " + COL_CARD_TYPE_HEX_COLOUR
+                                    + " FROM " + TABLE_CARD_TYPE +";";
+        //Passes the sql query and stores the results in the cardColourIntVal
+        cardColourAndHex = readDB(cardColourIntQuery);
+
+        return cardColourAndHex;
+    }
+
     //This method gets the VARCHAR limit of the first answer in the questions table
     public int getAnswerCharLimit(){
         //Creates an array list to store the results from the query
