@@ -3,6 +3,7 @@ package net.r4geviperzz.questionmaster;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.util.Log;
 import android.util.TypedValue;
@@ -22,47 +23,111 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CustomSpinnerStyle {
-    public static void setSpinnerStyle(Context passedContext, Spinner passedSpinner, float passedAdjustValue, Object passedItemValues, int passedDropdownWidth, int spinnerTextSize, int passedPadding) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            //This code is ran if the API level is less than 23 / Marshmallow
-            passedSpinner.setBackgroundColor(Color.TRANSPARENT);
+    private static Float widthAdjustValue = TextScale.getFontAdjustWidthValue();
+    private static Float density = DeviceSize.getDeviceDensity();
 
-            //This code is ran if the API level is 23 or more
-            if (passedAdjustValue < 1.25) {
-                //26dp size
-                passedSpinner.setBackgroundResource(R.drawable.spinner_background_26dp_png);
-            } else if (passedAdjustValue > 1.25 && passedAdjustValue <= 1.5) {
-                //32dp size
-                passedSpinner.setBackgroundResource(R.drawable.spinner_background_32dp_png);
-            } else if (passedAdjustValue > 1.5 && passedAdjustValue <= 1.75) {
-                //39dp size
-                passedSpinner.setBackgroundResource(R.drawable.spinner_background_39dp_png);
-            } else if (passedAdjustValue > 1.75 && passedAdjustValue <= 2) {
-                //46dp size
-                passedSpinner.setBackgroundResource(R.drawable.spinner_background_46dp_png);
-            } else if (passedAdjustValue > 2) {
-                //52dp size
-                passedSpinner.setBackgroundResource(R.drawable.spinner_background_52dp_png);
+    public static void setSpinnerBackground(Context passedContext, Spinner passedSpinner, float passedAdjustValue, int arrowAdjustValue, Boolean errorBackground){
+        if (errorBackground == false){
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                //This code is ran if the API level is less than 23 / Marshmallow
+                passedSpinner.setBackgroundColor(Color.TRANSPARENT);
+
+                LayerDrawable layerDrawable = null;
+
+                //This code is ran if the API level is 23 or more
+                if (passedAdjustValue < 1.25) {
+                    //26dp size
+                    // Get the reference to the layer list drawable
+                    layerDrawable = (LayerDrawable) ContextCompat.getDrawable(passedContext, R.drawable.spinner_background_26dp_png);
+                } else if (passedAdjustValue > 1.25 && passedAdjustValue <= 1.5) {
+                    //32dp size
+                    layerDrawable = (LayerDrawable) ContextCompat.getDrawable(passedContext, R.drawable.spinner_background_32dp_png);
+                } else if (passedAdjustValue > 1.5 && passedAdjustValue <= 1.75) {
+                    //39dp size
+                    layerDrawable = (LayerDrawable) ContextCompat.getDrawable(passedContext, R.drawable.spinner_background_39dp_png);
+                } else if (passedAdjustValue > 1.75 && passedAdjustValue <= 2) {
+                    //46dp size
+                    layerDrawable = (LayerDrawable) ContextCompat.getDrawable(passedContext, R.drawable.spinner_background_46dp_png);
+                } else if (passedAdjustValue > 2) {
+                    //52dp size
+                    layerDrawable = (LayerDrawable) ContextCompat.getDrawable(passedContext, R.drawable.spinner_background_52dp_png);
+                }
+
+                // Set the new right inset for the bitmap layer
+                layerDrawable.setLayerInset(0, 0, 0, (int) ((arrowAdjustValue * widthAdjustValue) * density), 0);
+                passedSpinner.setBackground(layerDrawable);
+            }else {
+                //This code is ran if the API level is 23 or more
+                if (passedAdjustValue < 1.25) {
+                    //26dp size
+                    passedSpinner.setBackgroundResource(R.drawable.spinner_background_26dp);
+                } else if (passedAdjustValue > 1.25 && passedAdjustValue <= 1.5) {
+                    //32dp size
+                    passedSpinner.setBackgroundResource(R.drawable.spinner_background_32dp);
+                } else if (passedAdjustValue > 1.5 && passedAdjustValue <= 1.75) {
+                    //39dp size
+                    passedSpinner.setBackgroundResource(R.drawable.spinner_background_39dp);
+                } else if (passedAdjustValue > 1.75 && passedAdjustValue <= 2) {
+                    //46dp size
+                    passedSpinner.setBackgroundResource(R.drawable.spinner_background_46dp);
+                } else if (passedAdjustValue > 2) {
+                    //52dp size
+                    passedSpinner.setBackgroundResource(R.drawable.spinner_background_52dp);
+                }
             }
-        }else {
-            //This code is ran if the API level is 23 or more
-            if (passedAdjustValue < 1.25) {
-                //26dp size
-                passedSpinner.setBackgroundResource(R.drawable.spinner_background_26dp);
-            } else if (passedAdjustValue > 1.25 && passedAdjustValue <= 1.5) {
-                //32dp size
-                passedSpinner.setBackgroundResource(R.drawable.spinner_background_32dp);
-            } else if (passedAdjustValue > 1.5 && passedAdjustValue <= 1.75) {
-                //39dp size
-                passedSpinner.setBackgroundResource(R.drawable.spinner_background_39dp);
-            } else if (passedAdjustValue > 1.75 && passedAdjustValue <= 2) {
-                //46dp size
-                passedSpinner.setBackgroundResource(R.drawable.spinner_background_46dp);
-            } else if (passedAdjustValue > 2) {
-                //52dp size
-                passedSpinner.setBackgroundResource(R.drawable.spinner_background_52dp);
+        }else{
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                //This code is ran if the API level is less than 23 / Marshmallow
+                passedSpinner.setBackgroundColor(Color.TRANSPARENT);
+
+                LayerDrawable layerDrawable = null;
+
+                //This code is ran if the API level is 23 or more
+                if (passedAdjustValue < 1.25) {
+                    //26dp size
+                    // Get the reference to the layer list drawable
+                    layerDrawable = (LayerDrawable) ContextCompat.getDrawable(passedContext, R.drawable.spinner_background_red_26dp_png);
+                } else if (passedAdjustValue > 1.25 && passedAdjustValue <= 1.5) {
+                    //32dp size
+                    layerDrawable = (LayerDrawable) ContextCompat.getDrawable(passedContext, R.drawable.spinner_background_red_32dp_png);
+                } else if (passedAdjustValue > 1.5 && passedAdjustValue <= 1.75) {
+                    //39dp size
+                    layerDrawable = (LayerDrawable) ContextCompat.getDrawable(passedContext, R.drawable.spinner_background_red_39dp_png);
+                } else if (passedAdjustValue > 1.75 && passedAdjustValue <= 2) {
+                    //46dp size
+                    layerDrawable = (LayerDrawable) ContextCompat.getDrawable(passedContext, R.drawable.spinner_background_red_46dp_png);
+                } else if (passedAdjustValue > 2) {
+                    //52dp size
+                    layerDrawable = (LayerDrawable) ContextCompat.getDrawable(passedContext, R.drawable.spinner_background_red_52dp_png);
+                }
+
+                // Set the new right inset for the bitmap layer
+                layerDrawable.setLayerInset(1, 0, 0, (int) ((arrowAdjustValue * widthAdjustValue) * density), 0);
+                passedSpinner.setBackground(layerDrawable);
+            }else {
+                //This code is ran if the API level is 23 or more
+                if (passedAdjustValue < 1.25) {
+                    //26dp size
+                    passedSpinner.setBackgroundResource(R.drawable.spinner_background_red_26dp);
+                } else if (passedAdjustValue > 1.25 && passedAdjustValue <= 1.5) {
+                    //32dp size
+                    passedSpinner.setBackgroundResource(R.drawable.spinner_background_red_32dp);
+                } else if (passedAdjustValue > 1.5 && passedAdjustValue <= 1.75) {
+                    //39dp size
+                    passedSpinner.setBackgroundResource(R.drawable.spinner_background_red_39dp);
+                } else if (passedAdjustValue > 1.75 && passedAdjustValue <= 2) {
+                    //46dp size
+                    passedSpinner.setBackgroundResource(R.drawable.spinner_background_red_46dp);
+                } else if (passedAdjustValue > 2) {
+                    //52dp size
+                    passedSpinner.setBackgroundResource(R.drawable.spinner_background_red_52dp);
+                }
             }
         }
+    }
+    public static SpinnerAdapter setSpinnerStyle(Context passedContext, Spinner passedSpinner, float passedAdjustValue, Object passedItemValues, int passedDropdownWidth, int spinnerTextSize, int passedPadding, int arrowAdjustValue) {
+        //Calls the method that will set the background for the spinner
+        setSpinnerBackground(passedContext, passedSpinner, passedAdjustValue, arrowAdjustValue, false);
 
         //Sets the width of the spinner dropdown list.
         passedSpinner.setDropDownWidth(passedDropdownWidth);
@@ -146,6 +211,6 @@ public class CustomSpinnerStyle {
         // Binds the adapter to the spinner
         passedSpinner.setAdapter(adapter);
 
-
+        return adapter;
     }
 }

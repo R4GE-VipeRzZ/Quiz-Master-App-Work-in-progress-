@@ -1350,22 +1350,35 @@ public class DBHelper extends SQLiteOpenHelper {
         return correctAnsString;
     }
 
+    //This method is responsible for getting the total number of teams that are in the teams table
+    public int getNumTeams(){
+        //Creates an int to store the number of teams that are returned
+        int numTeams = 0;
+        //This is the sql query that will be executed
+        String readTeamNamesQuery = "SELECT COUNT(*) FROM " + TABLE_TEAMS + ";";
+        //Passes the sql query and stores the results in the teamNameList
+        numTeams = Integer.parseInt(readDB(readTeamNamesQuery).get(0));
+
+        return numTeams;
+    }
+
     //This method is responsible for reading all the names of the teams from the database
     public List<String> getAllTeamNames(){
         //Creates an array list to store the results from the query
         List<String> teamNameList = new ArrayList<>();
         //This is the sql query that will be executed
-        String readTeamNamesQuery = "SELECT " + COL_TEAMS_NAME +" FROM " + TABLE_TEAMS + ";";
+        String readTeamNamesQuery = "SELECT " + COL_TEAMS_NAME +" FROM " + TABLE_TEAMS
+                                    + " ORDER BY " + COL_TEAMS_NAME + " ASC;";
         //Passes the sql query and stores the results in the teamNameList
         teamNameList = readDB(readTeamNamesQuery);
 
         return teamNameList;
     }
 
-    //This method returns the teamId from the team table using the team name that is passed to it
-    public List<String> getTeamIdByName(String[] passedTeamNamesArray){
+    //This method returns the teamIds from the teams table using the team names that is passed to it
+    public List<String> getTeamIdsByName(List<String> passedTeamNamesList){
         List<String> teamNamesArrayWithSpeechMarks = new ArrayList<>();
-        for (String element : passedTeamNamesArray){
+        for (String element : passedTeamNamesList){
             teamNamesArrayWithSpeechMarks.add("\"" + element + "\"");
         }
         String passedTeamNamesString = String.join(", ", teamNamesArrayWithSpeechMarks);

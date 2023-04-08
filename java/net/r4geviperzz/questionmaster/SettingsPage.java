@@ -12,7 +12,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -116,37 +119,83 @@ public class SettingsPage extends AppCompatActivity {
         loadDefaultBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Creates an alert message to ensure the a user doesn't accidentally reset the database to default
-                AlertDialog.Builder builder = new AlertDialog.Builder(SettingsPage.this);
+                // Create the dialog
+                CustomQuestionDialog dialog;
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+                    //This runs when on API 19 or lower
+                    dialog = new CustomQuestionDialog(SettingsPage.this, R.style.MyDialogThemeAPI19);
+                } else {
+                    //This runs when running on API 21 or higher
 
-                builder.setMessage("Are you sure you want to load the default database? All of the questions will be set back to there default values," +
-                        "and any new questions that have been added will be removed.");
-                builder.setTitle("Restore Defaults?");
-
-                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        TextView errorLabel = findViewById(R.id.settingsPgErrorLabel);
-                        errorLabel.setText("");
-
-                        dbHelper.loadDBFile(SettingsPage.this, returnedBackupFile, true);
+                    //Checks if running on API 22 or less
+                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                        dialog = new CustomQuestionDialog(SettingsPage.this, R.style.MyDialogThemeAPI21And22);
+                    } else {
+                        //Runs if running on API 23 and up
+                        dialog = new CustomQuestionDialog(SettingsPage.this);
                     }
-                });
+                }
 
-                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //Do nothing
+                if (dialog != null) {
+                    Window dialogWindow = dialog.getWindow();
+
+                    if (dialogWindow != null) {
+                        // Inflate the dialog layout
+                        LayoutInflater inflater = LayoutInflater.from(SettingsPage.this);
+                        View dialogView = inflater.inflate(R.layout.alert_dialog_layout, null);
+
+                        //Set the content view of the dialog
+                        dialog.setContentView(dialogView);
+
+                        //Alert dialog title
+                        TextView titleLabel = dialogView.findViewById(R.id.alertDialogTitle);
+                        //Alert dialog message
+                        TextView messageLabel = dialogView.findViewById(R.id.alertDialogMessage);
+
+                        titleLabel.setText("Restore Defaults?");
+                        messageLabel.setText("Are you sure you want to load the default database? All of the questions will be set back to there default values," +
+                                            "and any new questions that have been added will be removed?");
+
+                        //Setup Yes button
+                        Button alertBtnYes = dialogView.findViewById(R.id.alertDialogBtnYes);
+                        alertBtnYes.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                //Yes Click
+                                dialog.dismiss();
+
+                                TextView errorLabel = findViewById(R.id.settingsPgErrorLabel);
+                                errorLabel.setText("");
+
+                                dbHelper.loadDBFile(SettingsPage.this, returnedBackupFile, true);
+                            }
+                        });
+
+                        //Setup No button
+                        Button alertBtnNo = dialogView.findViewById(R.id.alertDialogBtnNo);
+                        alertBtnNo.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                //No Click
+                                dialog.dismiss();
+                            }
+                        });
+
+
+                        dialogWindow.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, (int) (DeviceSize.getDeviceHeightPX() * 0.36));
+                        // Show the dialog
+                        dialog.show();
+                    } else {
+                        Log.e("alertDialogWindowError", "Failed to get the window off the alert dialog");
                     }
-                });
-
-                // Create and show the AlertDialog
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                } else {
+                    Log.e("alertDialogError", "Failed to create alert dialog");
+                }
             }
         });
     }
 
+    //THis method loads the database from the selected directory
     private void callDBLoad(){
         TextView errorLabel = findViewById(R.id.settingsPgErrorLabel);
 
@@ -180,6 +229,7 @@ public class SettingsPage extends AppCompatActivity {
         }
     }
 
+    //This method backs the database to the selected directory
     private void callDBBackup(){
         TextView errorLabel = findViewById(R.id.settingsPgErrorLabel);
         errorLabel.setText("");

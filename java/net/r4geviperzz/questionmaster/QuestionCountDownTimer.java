@@ -19,7 +19,7 @@ public class QuestionCountDownTimer{
     private StopTimerSoundListener stopTimerSoundListener;
 
     //Constructor to initialize the progress bars, total time and interval
-    public QuestionCountDownTimer(Context passedContext, ProgressBar leftProgressBar, ProgressBar rightProgressBar, int totalTime, int timeInterval, TimerSound passedTimerSoundInstance) {
+    public QuestionCountDownTimer(Context passedContext, ProgressBar leftProgressBar, ProgressBar rightProgressBar, int totalTime, int timeInterval, Timer passedTimerSoundInstance) {
         this.context = passedContext;
         this.leftProgressBar = leftProgressBar;
         this.rightProgressBar = rightProgressBar;

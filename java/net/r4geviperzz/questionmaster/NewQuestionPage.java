@@ -37,17 +37,15 @@ public class NewQuestionPage extends AppCompatActivity {
         cardColours.add(0, "None");
 
         Float heightAdjustValue = TextScale.getFontAdjustHeightValue();
+        Float widthAdjustValue = TextScale.getFontAdjustWidthValue();
         //Sets the text size of the spinner
         int spinnerTextSize = (int) (16 * heightAdjustValue);
+        Float density = DeviceSize.getDeviceDensity();
 
         //Gets a reference to the card colour spinner
         cardColourDropdown = findViewById(R.id.newQuestionCardColourSpinner);
 
-        CustomSpinnerStyle.setSpinnerStyle(NewQuestionPage.this, cardColourDropdown, heightAdjustValue, cardColours, 280, spinnerTextSize, 22);
-//        //Creates the ArrayAdapter that is to be used in the card colour spinner
-//        ArrayAdapter<String> cardColourAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, cardColours);
-//        //Binds the ArrayAdapter to the card colour spinner
-//        cardColourDropdown.setAdapter(cardColourAdapter);
+        CustomSpinnerStyle.setSpinnerStyle(NewQuestionPage.this, cardColourDropdown, heightAdjustValue, cardColours, (int) ((70 * widthAdjustValue) * density), spinnerTextSize, 22, -10);
 
         //Calls the method that sets up the recycler view
         setupRecyclerView();

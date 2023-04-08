@@ -54,15 +54,17 @@ public class QuestionsPage extends AppCompatActivity implements QuestionsRecycle
         String[] orderByValArray = {"Ascending", "Descending"};
 
         Float heightAdjustValue = TextScale.getFontAdjustHeightValue();
+        Float widthAdjustValue = TextScale.getFontAdjustWidthValue();
         int spinnerTextSize = (int) (16 * heightAdjustValue);
+        Float density = DeviceSize.getDeviceDensity();
 
         //Gets a reference to the card colour spinner
         Spinner cardColourDropdown = findViewById(R.id.questionsPageCardColourSpinner);
-        CustomSpinnerStyle.setSpinnerStyle(QuestionsPage.this, cardColourDropdown, heightAdjustValue, cardColours, 300, spinnerTextSize, 22);
+        CustomSpinnerStyle.setSpinnerStyle(QuestionsPage.this, cardColourDropdown, heightAdjustValue, cardColours, (int) ((75 * widthAdjustValue) * density), spinnerTextSize, 22, 0);
 
         //Gets a reference to the order by spinner
         Spinner orderByDropdown = findViewById(R.id.questionsPageOrderTypeSpinner);
-        CustomSpinnerStyle.setSpinnerStyle(QuestionsPage.this, orderByDropdown, heightAdjustValue, orderByValArray, 400, spinnerTextSize, 22);
+        CustomSpinnerStyle.setSpinnerStyle(QuestionsPage.this, orderByDropdown, heightAdjustValue, orderByValArray, (int) ((100 * widthAdjustValue) * density), spinnerTextSize, 22, -50);
 
 
         cardColourDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

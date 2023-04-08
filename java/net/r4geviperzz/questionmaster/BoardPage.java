@@ -1,6 +1,5 @@
 package net.r4geviperzz.questionmaster;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -12,6 +11,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridLayout;
@@ -27,7 +28,6 @@ import androidx.core.view.ViewCompat;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 
 public class BoardPage extends AppCompatActivity {
@@ -47,12 +47,15 @@ public class BoardPage extends AppCompatActivity {
     private String winningTeam = null;
     private Boolean gameSessionNeedsSaving = true;
     private Boolean playTimerSound = true;
-    private TimerSound timerSound = null;
+    private Timer timerSound = null;
+    private Float widthAdjustValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_board_page);
+
+        widthAdjustValue = TextScale.getFontAdjustWidthValue();
 
         //This gets the boardId that was passed from the SetupPage as a result of a user selecting a board in the dropdown on that page
         idOfBoard = getIntent().getStringExtra("boardId");
@@ -212,14 +215,6 @@ public class BoardPage extends AppCompatActivity {
         }
     }
 
-    //This method is used to generate a random positive number that can be assigned to a programmatically generated button
-    //Math.abs gets the absolute value of the generate hash code meaning that the number that is generated is positive
-    //the number needs to be positive as when running on API 25 or lower findViewById returns null if you try to find a view with a negative id
-    private int generateBtnId(){
-        int generatedBtnId = Math.abs(UUID.randomUUID().hashCode());
-        return generatedBtnId;
-    }
-
     //This method is responsible for setting up the counters and label text when a game session is started
     private void setupPlayerCounter(){
         //Used to get the image names for each of the teams
@@ -230,7 +225,7 @@ public class BoardPage extends AppCompatActivity {
             //Creates the imageView
             ImageView imageView = new ImageView(this);
             //Sets an id for the imageView
-            int generatedId = generateBtnId();
+            int generatedId = BtnIdGenerator.generateBtnId();
             Log.e("MyApp", "Generated ID: " + generatedId);
             imageView.setId(generatedId);
 
@@ -518,7 +513,7 @@ public class BoardPage extends AppCompatActivity {
 
             if (playTimerSound == true) {
                 //Calls the class that will play the timer sound, passing it the current context and the dbHelper instance
-                timerSound = new TimerSound(this, dbHelper);
+                timerSound = new Timer(this, dbHelper);
                 //Calls the method that will start the timer sound
                 timerSound.start();
             }
@@ -588,7 +583,7 @@ public class BoardPage extends AppCompatActivity {
 
                     //These lines of code generate an id for the button, store the generated id in the leftBtnIdList
                     //and then set the id of the button to the generated id
-                    int leftBtnGenId = generateBtnId();
+                    int leftBtnGenId = BtnIdGenerator.generateBtnId();
                     leftBtnIdList.add(leftBtnGenId);
                     leftBtn.setId(leftBtnGenId);
 
@@ -603,7 +598,7 @@ public class BoardPage extends AppCompatActivity {
 
                     //These lines of code generate an id for the button, store the generated id in the rightBtnIdList
                     //and then set the id of the button to the generated id
-                    int rightBtnGenId = generateBtnId();
+                    int rightBtnGenId = BtnIdGenerator.generateBtnId();
                     rightBtnIdList.add(rightBtnGenId);
                     rightBtn.setId(rightBtnGenId);
 
@@ -753,65 +748,80 @@ public class BoardPage extends AppCompatActivity {
             }
         }
 
-        //This line stops the dialog window from closing when a user taps on a location out side of the dialog window
-        dialog.setCanceledOnTouchOutside(false);
+        if (dialog != null) {
+            Window dialogWindow = dialog.getWindow();
 
-        // Inflate the dialog layout
-        LayoutInflater inflater = LayoutInflater.from(BoardPage.this);
-        View dialogView = inflater.inflate(R.layout.dialog_num_to_get_correct_layout, null);
+            if (dialogWindow != null) {
+                //This line stops the dialog window from closing when a user taps on a location out side of the dialog window
+                dialog.setCanceledOnTouchOutside(false);
 
-        //Set the content view of the dialog
-        dialog.setContentView(dialogView);
+                // Inflate the dialog layout
+                LayoutInflater inflater = LayoutInflater.from(BoardPage.this);
+                View dialogView = inflater.inflate(R.layout.dialog_num_to_get_correct_layout, null);
 
-        TextView teamToEnterText = dialogView.findViewById(R.id.numToGetCorrectTextView);
-        teamToEnterText.setText(getString(R.string.board_pg_num_to_get_correct_dialog_label_pt1) + " " + teamNamesArray[currentTeamIndex] + " " + getString(R.string.board_pg_num_to_get_correct_dialog_label_pt2));
+                //Set the content view of the dialog
+                dialog.setContentView(dialogView);
+
+                TextView teamToEnterText = dialogView.findViewById(R.id.numToGetCorrectTextView);
+                teamToEnterText.setText(getString(R.string.board_pg_num_to_get_correct_dialog_label_pt1) + " " + teamNamesArray[currentTeamIndex] + " " + getString(R.string.board_pg_num_to_get_correct_dialog_label_pt2));
+
+                EditText enterNumEntryBox = dialogView.findViewById(R.id.numToGetCorrectEditText);
+                enterNumEntryBox.setTextSize((int) (16 * widthAdjustValue));
 
 
-        // Set up the Submit button
-        Button dialogSubmitButton = dialog.findViewById(R.id.numToGetCorrectSubmitBtn);
-        dialogSubmitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                EditText numToGetCorrectInput = dialog.findViewById(R.id.numToGetCorrectEditText);
-                int numToGetCorrect = 0;
+                // Set up the Submit button
+                Button dialogSubmitButton = dialog.findViewById(R.id.numToGetCorrectSubmitBtn);
+                dialogSubmitButton.setTextSize((int) (18 * widthAdjustValue));
+                dialogSubmitButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        EditText numToGetCorrectInput = dialog.findViewById(R.id.numToGetCorrectEditText);
+                        int numToGetCorrect = 0;
 
-                TextView numToGetCorrectErrorText = dialog.findViewById(R.id.numToGetCorrectErrorText);
+                        TextView numToGetCorrectErrorText = dialog.findViewById(R.id.numToGetCorrectErrorText);
 
-                //This try checks that the users number input is valid
-                try{
-                    //Converts the input value to an int
-                    String numInputBoxInput = numToGetCorrectInput.getText().toString();
-                    Log.e("NumLimitInput", "Text = " + numInputBoxInput);
-                     if (numInputBoxInput.length() > 0) {
-                         //Tries to convert the input to an int
-                         numToGetCorrect = Integer.parseInt(numInputBoxInput);
+                        //This try checks that the users number input is valid
+                        try {
+                            //Converts the input value to an int
+                            String numInputBoxInput = numToGetCorrectInput.getText().toString();
+                            Log.e("NumLimitInput", "Text = " + numInputBoxInput);
+                            if (numInputBoxInput.length() > 0) {
+                                //Tries to convert the input to an int
+                                numToGetCorrect = Integer.parseInt(numInputBoxInput);
 
-                         if (numToGetCorrect == 0){
-                             //This runs if the user inputs zero
-                             numToGetCorrectErrorText.setText(getString(R.string.board_pg_dialog_input_is_zero));
-                         } else if (numToGetCorrect > 10) {
-                             //This runs if a user inputs more than 10
-                             numToGetCorrectErrorText.setText(getString(R.string.board_pg_dialog_input_more_than_ten));
-                         } else if (numToGetCorrect < 0){
-                             //This runs if a user inputs a negative number
-                             numToGetCorrectErrorText.setText(getString(R.string.board_pg_dialog_input_negative));
-                         }else {
-                             createAskQuestionDialog(passedCounterPosTotal, passedCardColour, passedWildCardVal, numToGetCorrect);
-                             dialog.dismiss();
-                         }
-                     }else{
-                         //This runs if the user hasn't input anything into the input box
-                         numToGetCorrectErrorText.setText(getString(R.string.board_pg_dialog_input_empty));
-                     }
-                }catch (NumberFormatException e){
-                    //This runs if the input is not an int
-                    numToGetCorrectErrorText.setText(getString(R.string.board_pg_dialog_input_not_num));
-                }
+                                if (numToGetCorrect == 0) {
+                                    //This runs if the user inputs zero
+                                    numToGetCorrectErrorText.setText(getString(R.string.board_pg_dialog_input_is_zero));
+                                } else if (numToGetCorrect > 10) {
+                                    //This runs if a user inputs more than 10
+                                    numToGetCorrectErrorText.setText(getString(R.string.board_pg_dialog_input_more_than_ten));
+                                } else if (numToGetCorrect < 0) {
+                                    //This runs if a user inputs a negative number
+                                    numToGetCorrectErrorText.setText(getString(R.string.board_pg_dialog_input_negative));
+                                } else {
+                                    createAskQuestionDialog(passedCounterPosTotal, passedCardColour, passedWildCardVal, numToGetCorrect);
+                                    dialog.dismiss();
+                                }
+                            } else {
+                                //This runs if the user hasn't input anything into the input box
+                                numToGetCorrectErrorText.setText(getString(R.string.board_pg_dialog_input_empty));
+                            }
+                        } catch (NumberFormatException e) {
+                            //This runs if the input is not an int
+                            numToGetCorrectErrorText.setText(getString(R.string.board_pg_dialog_input_not_num));
+                        }
+                    }
+                });
+
+                dialogWindow.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, (int) (DeviceSize.getDeviceHeightPX() * 0.38));
+                // Show the dialog
+                dialog.show();
+            }else{
+                Log.e("numToGetCorrectWinError", "Failed to get the window off the number to get correct dialog");
             }
-        });
-
-        // Show the dialog
-        dialog.show();
+        }else{
+            Log.e("numToGetCorrectDiaError", "Failed to create number to get correct dialog");
+        }
     }
 
     //This method is responsible for asking the user the question
