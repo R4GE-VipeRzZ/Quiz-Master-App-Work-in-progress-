@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- The code has been changed to use the custom FilterEditView class instead of the default EditText class so
 that it can be ensured that the entered text is UTF-8 or UTF-16 and doesn't contain anything such as emoji's-->
-<net.r4geviperzz.questionmaster.FilterEditView xmlns:android="http://schemas.android.com/apk/res/android"
+<net.r4geviperzz.questionmaster.FilterEditView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/questionEditTextView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

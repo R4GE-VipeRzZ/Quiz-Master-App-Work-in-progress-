@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
@@ -8,12 +9,62 @@
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground">
 
-    <TextView
-        android:id="@+id/myTextView"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="12dp"
-        android:textColor="@android:color/black"
-        android:textSize="18sp" />
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/verticalGuideLine1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.80"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/verticalGuideLine2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.85"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/topHorizontalGuideLine"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.26"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/bottomHorizontalGuideLine"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.74"/>
+
+        <TextView
+            android:id="@+id/myTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8"
+            android:padding="12dp"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/verticalGuideLine1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <net.r4geviperzz.questionmaster.QuestionColourShape
+            android:id="@+id/myQuestionShape"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="@id/verticalGuideLine1"
+            app:layout_constraintEnd_toEndOf="@id/verticalGuideLine2"
+            app:layout_constraintTop_toTopOf="@id/topHorizontalGuideLine"
+            app:layout_constraintBottom_toBottomOf="@id/bottomHorizontalGuideLine"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>
