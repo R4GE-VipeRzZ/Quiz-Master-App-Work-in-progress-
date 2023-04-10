@@ -14,18 +14,32 @@
         android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/leftVerticalGuideLine"
+            android:id="@+id/leftVerticalGuideLine1"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.04"/>
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/rightVerticalGuideLine"
+            android:id="@+id/leftVerticalGuideLine2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.25"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/rightVerticalGuideLine1"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.96"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/rightVerticalGuideLine2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.75"/>
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/topHorizontalGuideLine"
@@ -35,18 +49,67 @@
             app:layout_constraintGuide_percent="0.01"/>
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/topSecondHorizontalGuideLine"
+            android:id="@+id/horizontalGuideLine1"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.09"/>
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/topThirdHorizontalGuideLine"
+            android:id="@+id/horizontalGuideLine2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.11"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontalGuideLine3"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.15"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontalGuideLine4"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.28"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontalGuideLine5"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.38"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontalGuideLine6"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.50"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontalGuideLine7"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.782"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontalGuideLine8"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.80"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontalGuideLine9"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.842"/>
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/bottomHorizontalGuideLine"
@@ -54,130 +117,172 @@
             android:layout_height="0dp"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.90"/>
-
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/bottomSecondHorizontalGuideLine"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.842"/>
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/bottomThirdHorizontalGuideLine"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.782"/>
-
+        
         <ImageView
             android:id="@+id/progressBarLeftFullIcon"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:visibility="gone"
             android:src="@drawable/timer_icon_full"
             app:layout_constraintDimensionRatio="1:1.56"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/leftVerticalGuideLine"
-            app:layout_constraintTop_toTopOf="@id/topSecondHorizontalGuideLine"
-            app:layout_constraintBottom_toBottomOf="@id/topThirdHorizontalGuideLine" />
+            app:layout_constraintEnd_toEndOf="@id/leftVerticalGuideLine1"
+            app:layout_constraintTop_toTopOf="@id/horizontalGuideLine1"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine3" />
 
         <ProgressBar
             android:id="@+id/progressBarLeft"
             style="@style/VerticalProgressBar"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:visibility="gone"
             android:progressDrawable="@drawable/vertical_progress_bar"
             android:orientation="vertical"
             app:layout_constraintDimensionRatio="1:50"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/leftVerticalGuideLine"
-            app:layout_constraintTop_toTopOf="@id/topThirdHorizontalGuideLine"
-            app:layout_constraintBottom_toBottomOf="@id/bottomThirdHorizontalGuideLine" />
+            app:layout_constraintEnd_toEndOf="@id/leftVerticalGuideLine1"
+            app:layout_constraintTop_toTopOf="@id/horizontalGuideLine3"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine7" />
 
         <ImageView
             android:id="@+id/progressBarLeftEmptyIcon"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:visibility="gone"
             android:src="@drawable/timer_icon_empty"
             app:layout_constraintDimensionRatio="1:1.56"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/leftVerticalGuideLine"
-            app:layout_constraintTop_toTopOf="@id/bottomThirdHorizontalGuideLine"
-            app:layout_constraintBottom_toBottomOf="@id/bottomSecondHorizontalGuideLine" />
+            app:layout_constraintEnd_toEndOf="@id/leftVerticalGuideLine1"
+            app:layout_constraintTop_toTopOf="@id/horizontalGuideLine7"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine9" />
 
-        <!-- Question TextView -->
         <TextView
             android:id="@+id/questionTextView"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="0dp"
+            android:visibility="gone"
             android:text="Question goes here"
             android:textStyle="bold"
             android:textSize="18sp"
             android:gravity="center_horizontal"
-            app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine"
-            app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine"
+            app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine1"
+            app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine1"
             app:layout_constraintTop_toTopOf="@id/topHorizontalGuideLine"
-            app:layout_constraintBottom_toBottomOf="@id/topSecondHorizontalGuideLine" />
+            app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine1" />
 
-        <!-- Answers TextViews -->
+        <TextView
+            android:id="@+id/teamToBeAskedTextView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="The next question is for team: "
+            android:textStyle="bold"
+            app:autoSizeTextType="uniform"
+            app:autoSizeMinTextSize="18sp"
+            app:autoSizeMaxTextSize="86sp"
+            app:autoSizeStepGranularity="2sp"
+            android:gravity="center_horizontal"
+            app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine1"
+            app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine1"
+            app:layout_constraintTop_toTopOf="@id/topHorizontalGuideLine"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine2" />
+
+        <ImageView
+            android:id="@+id/teamToBeAskedIcon"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/horizontalGuideLine2"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine4"
+            app:layout_constraintHorizontal_bias="0.5"/>
+
+        <TextView
+            android:id="@+id/toBeAskedAdditionInfoTextView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:autoSizeTextType="uniform"
+            app:autoSizeMinTextSize="18sp"
+            app:autoSizeMaxTextSize="86sp"
+            app:autoSizeStepGranularity="2sp"
+            android:gravity="center_horizontal"
+            app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine1"
+            app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine1"
+            app:layout_constraintTop_toTopOf="@id/horizontalGuideLine5"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine6" />
+
         <LinearLayout
             android:id="@+id/ansLinLayout"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:visibility="gone"
             android:orientation="vertical"
             android:padding="16dp"
             android:gravity="center_horizontal"
-            app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine"
-            app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine"
-            app:layout_constraintTop_toTopOf="@id/topSecondHorizontalGuideLine"
-            app:layout_constraintBottom_toBottomOf="@id/bottomSecondHorizontalGuideLine"
+            app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine1"
+            app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine1"
+            app:layout_constraintTop_toTopOf="@id/horizontalGuideLine1"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine9"
             android:layout_weight="1"/>
-
 
         <ImageView
             android:id="@+id/progressBarRightFullIcon"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:visibility="gone"
             android:src="@drawable/timer_icon_full"
             app:layout_constraintDimensionRatio="1:1.56"
-            app:layout_constraintStart_toStartOf="@id/rightVerticalGuideLine"
+            app:layout_constraintStart_toStartOf="@id/rightVerticalGuideLine1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/topSecondHorizontalGuideLine"
-            app:layout_constraintBottom_toBottomOf="@id/topThirdHorizontalGuideLine" />
+            app:layout_constraintTop_toTopOf="@id/horizontalGuideLine1"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine3" />
 
         <ProgressBar
             android:id="@+id/progressBarRight"
             style="@style/VerticalProgressBar"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:visibility="gone"
             android:progressDrawable="@drawable/vertical_progress_bar"
             android:orientation="vertical"
             app:layout_constraintDimensionRatio="1:50"
-            app:layout_constraintStart_toStartOf="@id/rightVerticalGuideLine"
+            app:layout_constraintStart_toStartOf="@id/rightVerticalGuideLine1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/topThirdHorizontalGuideLine"
-            app:layout_constraintBottom_toBottomOf="@id/bottomThirdHorizontalGuideLine"/>
+            app:layout_constraintTop_toTopOf="@id/horizontalGuideLine3"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine7"/>
 
         <ImageView
-            android:id="@+id/progressBarLeftEmptyIcon"
+            android:id="@+id/progressBarRightEmptyIcon"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:visibility="gone"
             android:src="@drawable/timer_icon_empty"
             app:layout_constraintDimensionRatio="1:1.56"
-            app:layout_constraintStart_toStartOf="@id/rightVerticalGuideLine"
+            app:layout_constraintStart_toStartOf="@id/rightVerticalGuideLine1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/bottomThirdHorizontalGuideLine"
-            app:layout_constraintBottom_toBottomOf="@id/bottomSecondHorizontalGuideLine" />
+            app:layout_constraintTop_toTopOf="@id/horizontalGuideLine7"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalGuideLine9" />
+
+        <Button
+            android:id="@+id/startBtn"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="@string/board_pg_question_dialog_start_btn"
+            app:layout_constraintTop_toBottomOf="@id/horizontalGuideLine8"
+            app:layout_constraintBottom_toBottomOf="@id/bottomHorizontalGuideLine"
+            app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine1"
+            app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine1"/>
 
         <Button
             android:id="@+id/submitBtn"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:visibility="gone"
             android:text="@string/board_pg_question_dialog_submit_btn"
             app:layout_constraintTop_toBottomOf="@id/bottomHorizontalGuideLine"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine"
-            app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine"/>
+            app:layout_constraintStart_toStartOf="@id/leftVerticalGuideLine1"
+            app:layout_constraintEnd_toEndOf="@id/rightVerticalGuideLine1"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

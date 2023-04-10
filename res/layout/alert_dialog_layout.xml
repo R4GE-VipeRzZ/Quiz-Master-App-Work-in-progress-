@@ -35,14 +35,14 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.67"/>
+            app:layout_constraintGuide_percent="0.62"/>
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/horizontalGuideLine4"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.785"/>
+            app:layout_constraintGuide_percent="0.735"/>
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/bottomHorizontalGuideLine"
@@ -77,21 +77,21 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.82"/>
+            app:layout_constraintGuide_percent="0.81"/>
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/rightVerticalGuideLine4"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.685"/>
+            app:layout_constraintGuide_percent="0.693"/>
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/rightVerticalGuideLine5"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.625"/>
+            app:layout_constraintGuide_percent="0.623"/>
 
         <TextView
             android:id="@+id/alertDialogTitle"

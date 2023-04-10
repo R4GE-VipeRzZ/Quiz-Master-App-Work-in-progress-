@@ -18,7 +18,9 @@
     <string name="board_pg_ask_question_btn">Ask Question</string>
     <string name="board_pg_team_ask_next_label">The team to be asked the \nnext question is:</string>
 
+    <string name="board_pg_question_dialog_start_btn">Start</string>
     <string name="board_pg_question_dialog_submit_btn">Submit</string>
+    <string name="board_pg_question_dialog_additional_info">The team will need to get %1$s answers correct or they will move back %2$s spaces</string>
 
     <string name="board_pg_num_to_get_correct_dialog_label_pt1">Please enter the number of questions that team</string>
     <string name="board_pg_num_to_get_correct_dialog_label_pt2">is going to get correct</string>
@@ -26,7 +28,7 @@
     <string name="board_pg_dialog_input_not_num">The input needs to be a number</string>
     <string name="board_pg_dialog_input_empty">Please enter a number</string>
     <string name="board_pg_dialog_input_is_zero">The number can\'t be zero</string>
-    <string name="board_pg_dialog_input_more_than_ten">The number can\'t be more than ten</string>
+    <string name="board_pg_dialog_input_more_than">The number can\'t be more than %1$s</string>
     <string name="board_pg_dialog_input_negative">The number can\'t be negative</string>
     <string name="board_pg_dialog_input_hint">Enter number here</string>
 

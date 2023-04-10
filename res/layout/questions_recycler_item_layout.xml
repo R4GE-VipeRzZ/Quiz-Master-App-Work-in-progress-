@@ -19,14 +19,29 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.80"/>
+            app:layout_constraintGuide_percent="0.73"/>
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/verticalGuideLine2"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.85"/>
+            app:layout_constraintGuide_percent="0.78"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/verticalGuideLine3"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.82"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/verticalGuideLine4"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.94"/>
+
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/topHorizontalGuideLine"
@@ -34,6 +49,7 @@
             android:layout_height="0dp"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.26"/>
+
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/bottomHorizontalGuideLine"
@@ -64,6 +80,18 @@
             app:layout_constraintEnd_toEndOf="@id/verticalGuideLine2"
             app:layout_constraintTop_toTopOf="@id/topHorizontalGuideLine"
             app:layout_constraintBottom_toBottomOf="@id/bottomHorizontalGuideLine"/>
+
+        <Button
+            android:id="@+id/myQuestionDeleteBtn"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/ic_delete"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="@id/verticalGuideLine3"
+            app:layout_constraintEnd_toEndOf="@id/verticalGuideLine4"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.5"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
