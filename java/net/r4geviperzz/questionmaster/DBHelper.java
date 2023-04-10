@@ -1451,6 +1451,19 @@ public class DBHelper extends SQLiteOpenHelper {
         return teamImgList;
     }
 
+    //This method returns the image name of the team id that is passed to it
+    public String getTeamImgUsingId(String passedTeamId){
+        //Creates a string to store the result from the query
+        String teamIdImgName = "";
+        //This is the sql query that will be executed
+        String readTeamImgNameQuery = "SELECT " + COL_TEAMS_IMG_NAME + " FROM " + TABLE_TEAMS + " WHERE "
+                + COL_TEAMS_ID + " = " + passedTeamId + ";";
+        //Passes the sql query and stores the result in the teamIdImgName
+        teamIdImgName = readDB(readTeamImgNameQuery).get(0);
+
+        return teamIdImgName;
+    }
+
     //This method gets the current position of a passed user id from the gameSession table
     public List<String> getCurrentPosByTeamId(String[] passedTeamIdArray, String passedBoardId){
         //Converts the String[] to a single string with each of the elements separated in the string by a comma

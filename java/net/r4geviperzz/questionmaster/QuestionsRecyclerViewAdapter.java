@@ -2,11 +2,14 @@ package net.r4geviperzz.questionmaster;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,6 +33,7 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
     private Float heightAdjustValue;
 
     private Map<String, String> cardNumToHexMultiMap = new HashMap<>();
+    private LayerDrawable deleteBtnDrawable;
 
     //The constructor
     public QuestionsRecyclerViewAdapter(Context context, List<String> data, List<String> colourData) {
@@ -37,6 +41,14 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
         this.dbQuestionsList = data;
         this.dbQuestionColourNumList = colourData;
         this.heightAdjustValue = TextScale.getFontAdjustHeightValue();
+
+        Drawable tempDrawable = context.getResources().getDrawable(R.drawable.ic_delete);
+        LayerDrawable tempLayerDrawable = new LayerDrawable(new Drawable[] {tempDrawable});
+
+        Float density = DeviceSize.getDeviceDensity();
+        int tempPadding = (int) ((7.5 * TextScale.getFontAdjustWidthValue()) * DeviceSize.getDeviceDensity());
+        tempLayerDrawable.setLayerInset(0, tempPadding,tempPadding,tempPadding,tempPadding);
+        this.deleteBtnDrawable = tempLayerDrawable;
 
         DBHelper dbHelper = new DBHelper(context);
         setupCardColourHashMap(dbHelper);
@@ -117,23 +129,35 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView myTextView;
         QuestionColourShape myQuestionShape;
+        Button myQuestionDeleteBtn;
 
         // ViewHolder constructor takes a view as a parameter and initializes the myTextView field and click listener
         ViewHolder(View itemView) {
             super(itemView);
-            myTextView = itemView.findViewById(R.id.myTextView); // Find the myTextView TextView in the item view
-            myQuestionShape = itemView.findViewById(R.id.myQuestionShape);        //Find the question circle in the item view
+            myTextView = itemView.findViewById(R.id.myTextView); // Finds the myTextView TextView in the item view
+            myQuestionShape = itemView.findViewById(R.id.myQuestionShape);        //Finds the question circle in the item view
+            myQuestionDeleteBtn = itemView.findViewById(R.id.myQuestionDeleteBtn);      //Finds the question delete button in the item view
+            //Sets the layerDrawable with padding added to be the background for the delete button
+            myQuestionDeleteBtn.setBackground(deleteBtnDrawable);
             itemView.setOnClickListener(this); // Set click listener on the entire item view
+            myQuestionDeleteBtn.setOnClickListener(this);
         }
 
         // onClick method is called when an item is clicked and delegates the click event to the click listener object
         @Override
         public void onClick(View view) {
-            // Check if click listener is set and call onItemClick method
-            if (questionsRecyclerAdapterListenerInterface != null){
-                //This line is used to passed the view that was clicked so that the code
-                //can tell what item in the RecyclerView has been pressed
-                questionsRecyclerAdapterListenerInterface.onItemClick(view, getAdapterPosition());
+            if (view == myQuestionDeleteBtn){
+                Log.e("deleteBtnClicked", "Delete button clicked, AdapterPosition = " + getAdapterPosition());
+                if (questionsRecyclerAdapterListenerInterface != null) {
+                    questionsRecyclerAdapterListenerInterface.onDeleteClick(view, getAdapterPosition());
+                }
+            }else {
+                // Check if click listener is set and call onItemClick method
+                if (questionsRecyclerAdapterListenerInterface != null) {
+                    //This line is used to passed the view that was clicked so that the code
+                    //can tell what item in the RecyclerView has been pressed
+                    questionsRecyclerAdapterListenerInterface.onItemClick(view, getAdapterPosition());
+                }
             }
         }
     }
@@ -151,7 +175,10 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
 
     // The parent activity will implement this method to respond to click events
     public interface ItemClickListener {
+        //This method is for when the cardView in the RecyclerView is clicked
         void onItemClick(View view, int position);
+        //This method is for when the delete button inside of the CardView that is in the RecyclerView is clicked
+        void onDeleteClick(View view, int position);
     }
 }
 

@@ -1,19 +1,24 @@
 package net.r4geviperzz.questionmaster;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,6 +42,7 @@ public class QuestionsPage extends AppCompatActivity implements QuestionsRecycle
     private Boolean firstTimeCardColourSpinnerLoad;
     private Boolean firstTimeOrdBySpinnerLoad;
     private List<String> questionsDetailsList = new ArrayList<>();
+    private List<String> questionsToDisplayList = new ArrayList<>();
     private List<String> questionColourNumList = new ArrayList<>();
 
     @Override
@@ -65,7 +71,7 @@ public class QuestionsPage extends AppCompatActivity implements QuestionsRecycle
 
         //Gets a reference to the order by spinner
         Spinner orderByDropdown = findViewById(R.id.questionsPageOrderTypeSpinner);
-        CustomSpinnerStyle.setSpinnerStyle(QuestionsPage.this, orderByDropdown, heightAdjustValue, orderByValArray, (int) ((100 * widthAdjustValue) * density), spinnerTextSize, 22, -50);
+        CustomSpinnerStyle.setSpinnerStyle(QuestionsPage.this, orderByDropdown, heightAdjustValue, orderByValArray, (int) ((100 * widthAdjustValue) * density), spinnerTextSize, 22, -60);
 
 
         cardColourDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -176,10 +182,133 @@ public class QuestionsPage extends AppCompatActivity implements QuestionsRecycle
         startActivity(intent);
     }
 
+    //This method is used to handel a delete button been clicked in the RecyclerView
+    public void onDeleteClick(View view, int position) {
+        // Create the dialog
+        CustomQuestionDialog dialog;
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            //This runs when on API 19 or lower
+            dialog = new CustomQuestionDialog(QuestionsPage.this, R.style.MyDialogThemeAPI19);
+        } else {
+            //This runs when running on API 21 or higher
+
+            //Checks if running on API 22 or less
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                dialog = new CustomQuestionDialog(QuestionsPage.this, R.style.MyDialogThemeAPI21And22);
+            } else {
+                //Runs if running on API 23 and up
+                dialog = new CustomQuestionDialog(QuestionsPage.this);
+            }
+        }
+
+        if (dialog != null) {
+            Window dialogWindow = dialog.getWindow();
+
+            if (dialogWindow != null) {
+                // Inflate the dialog layout
+                LayoutInflater inflater = LayoutInflater.from(QuestionsPage.this);
+                View dialogView = inflater.inflate(R.layout.alert_dialog_layout, null);
+
+                //Set the content view of the dialog
+                dialog.setContentView(dialogView);
+
+                //Alert dialog title
+                TextView titleLabel = dialogView.findViewById(R.id.alertDialogTitle);
+                //Alert dialog message
+                TextView messageLabel = dialogView.findViewById(R.id.alertDialogMessage);
+
+                titleLabel.setText("Delete Question?");
+                messageLabel.setText("Are you sure you want to delete the question?");
+
+                //Setup Yes button
+                Button alertBtnYes = dialogView.findViewById(R.id.alertDialogBtnYes);
+                alertBtnYes.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //Yes Click
+                        dialog.dismiss();
+
+                        Log.e("questionDelete", "The question should be deleted");
+                        Log.e("position", "position = " + position);
+
+                        List<String> questionDetailsList = questionsDetailsMultiMap.get(position);
+                        String questionCardColour = questionDetailsList.get(0);
+                        String questionId = questionDetailsList.get(1);
+
+                        //Calls the method that will delete the question from the database
+                        Boolean success = dbHelper.deleteQuestion(questionCardColour, questionId);
+
+                        Log.e("questionDetails", "questionCardColour = " + questionCardColour + " questionId = " + questionId);
+
+                        //Checks that the delete method call returned true, if it didn't then that means there isn't more than one
+                        //question of the given colour in the table
+                        if (success == true) {
+                            //Removes the question from the questionToDisplayList
+                            questionsToDisplayList.remove(position);
+
+                            if (questionColourNumList.size() > 1){
+                                //Removes the card colour number from the questionColourNumList
+                                questionColourNumList.remove(position);
+                            }
+
+                            //Removes the question from the MultiMap
+                            questionsDetailsMultiMap.remove(position);
+
+                            //Renumbers the keys after the removed key in the MultiMap
+                            //Iterates through the keys in the MultiMap starting at the position where the
+                            //key pair was removed and continuing until the end of the MultiMap
+                            for (int i = position + 1; i <= questionsDetailsMultiMap.keySet().size(); i++) {
+                                // Get the values associated with the current key
+                                List<String> values = questionsDetailsMultiMap.get(i);
+                                // Remove the current key and its associated values from the MultiMap
+                                questionsDetailsMultiMap.remove(i);
+                                // Add the values back into the MultiMap with a new key that is one less than the current key
+                                questionsDetailsMultiMap.put((i - 1), values);
+                            }
+
+                            recyclerAdapter.notifyDataSetChanged();
+
+                            Toast.makeText(QuestionsPage.this, "Question Deleted", Toast.LENGTH_SHORT).show();
+                            //Nulls the questionOrder Blob in the gameBoards table as it needs
+                            //recreating in order to account for the deleted question
+                            dbHelper.nullQuestionOrderFromGameBoards();
+                            //Nulls the questionOrderCount Blob in the gameBoards table as it needs
+                            //recreating in order to account for the deleted question
+                            dbHelper.nullQuestionOrderCountFromGameBoards();
+                        }else{
+                            Toast.makeText(QuestionsPage.this, "Unable to delete question, as it is the last card of such a colour in the database", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+
+                //Setup No button
+                Button alertBtnNo = dialogView.findViewById(R.id.alertDialogBtnNo);
+                alertBtnNo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //No Click
+                        dialog.dismiss();
+
+                        Log.e("questionDelete", "The question should not be deleted");
+                    }
+                });
+
+
+                dialogWindow.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, (int) (DeviceSize.getDeviceHeightPX() * 0.275));
+                // Show the dialog
+                dialog.show();
+            } else {
+                Log.e("alertDialogWindowError", "Failed to get the window off the alert dialog");
+            }
+        } else {
+            Log.e("alertDialogError", "Failed to create alert dialog");
+        }
+    }
+
     //This method sets up the MultiMap that corresponds to the questions
     private List<String> setupQuestionMultiMap(Boolean initialSetup, Boolean singleColour){
-        //This List<String> contains all the questions that need to be displayed in the RecyclerView
-        List<String> questionsToDisplayList = new ArrayList<>();
+        //Clears the questionsToDisplayList so that it doesn't have any old values in it
+        questionsToDisplayList.clear();
         //Clears the questionColourNumList list so that it doesn't have any old values in it
         questionColourNumList.clear();
         List<String> tempList = new ArrayList<>();
@@ -229,8 +358,6 @@ public class QuestionsPage extends AppCompatActivity implements QuestionsRecycle
         if (initialSetup == true) {
             return questionsToDisplayList;
         }else{
-            //Calls the update method in the adapter to change the values that are displayed in the RecyclerView
-            recyclerAdapter.updateList(questionsToDisplayList);
             //Lets the adapter know that it need to update the data in its items as the data has been changed
             recyclerAdapter.notifyDataSetChanged();
             return null;
@@ -242,7 +369,7 @@ public class QuestionsPage extends AppCompatActivity implements QuestionsRecycle
         //This line gets all the questions from the database along with the card colour value and question id
         questionsDetailsList = dbHelper.getAllQuestionsNoAnswers("Ascending");
 
-        List<String> questionsToDisplayList = setupQuestionMultiMap(true, false);
+        questionsToDisplayList = setupQuestionMultiMap(true, false);
 
         // Get a reference to the RecyclerView in your layout
         RecyclerView myRecyclerView = findViewById(R.id.questionsPageRecyclerView);

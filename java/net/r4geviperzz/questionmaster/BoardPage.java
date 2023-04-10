@@ -47,8 +47,10 @@ public class BoardPage extends AppCompatActivity {
     private String winningTeam = null;
     private Boolean gameSessionNeedsSaving = true;
     private Boolean playTimerSound = true;
+    private QuestionCountDownTimer countDownTimer = null;
     private Timer timerSound = null;
     private Float widthAdjustValue;
+    private Boolean questionBeingShown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -415,7 +417,7 @@ public class BoardPage extends AppCompatActivity {
     }
 
     //This method is responsible for creating the ask question dialog window
-    private void createAskQuestionDialog(int passedCounterPosTotal, String passedCardColour, int passedWildCardVal, int passedNumToGetCorrect){
+    private void createAskQuestionDialog(int passedCounterPosTotal, String passedCardColour, int passedWildCardVal, int passedNumToGetCorrect, String additionalInfo){
         // Create the dialog
         CustomQuestionDialog dialog;
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
@@ -493,7 +495,7 @@ public class BoardPage extends AppCompatActivity {
             int timeInSeconds = dbHelper.getCardTimeColour(passedCardColour);
             //Sets the time limit for the timer
             int timeLimit = (timeInSeconds * 1000);
-            //Sets the countdown increment for the timer
+            //Sets the countdown increment for the timer, the smaller the number the smoother the animation
             int countDownIncrement = 30;
 
             //Gets a reference to the left progress bar
@@ -510,18 +512,6 @@ public class BoardPage extends AppCompatActivity {
             rightProgressBar.setMax(timeLimit);
             //Sets the progress value to the max value so that the bar starts at full
             rightProgressBar.setProgress(timeLimit);
-
-            if (playTimerSound == true) {
-                //Calls the class that will play the timer sound, passing it the current context and the dbHelper instance
-                timerSound = new Timer(this, dbHelper);
-                //Calls the method that will start the timer sound
-                timerSound.start();
-            }
-
-            //Creates a new instance of QuestionCountDownTimer with the left and right progress bars, time limit, and count down increment
-            QuestionCountDownTimer countDownTimer = new QuestionCountDownTimer(BoardPage.this, leftProgressBar, rightProgressBar, timeLimit, countDownIncrement, timerSound);
-            //Starts the count down timer
-            countDownTimer.startCountDownTimer();
 
 
             String hexColour = dbHelper.getCardHexColour(passedCardColour);
@@ -668,15 +658,100 @@ public class BoardPage extends AppCompatActivity {
                 }
             }
 
+            //Gets a reference to the TextView in the dialog that displays the which team the next question is for
+            TextView dialogNextTeamToAskLabel = dialog.findViewById(R.id.teamToBeAskedTextView);
+            dialogNextTeamToAskLabel.setText("The next question is for team: " + teamNamesArray[currentTeamIndex]);
 
-            // Set up the Submit button
+            //Gets a reference to the ImageView in the dialog that displays the team to ask the next question to counter icon
+            ImageView dialogNextTeamToAskIcon = dialog.findViewById(R.id.teamToBeAskedIcon);
+            String nextTeamToAskIconName = dbHelper.getTeamImgUsingId(teamIdsArray[currentTeamIndex]);
+            int nextTeamToAskIconDrawableId = getResources().getIdentifier(nextTeamToAskIconName, "drawable", getPackageName());
+            dialogNextTeamToAskIcon.setImageResource(nextTeamToAskIconDrawableId);
+
+            //Gets a reference to the TextView in the dialog that displays additional information before the start button is pressed
+            TextView dialogAdditionalInfoLabel = dialog.findViewById(R.id.toBeAskedAdditionInfoTextView);
+            dialogAdditionalInfoLabel.setText(additionalInfo);
+
+            //Gets a reference to the submit button
             Button dialogSubmitButton = dialog.findViewById(R.id.submitBtn);
+
+            //Sets the onClick listener for the start button on the dialog
+            Button dialogStartBtn = dialog.findViewById(R.id.startBtn);
+            dialogStartBtn.setTextSize(14  * TextScale.getFontAdjustWidthValue());
+            dialogStartBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Runs when the start button is clicked
+
+                    if (playTimerSound == true) {
+                        //Calls the class that will play the timer sound, passing it the current context and the dbHelper instance
+                        timerSound = new Timer(BoardPage.this, dbHelper);
+                        //Calls the method that will start the timer sound
+                        timerSound.start();
+                    }
+
+                    //Creates a new instance of QuestionCountDownTimer with the left and right progress bars, time limit, and count down increment
+                    countDownTimer = new QuestionCountDownTimer(BoardPage.this, leftProgressBar, rightProgressBar, timeLimit, countDownIncrement, timerSound);
+
+                    //Starts the count down timer
+                    countDownTimer.startCountDownTimer();
+
+                    //Hides the start button
+                    dialogStartBtn.setVisibility(View.GONE);
+                    //Makes the linearLayout that shows all the answers visible
+                    ansLinLayout.setVisibility(View.VISIBLE);
+                    //Makes the TextView that contains the question visible
+                    questionTextView.setVisibility(View.VISIBLE);
+                    //Makes the Submit button visible
+                    dialogSubmitButton.setVisibility(View.VISIBLE);
+
+                    //Makes the left progress bar visible
+                    leftProgressBar.setVisibility(View.VISIBLE);
+                    //Makes the right progress bar visible
+                    rightProgressBar.setVisibility(View.VISIBLE);
+
+                    //Gets a reference to the right progress bar full icon
+                    ImageView rightFullIcon = dialog.findViewById(R.id.progressBarRightFullIcon);
+                    //Makes the right progress bar full icon visible
+                    rightFullIcon.setVisibility(View.VISIBLE);
+                    //Gets a reference to the right progress bar empty icon
+                    ImageView rightEmptyIcon = dialog.findViewById(R.id.progressBarRightEmptyIcon);
+                    //Makes the right progress bar empty icon visible
+                    rightEmptyIcon.setVisibility(View.VISIBLE);
+
+                    //Gets a reference to the left progress bar full icon
+                    ImageView leftFullIcon = dialog.findViewById(R.id.progressBarLeftFullIcon);
+                    //Makes the left progress bar full icon visible
+                    leftFullIcon.setVisibility(View.VISIBLE);
+                    //Gets a reference to the left progress bar empty icon
+                    ImageView leftEmptyIcon = dialog.findViewById(R.id.progressBarLeftEmptyIcon);
+                    //Makes the left progress bar empty icon visible
+                    leftEmptyIcon.setVisibility(View.VISIBLE);
+
+                    //Makes the TextView that shows the next team to be asked a question invisible
+                    dialogNextTeamToAskLabel.setVisibility(View.GONE);
+                    //Makes the ImageView that shows the next team to be asked icon invisible
+                    dialogNextTeamToAskIcon.setVisibility(View.GONE);
+                    //Makes the TextView that shows the additional information before the start button is pressed invisible
+                    dialogAdditionalInfoLabel.setVisibility(View.GONE);
+                }
+            });
+
+
+            //Sets up the Submit button
             dialogSubmitButton.setTextSize(14  * TextScale.getFontAdjustWidthValue());
             dialogSubmitButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    //Runs when the submit button is clicked
+
                     //Called to stop the timer that is running on a background thread
                     countDownTimer.stopCountDownTimer(true);
+
+                    if (playTimerSound == true) {
+                        //Stops the timer sound from playing
+                        timerSound.stop(true);
+                    }
 
                     int numAnsCorrect = 0;
 
@@ -721,6 +796,8 @@ public class BoardPage extends AppCompatActivity {
                     //call the appropriate methods to move the counters
                     updatePosValue(passedCounterPosTotal, numAnsCorrect);
 
+                    //Sets back to false so that another question dialog window can be displayed
+                    questionBeingShown = false;
                     dialog.dismiss();
                 }
             });
@@ -768,6 +845,10 @@ public class BoardPage extends AppCompatActivity {
                 EditText enterNumEntryBox = dialogView.findViewById(R.id.numToGetCorrectEditText);
                 enterNumEntryBox.setTextSize((int) (16 * widthAdjustValue));
 
+                List<String> questionAndAnsList = quest.getQuestionAndAnswers(passedCardColour, BoardPage.this);
+                //Gets the number of answers that are going to be provided to the question taking 1
+                //off the size of the list to account for the question been in the list
+                int maxNumAnswers = (questionAndAnsList.size() - 1);
 
                 // Set up the Submit button
                 Button dialogSubmitButton = dialog.findViewById(R.id.numToGetCorrectSubmitBtn);
@@ -792,14 +873,15 @@ public class BoardPage extends AppCompatActivity {
                                 if (numToGetCorrect == 0) {
                                     //This runs if the user inputs zero
                                     numToGetCorrectErrorText.setText(getString(R.string.board_pg_dialog_input_is_zero));
-                                } else if (numToGetCorrect > 10) {
-                                    //This runs if a user inputs more than 10
-                                    numToGetCorrectErrorText.setText(getString(R.string.board_pg_dialog_input_more_than_ten));
+                                } else if (numToGetCorrect > maxNumAnswers) {
+                                    //This runs if a user inputs more than the maxNumAnswers
+                                    numToGetCorrectErrorText.setText(getString(R.string.board_pg_dialog_input_more_than, Integer.toString(maxNumAnswers)));
                                 } else if (numToGetCorrect < 0) {
                                     //This runs if a user inputs a negative number
                                     numToGetCorrectErrorText.setText(getString(R.string.board_pg_dialog_input_negative));
                                 } else {
-                                    createAskQuestionDialog(passedCounterPosTotal, passedCardColour, passedWildCardVal, numToGetCorrect);
+                                    String additionalInfoString = getString(R.string.board_pg_question_dialog_additional_info, Integer.toString(numToGetCorrect), Integer.toString(numToGetCorrect));
+                                    createAskQuestionDialog(passedCounterPosTotal, passedCardColour, passedWildCardVal, numToGetCorrect, additionalInfoString);
                                     dialog.dismiss();
                                 }
                             } else {
@@ -826,21 +908,26 @@ public class BoardPage extends AppCompatActivity {
 
     //This method is responsible for asking the user the question
     private void askQuestion(){
-        //Gets the current counter position of the player counter
-        List<String> countersPosArray = dbHelper.getCurrentPosByTeamId(teamIdsArray, idOfBoard);
-        int counterPosTotal = Integer.parseInt(countersPosArray.get(currentTeamIndex));
+        //Checks that a current question isn't being shown, this is checked so that if the UI
+        //doesn't respond straight way then multiple dialog windows won't be created
+        if (questionBeingShown == false) {
+            questionBeingShown = true;
+            //Gets the current counter position of the player counter
+            List<String> countersPosArray = dbHelper.getCurrentPosByTeamId(teamIdsArray, idOfBoard);
+            int counterPosTotal = Integer.parseInt(countersPosArray.get(currentTeamIndex));
 
-        //Gets the card colour and special value for the counters current board position
-        List<String> cardDetails = dbHelper.getPosCardDetails(counterPosTotal, idOfBoard);
-        //Sets the card colour for the question
-        String cardColour = cardDetails.get(0);
-        //Sets the special value for the card
-        int wildCardVal = Integer.parseInt(cardDetails.get(1));
+            //Gets the card colour and special value for the counters current board position
+            List<String> cardDetails = dbHelper.getPosCardDetails(counterPosTotal, idOfBoard);
+            //Sets the card colour for the question
+            String cardColour = cardDetails.get(0);
+            //Sets the special value for the card
+            int wildCardVal = Integer.parseInt(cardDetails.get(1));
 
-        if (wildCardVal == -1){
-            createNumToGetCorrectDialog(counterPosTotal, cardColour, wildCardVal);
-        }else {
-            createAskQuestionDialog(counterPosTotal, cardColour, wildCardVal, 0);
+            if (wildCardVal == -1) {
+                createNumToGetCorrectDialog(counterPosTotal, cardColour, wildCardVal);
+            } else {
+                createAskQuestionDialog(counterPosTotal, cardColour, wildCardVal, 0, "");
+            }
         }
     }
 

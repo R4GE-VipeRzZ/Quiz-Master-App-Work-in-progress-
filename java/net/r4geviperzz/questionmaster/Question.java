@@ -180,7 +180,9 @@ public class Question {
         //if this isn't set to the correct value then it will end up reading the wrong colour question from the database
         int questionOrderRowIndex = 0;
 
+        //Loops through the cardColoursArray to find the index of the passedCardColour
         for(int n = 0; n < cardColoursArray.length; n++){
+            //If the passedCardColour is found then the questionOrderRowIndex is set to the current index
             if(cardColoursArray[n].equals(passedCardColour)){
                 questionOrderRowIndex = n;
                 break;
